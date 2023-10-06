@@ -77,6 +77,5 @@ libraries = {
 }
 
 [node name="Reach" type="CollisionShape2D" parent="Player"]
-visible = false
 position = Vector2(-0.5, 8)
 shape = SubResource("RectangleShape2D_uv76u")

@@ -1,0 +1,28 @@
+[gd_scene load_steps=7 format=3 uid="uid://1uh18ly1mgb2"]
+
+[ext_resource type="Texture2D" uid="uid://bhjrnp2tijddc" path="res://objects/shield.png" id="1_7blao"]
+[ext_resource type="Texture2D" uid="uid://b60fns52fo6h1" path="res://objects/ChristmasBalls/06.png" id="2_cbst2"]
+[ext_resource type="Script" path="res://scenes/player/Normal.gd" id="2_gx7v2"]
+[ext_resource type="Texture2D" uid="uid://c56m6oniumyex" path="res://objects/EnBallYellow.png" id="3_lnrnx"]
+[ext_resource type="Script" path="res://scenes/player/Azul.gd" id="4_5a8or"]
+[ext_resource type="Script" path="res://scenes/player/Amarillo.gd" id="6_6lmju"]
+
+[node name="Items" type="Node2D"]
+
+[node name="Normal" type="Sprite2D" parent="."]
+position = Vector2(528, 385)
+scale = Vector2(0.260502, 0.260502)
+texture = ExtResource("1_7blao")
+script = ExtResource("2_gx7v2")
+
+[node name="Azul" type="Sprite2D" parent="."]
+position = Vector2(660, 394)
+scale = Vector2(0.149414, 0.149414)
+texture = ExtResource("2_cbst2")
+script = ExtResource("4_5a8or")
+
+[node name="Amarillo" type="Sprite2D" parent="."]
+position = Vector2(806, 396)
+scale = Vector2(0.881579, 0.881579)
+texture = ExtResource("3_lnrnx")
+script = ExtResource("6_6lmju")

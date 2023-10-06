@@ -1,0 +1,57 @@
+[gd_scene load_steps=5 format=3 uid="uid://cx0ahqdjag02j"]
+
+[ext_resource type="Texture2D" uid="uid://cutau53kkn24c" path="res://objects/Characters/Cat_Right.png" id="1_am2b2"]
+[ext_resource type="Script" path="res://scenes/player/player.gd" id="1_fv26u"]
+[ext_resource type="Texture2D" uid="uid://bhjrnp2tijddc" path="res://objects/shield.png" id="2_3p711"]
+
+[sub_resource type="GDScript" id="GDScript_73up1"]
+script/source = "extends Sprite2D
+
+var movX = 200
+var movY = 200
+var rotationValue: int = 0
+
+var pos: Vector2 = Vector2(100,100)
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	position = pos
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+#	position.x += movX * delta
+#	position.y += movY * delta
+#	# rotation_degrees = rotationValue
+#
+#	if position.x >= get_window().size.x - 60:
+#		flip_h = true
+#		movX = -200
+#	if position.x <= 0 :
+#		flip_h = false
+#		rotationValue += 45
+#		movX = 200
+#
+#	if position.y >= get_window().size.y  -60:
+#		flip_v = true
+#		rotationValue += 45
+#		movY = -200
+#	if position.y <= 0 :
+#		flip_v = false
+#		rotationValue += 45
+#		movY = 200
+"
+
+[node name="Player" type="Node2D"]
+script = ExtResource("1_fv26u")
+
+[node name="PlayerImage" type="Sprite2D" parent="."]
+scale = Vector2(0.45, 0.45)
+texture = ExtResource("1_am2b2")
+script = SubResource("GDScript_73up1")
+
+[node name="BallImage" type="Sprite2D" parent="PlayerImage"]
+position = Vector2(1.3913, -1.39139)
+scale = Vector2(0.458057, 0.458057)
+texture = ExtResource("2_3p711")
