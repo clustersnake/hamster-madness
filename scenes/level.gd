@@ -34,7 +34,7 @@ func _ready():
 #	pass # Replace with function body.
 
 	screenSize = get_viewport().get_visible_rect().size
-  
+	
 
 	item = item_scene.instantiate()
 	item.position = set_item_position()
