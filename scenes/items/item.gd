@@ -17,5 +17,5 @@ func change_ball_color():
 
 func _on_body_entered(body):
 #	pass # Replace with function body.
-	print(body)
+#	print(body)
 	player_got_item.emit()

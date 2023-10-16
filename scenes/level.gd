@@ -6,17 +6,16 @@ var item: Area2D
 var screenSize:Vector2
 var rng:int
 
-
-
-
 func player_got_item_handler():
-	print('player got item')
 	create_new_item()
+	$Player.get_item()
+#	print($Player.balls_positions)
 	
 func create_new_item():
 #	item.position = $Player.position * 1.5
 	item.change_ball_color()
 	item.position = set_item_position()
+	
 	
 func set_item_position():
 	var rng = RandomNumberGenerator.new()
@@ -25,16 +24,11 @@ func set_item_position():
 #	item.position = Vector2(rndX, rndY)
 	return Vector2(rndX, rndY)
 
-	
-	
-	
-	
 # Called when the node enters the scene tree for the first time.
 func _ready():
 #	pass # Replace with function body.
 
 	screenSize = get_viewport().get_visible_rect().size
-	
 
 	item = item_scene.instantiate()
 	item.position = set_item_position()
