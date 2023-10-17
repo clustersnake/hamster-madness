@@ -7,8 +7,9 @@ var screenSize:Vector2
 var rng:int
 
 func player_got_item_handler():
+	
+	$Player.get_item($Item/Ball.texture)
 	create_new_item()
-	$Player.get_item()
 #	print($Player.balls_positions)
 	
 func create_new_item():
