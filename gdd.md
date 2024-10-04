@@ -9,13 +9,14 @@ This game is a snake like game starting with a hamster that collects hamster bal
 ## Characters
 
 ### Player 
-The user will control a hamster that walks in 4 directions and collects hamster balls.
+The player will control a hamster that walks in 4 directions and collects hamster balls.
 
 ### Enemies 
 - Hamsters: Can collect hamster balls and will perform the same actions as the player.
 - Snakes: Will grow every time they eat a ball, a hamster or an enemy.
 - Spiders: web, hang, sting.
-- cats: speed, throw ball, scratch.
+- Roaches: byte.
+- Cats: speed, throw ball, scratch.
 - Bunnies: jump, speed, throw ball, stomp.
 - Rats: speed, byte, use two balls.
 - Mice: speed, byte, use one ball.
@@ -23,6 +24,10 @@ The user will control a hamster that walks in 4 directions and collects hamster 
 - Hornets: fly, speed, sting.
 - Moles: dig, hole, throw ball, scratch.
 - Dogs: speed, destroy ball, byte.
+
+### NPCs
+- Hamsters: Trade, info
+- Racoon: Trade, info
 
 
 ### Bosses
@@ -35,6 +40,7 @@ The user will control a hamster that walks in 4 directions and collects hamster 
 - Turtle
 - Hawk
 - Cobra
+- Bat
 
 
 ## Mechanics
@@ -51,4 +57,26 @@ The user will control a hamster that walks in 4 directions and collects hamster 
 - The mines and shoots can cut the "snake's" body at any time and missing balls can be recovered by the player.
 - Some Enemies will interact with the inactive snakes's tail.
 
+### Abilities
+- Bat: Echo
+- Otter: Swim
+- Gecko: Climb
+- Turtle: Charged Shield
+- Armadillo: Parry
+- Snake: Grow a tail
 
+
+## Story
+A hamster lives a peacefull life inside a cage with food and water in a laboratory. A big earthquake shakes the building and damages the building, breaks all cages and sets free all the animals product of the experiments.
+The player starts at the top of the building and has to fight against many of the experiments. Not all the experiments are hostile, 
+
+
+## Progress
+The player will start in a board where can pick up a single ball, after picking it up, the ball will surround it and a message will show him about how blocking and shooting the ball. 
+
+
+## Bonus games
+Earned when special coins are found
+- Pong
+- Arkanoid
+- Frogger
