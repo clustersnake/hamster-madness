@@ -4,7 +4,7 @@
 Hamster Madness
 
 ## Description
-This game is a snake like game starting with a hamster that collects hamster balls to create a long line of balls that can be used in different forms like shooting ammo, mines, shields and maybe more.
+The game starts with a hamster that collects hamster balls that are used as his only way to survive in different encounters against enemies.
 
 ## Characters
 
@@ -33,30 +33,31 @@ The player will control a hamster that walks in 4 directions and collects hamste
 ### Bosses
 #### 1. Bugs
 Theme: Space invaders
-- Bee nest:     Battle: Space invaders. Attack: kamikaze, Shoot. Power up: Shooting
-- Wasp nest:    Battle: Space invaders. Attack: sting.           Power up: Plasma sword
-- Spider Queen: Battle: Space invaders. Attack: Poison.          Power up: Poison
+- Bee nest:     Attack: kamikaze, Shoot. Power up: Shooting
+- Wasp nest:    Attack: sting.           Power up: Plasma sword
+- Spider Queen: Attack: Poison.          Power up: Poison
 
 #### 2. Mammals
 Theme Asteroids
-- Dog Pack:     Battle: Asteroids.      Attack: byte.
-- Wolf Pack:    Battle: Asteroids.      Attack: byte.
+- Dog Pack:     Attack: byte.
+- Wolf Pack:    Attack: byte.
 
 #### 3. Diggers
 Theme: Zelda classic
-- Mole King:    Battle: Zelda.          Attack: Mines, scratch.  Power up: Explosive mines
-- Rat King:     Battle: Zelda.          Attack: Saw.             Power up: Saw
+- Mole King:    Attack: Mines, scratch.  Power up: Explosive mines
+- Rat King:     Attack: Saw.             Power up: Saw
 
 #### 4. Reptiles
 Theme: Snake
-- Cobra:        Battle: Snake, spits,                            Power up: Stack Balls
+- Cobra:        Attack: Body, byte.      Power up: Stack Balls
 
 ### Power ups
 
 - Armadillo:    Battle: Bouncing(sonic) Attack: Roll, parry.     Power up: Parry
-- Turtle:       Battle:                                          Power up: Shield
-- Hawk:         Battle:                                          Power up: Map?
-- Bat:          Battle:                                          Power up: Map? Echo?
+- Turtle:       Battle: ?                                        Power up: Charged Shield
+- Hawk:         Battle: ?                                        Power up: Map?
+- Bat:          Battle: ?                                        Power up: Map? Echo?
+- Otter:        Battle: ?                                        Power up: Swim
 
 
 ## Mechanics
@@ -73,22 +74,14 @@ Theme: Snake
 - The mines and shoots can cut the "snake's" body at any time and missing balls can be recovered by the player.
 - Some Enemies will interact with the inactive snakes's tail.
 
-### Abilities
-- Bat: Echo
-- Otter: Swim
-- Gecko: Climb
-- Turtle: Charged Shield
-- Armadillo: Parry
-- Snake: Grow a tail
-
 
 ## Story
-A hamster lives a peacefull life inside a cage with food and water in a laboratory. A big earthquake shakes the building and damages the building, breaks all cages and sets free all the animals product of the experiments.
-The player starts at the top of the building and has to fight against many of the experiments. Not all the experiments are hostile, 
+A hamster lives a peacefull life inside a cage with food and water in a laboratory. Many different animals are used to create virtual environments to test their adaptability and simulate experiments to enhance their physical abilities. 
+The player controls the hamster that is used to explore the different virtual environments to test the different animals improvements to evaluate if they are ready to be implemented in the real world.
 
 
 ## Progress
-The player will start in a board where can pick up a single ball, after picking it up, the ball will surround it and a message will show him about how blocking and shooting the ball. 
+The player will be able to select a stage to start fighting against different kinds of enemies. Each stage is themed according to different kind of retro game having to fight a final boss to acquire a power up to improve the hamster.
 
 
 ## Bonus games
