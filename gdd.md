@@ -31,16 +31,32 @@ The player will control a hamster that walks in 4 directions and collects hamste
 
 
 ### Bosses
-- Bee nest
-- Wasp nest
-- Spider Queen
-- Rat King
-- Dog Pack
-- Wolf Pack
-- Turtle
-- Hawk
-- Cobra
-- Bat
+#### 1. Bugs
+Theme: Space invaders
+- Bee nest:     Battle: Space invaders. Attack: kamikaze, Shoot. Power up: Shooting
+- Wasp nest:    Battle: Space invaders. Attack: sting.           Power up: Plasma sword
+- Spider Queen: Battle: Space invaders. Attack: Poison.          Power up: Poison
+
+#### 2. Mammals
+Theme Asteroids
+- Dog Pack:     Battle: Asteroids.      Attack: byte.
+- Wolf Pack:    Battle: Asteroids.      Attack: byte.
+
+#### 3. Diggers
+Theme: Zelda classic
+- Mole King:    Battle: Zelda.          Attack: Mines, scratch.  Power up: Explosive mines
+- Rat King:     Battle: Zelda.          Attack: Saw.             Power up: Saw
+
+#### 4. Reptiles
+Theme: Snake
+- Cobra:        Battle: Snake, spits,                            Power up: Stack Balls
+
+### Power ups
+
+- Armadillo:    Battle: Bouncing(sonic) Attack: Roll, parry.     Power up: Parry
+- Turtle:       Battle:                                          Power up: Shield
+- Hawk:         Battle:                                          Power up: Map?
+- Bat:          Battle:                                          Power up: Map? Echo?
 
 
 ## Mechanics
