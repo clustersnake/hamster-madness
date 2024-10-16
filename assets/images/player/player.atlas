@@ -1,0 +1,13 @@
+images {
+  image: "/assets/images/player/Cat_Down.png"
+}
+images {
+  image: "/assets/images/player/Cat_Left.png"
+}
+images {
+  image: "/assets/images/player/Cat_Right.png"
+}
+images {
+  image: "/assets/images/player/Cat_Up.png"
+}
+extrude_borders: 2
