@@ -1,0 +1,97 @@
+
+function init(self)
+	-- Add initialization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+	-- self.health = 100
+	-- self.item_name = 'apple'
+	-- self.jump_height = 80.5
+	-- self.falling = false
+
+	-- print(self.health, self.item_name, self.jump_height, self.falling)
+
+	-- msg.post('ball#ball', 'bump', {health = self.health, falling = self.falling})
+	msg.post(".", "acquire_input_focus")
+	self.speed = 5
+
+	self.direction = vmath.vector3()
+
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+	-- tell the current game object (".") to release input focus.
+	msg.post(".", "release_input_focus")
+end
+
+local function animate(self)
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+
+	
+end
+
+function fixed_update(self, dt)
+	-- This function is called if 'Fixed Update Frequency' is enabled in the Engine section of game.project
+	-- Can be coupled with fixed updates of the physics simulation if 'Use Fixed Timestep' is enabled in
+	-- Physics section of game.project
+	-- Add update code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Learn more: https://defold.com/manuals/message-passing/
+	-- Remove this function if not needed
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here. The game object this script is attached to
+	-- must have acquired input focus:
+	--
+	--    msg.post(".", "acquire_input_focus")
+	--
+	-- All mapped input bindings will be received. Mouse and touch input will
+	-- be received regardless of where on the screen it happened.
+	-- Learn more: https://defold.com/manuals/input/
+	-- Remove this function if not needed
+	print(action_id)
+	if action_id == hash("move_left") then
+		-- move left
+		-- local pos = go.get_position()
+		-- pos.x = pos.x - self.speed
+		-- go.set_position(pos)
+		self.direction.x = -1
+	elseif action_id == hash("move_right") then
+		-- move right
+		-- local pos = go.get_position()
+		-- pos.x = pos.x + self.speed
+		-- go.set_position(pos)
+		self.direction.x = 1
+	elseif action_id == hash("move_up") then
+		-- move up
+		-- local pos = go.get_position()
+		-- pos.y = pos.y + self.speed
+		-- go.set_position(pos)
+		self.direction.y = 1
+	elseif action_id == hash("move_down")  then
+		-- move down
+		-- local pos = go.get_position()
+		-- pos.y = pos.y - self.speed
+		-- go.set_position(pos)
+		self.direction.y = -1
+	end
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Learn more: https://defold.com/manuals/hot-reload/
+	-- Remove this function if not needed
+end
