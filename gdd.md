@@ -1,91 +1,483 @@
-# Game Design Document
+# Game Design Document — Hamster Madness
 
-## Game name 
+---
+
+## 1. General Information
+
+### Game Name
 Hamster Madness
 
-## Description
-The game starts with a hamster that collects hamster balls that are used as his only way to survive in different encounters against enemies.
+### Genre
+Roguelite top-down arena
+Skill-based combat
+Structured progression
 
-## Characters
+### Inspirations
+- The Binding of Isaac (room structure)
+- Titan Souls (single resource risk)
+- Mega Man X (boss upgrades)
 
-### Player 
-The player will control a hamster that walks in 4 directions and collects hamster balls.
+### Platform
+PC (Defold Engine)
 
-### Enemies 
-- Hamsters: Can collect hamster balls and will perform the same actions as the player.
-- Snakes: Will grow every time they eat a ball, a hamster or an enemy.
-- Spiders: web, hang, sting.
-- Roaches: byte.
-- Cats: speed, throw ball, scratch.
-- Bunnies: jump, speed, throw ball, stomp.
-- Rats: speed, byte, use two balls.
-- Mice: speed, byte, use one ball.
-- Bees: fly, speed, kamikaze.
-- Hornets: fly, speed, sting.
-- Moles: dig, hole, throw ball, scratch.
-- Dogs: speed, destroy ball, byte.
+### Target Run Duration
+5–10 minutes per run
 
-### NPCs
-- Hamsters: Trade, info
-- Racoon: Trade, info
+---
 
+## 2. Description
 
-### Bosses
-#### 1. Bugs
-Theme: Space invaders
-- Bee nest:     Attack: kamikaze, Shoot. Power up: Shooting
-- Wasp nest:    Attack: sting.           Power up: Plasma sword
-- Spider Queen: Attack: Poison.          Power up: Poison
+A hamster is subjected to virtual simulations in a laboratory.
+His only survival tool is a hamster ball that simultaneously
+serves as a shield and as a weapon.
 
-#### 2. Mammals
-Theme Asteroids
-- Dog Pack:     Attack: byte.
-- Wolf Pack:    Attack: byte.
+Every shot is a life-or-death decision:
+throwing the ball means being completely vulnerable.
 
-#### 3. Diggers
-Theme: Zelda classic
-- Mole King:    Attack: Mines, scratch.  Power up: Explosive mines
-- Rat King:     Attack: Saw.             Power up: Saw
+---
 
-#### 4. Reptiles
-Theme: Snake
-- Cobra:        Attack: Body, byte.      Power up: Stack Balls
+## 3. Core Concept
 
-### Power ups
+> 1 ball = shield + projectile + life.
+> Throwing it = exposed.
+> Recovering it = survival.
 
-- Armadillo:    Battle: Bouncing(sonic) Attack: Roll, parry.     Power up: Parry
-- Turtle:       Battle: ?                                        Power up: Charged Shield
-- Hawk:         Battle: ?                                        Power up: Map?
-- Bat:          Battle: ?                                        Power up: Map? Echo?
-- Otter:        Battle: ?                                        Power up: Swim
+---
 
+## 4. Core Loop
 
-## Mechanics
-- The player will collect hamster balls randomly placed in the game board.
-- The first ball will automatically be used as a shield and will be used as a regular hamster ball.
-- If the player's shield is destroyed and has more balls, then a ball will be used as a new shield after a short period of time.
-- The player will be able to shoot the hamster ball at any time in the direction the player is facing.
-- Can make charged shots that use extra balls.
-- Can make parrys that won't deplete the current shield.
-- The player may drop the hamster ball and use it as a land mine in any time, the land mine may be shot in any direction the player is facing or can be dropped in the place occupied by the player.
-- The more hamster balls are being collected, the more the tail will grow.
-- The player can collide with the balls line but will lose two balls, one for the shield and one for the ball being hit.
-- The remaining balls left after being hit by the player can be recovered by the player.
-- The mines and shoots can cut the "snake's" body at any time and missing balls can be recovered by the player.
-- Some Enemies will interact with the inactive snakes's tail.
+1. Enter simulation
+2. Enemies spawn in closed room
+3. Decide when to throw your only ball
+4. Eliminate enemies or dodge
+5. Recover ball manually
+6. Clear room
+7. Advance to next room
+8. Face simulation boss
+9. Obtain permanent upgrade
+10. New harder simulation
+11. Death → restart
 
+---
 
-## Story
-A hamster lives a peacefull life inside a cage with food and water in a laboratory. Many different animals are used to create virtual environments to test their adaptability and simulate experiments to enhance their physical abilities. 
-The player controls the hamster that is used to explore the different virtual environments to test the different animals improvements to evaluate if they are ready to be implemented in the real world.
+## 5. Player
 
+### Character: Hamster
 
-## Progress
-The player will be able to select a stage to start fighting against different kinds of enemies. Each stage is themed according to different kind of retro game having to fight a final boss to acquire a power up to improve the hamster.
+#### Movement
+- 8 directions
+- Constant base speed
 
+#### States
 
-## Bonus games
-Earned when special coins are found
+| State      | Visual                              | Behavior              |
+|------------|-------------------------------------|-----------------------|
+| Protected  | Hamster inside transparent ball     | Can absorb 1 hit     |
+| Vulnerable | Hamster without ball                | 1 hit = death         |
+
+#### Base Actions
+- Move
+- Throw ball (facing direction)
+- Pick up ball (direct contact)
+
+#### Unlockable Actions
+- Parry (Turtle boss upgrade)
+- Sonar (Bat boss upgrade)
+- Spike Shield (Porcupine boss upgrade)
+- Penetration (Cobra boss upgrade)
+
+---
+
+## 6. Ball System
+
+### Intentional Shot (Player throws)
+
+| Property        | Behavior                                      |
+|-----------------|-----------------------------------------------|
+| Direction       | Straight line, facing direction               |
+| Speed           | Fast (~2x player speed)                       |
+| Bounce          | No (base). Yes with upgrade                   |
+| Penetration     | No (base). Yes with upgrade                   |
+| Damage          | Yes                                           |
+
+### Shield Lost by Enemy Hit
+
+| Property        | Behavior                                      |
+|-----------------|-----------------------------------------------|
+| Direction       | Expelled in hit direction                     |
+| Speed           | Slower than intentional shot                  |
+| Damage          | No (base). Yes with Spike Shield upgrade      |
+| Recovery        | Manual pickup required                        |
+
+### Impact Results
+
+| Scenario                        | Result                              |
+|---------------------------------|-------------------------------------|
+| Hits enemy and kills            | Ball falls near eliminated enemy    |
+| Hits enemy but doesn't kill     | Ball falls immediately at impact    |
+| Misses and hits wall            | Ball falls where it impacted        |
+
+### Recovery
+- Player must physically touch the ball
+- Ball never returns automatically
+- Ball never disappears from the world
+
+### Fundamental Rule
+
+> No upgrade shall eliminate the vulnerability
+> of being without the ball.
+> The ball ALWAYS separates from the player upon taking damage.
+
+---
+
+## 7. Damage System
+
+### With Shield (Ball)
+- Absorbs 1 hit
+- Ball is expelled (speed < intentional shot)
+- Expelled ball does NOT damage enemies (base)
+- Expelled ball DOES damage enemies (with Spike Shield)
+- Ball is recoverable from the ground
+
+### Without Shield
+- 1 hit = instant death
+
+### Parry (if unlocked)
+- Success → keeps shield + reflects projectile / stuns enemy
+- Failure → loses shield normally
+
+### Parry + Spike Shield
+- Failed parry → loses spiked shield equally
+- Spikes do NOT save from a failed parry
+
+### Summary Table
+
+| Situation                  | Result                                     |
+|----------------------------|--------------------------------------------|
+| Hit with shield            | Lose shield, ball expelled, recoverable    |
+| Hit without shield         | Death                                      |
+| Parry success              | Keep shield, reflect/stun                  |
+| Parry failure              | Lose shield normally                       |
+| Parry failure + spikes     | Lose spiked shield equally                 |
+| Contact enemy + spikes     | Enemy takes damage, keep shield            |
+| Expelled ball + spikes     | Expelled ball damages on contact           |
+
+---
+
+## 8. Room Design
+
+### Normal Rooms
+- Compact size
+- Player crosses room in ~2 seconds
+- Ball reaches opposite wall in ~1 second
+- No 100% safe zone ever
+- Doors locked until all enemies eliminated
+
+### Boss Rooms
+- Slightly larger than normal rooms
+- Player crosses room in ~3 seconds
+- Enough space for attack patterns
+- No additional enemies (boss only)
+
+---
+
+## 9. Enemies
+
+### MVP Enemies (2 types)
+
+#### Chaser
+| Property    | Value                          |
+|-------------|--------------------------------|
+| Behavior    | Directly pursues player        |
+| Speed       | Moderate                       |
+| HP          | 1 hit                          |
+| Danger      | Dangerous in groups            |
+
+#### Shooter
+| Property    | Value                          |
+|-------------|--------------------------------|
+| Behavior    | Moves little, shoots slow      |
+| Speed       | Slow                           |
+| HP          | 2 hits                         |
+| Danger      | Forces smart shield usage      |
+
+### Future Enemies (Post-MVP)
+
+| Enemy    | Key Behaviors                              |
+|----------|--------------------------------------------|
+| Hamsters | Collect balls, mimic player actions        |
+| Snakes   | Grow when eating balls                     |
+| Spiders  | Web, hang, sting                           |
+| Roaches  | Quick bite                                 |
+| Cats     | Speed, scratch                             |
+| Bunnies  | Jump, stomp                                |
+| Rats     | Speed, bite                                |
+| Mice     | Speed, bite                                |
+| Bees     | Fly, kamikaze                              |
+| Hornets  | Fly, sting                                 |
+| Moles    | Dig, scratch                               |
+| Dogs     | Speed, destroy ball, bite                  |
+
+---
+
+## 10. Bosses
+
+### Boss Upgrade System (Mega Man X style)
+
+Each boss grants a permanent upgrade when defeated.
+Upgrades expand options without eliminating core risk.
+
+> Key Design Rule:
+> Each boss demonstrates WHY you need its upgrade
+> BEFORE giving it to you.
+
+---
+
+### Boss 1 — Turtle
+
+**Theme:** Defense and patience
+
+**Attacks:**
+
+| Attack          | Description                                    | Counter                              |
+|-----------------|------------------------------------------------|--------------------------------------|
+| Bite            | Extends neck, surprising range                 | Dodge, respect distance              |
+| Seismic slam    | Hits floor with shell, area damage             | Without parry → lose shield          |
+|                 |                                                | With parry → negate                  |
+| Shell hide      | Hides inside shell, invulnerable               | Wait, reposition                     |
+
+**Phases:**
+
+| Phase              | Behavior                                    |
+|--------------------|---------------------------------------------|
+| Phase 1 (100-50%)  | Alternates bite and shell hide              |
+|                    | Occasional seismic slam                     |
+| Phase 2 (50-0%)    | More aggressive                             |
+|                    | Seismic slam more frequent                  |
+|                    | Less time hiding in shell                   |
+
+**Design Intent:**
+
+> The seismic slam teaches the player
+> they need a way to negate area damage.
+> Defeating the boss grants exactly that: Parry.
+
+**Upgrade: Parry**
+
+| Property          | Value                                       |
+|-------------------|---------------------------------------------|
+| Activation        | Active button press                         |
+| Window            | ~0.2 seconds                                |
+| Success           | Reflects projectile or stuns enemy          |
+| Failure           | Loses shield normally                       |
+
+---
+
+### Boss 2 — Bat
+
+**Theme:** Darkness and information
+
+**Attacks:**
+
+| Attack              | Description                                | Counter                      |
+|---------------------|--------------------------------------------|------------------------------|
+| Darkness            | Reduces visibility partially               | Memorize patterns            |
+| Teleport            | Appears at random position                 | React quickly                |
+| Blind side attack   | Charges from off-screen                    | Central positioning          |
+
+**Design Intent:**
+
+> The boss demonstrates that lack of information kills.
+> Defeating it grants the tool that solves
+> exactly that problem.
+
+**Upgrade: Sonar**
+
+| Function              | Description                                |
+|-----------------------|--------------------------------------------|
+| Enemy HP bars         | Shows enemy health bars                    |
+| Trap detection        | Reveals floor spikes and mines             |
+| Hidden rooms          | Shows possible secret room access          |
+| Cooldown              | Prevents abuse, tactical use only          |
+
+**Sonar does NOT:**
+- Deal damage
+- Stun
+- Slow
+
+> Sonar is purely informational.
+
+---
+
+### Boss 3 — Porcupine
+
+**Theme:** Dangerous contact
+
+**Attacks:**
+
+| Attack              | Description                                | Counter                      |
+|---------------------|--------------------------------------------|------------------------------|
+| Roll and charge     | Curls into ball and charges                | Dodge                        |
+| Spike spray         | Fan-shaped projectiles                     | Shield or dodge              |
+| Contact damage      | Touching boss deals damage                 | Keep distance                |
+
+**Upgrade: Spike Shield**
+
+| Property                | Behavior                                  |
+|-------------------------|-------------------------------------------|
+| Contact damage          | Melee enemies take damage touching shield |
+| Expelled ball           | Lost shield ball ALSO deals damage        |
+| Parry interaction       | Failed parry → lose spiked shield equally |
+| Projectile protection   | Does NOT add projectile damage            |
+
+---
+
+### Boss 4 — Queen Bee (Phase 3)
+
+**Theme:** Flight and venom
+
+**Attacks:**
+
+| Attack              | Description                                | Counter                      |
+|---------------------|--------------------------------------------|------------------------------|
+| Sting               | Moves through arena                        | Positioning                  |
+| Minions             | Quick frontal attack                       | Dodge, attack                |
+| Honey shots         | Honey shots that leave sticky ponds        | Find gaps                    |
+
+**Upgrade: Penetration**
+- Ball passes through 1 enemy before falling
+
+---
+
+## 11. Progression System
+
+### Simulation Structure
+
+### Permanent Progression (Roguelite)
+- Boss upgrades are permanent between runs
+- Difficulty scales with obtained upgrades
+- New simulations unlock upon defeating bosses
+
+### There is NO:
+- Random items
+- Shops
+- Coins
+- Upgrade RNG
+
+> Progression is clean and predictable.
+
+---
+
+## 12. NPCs (Post-MVP)
+
+| NPC      | Function                |
+|----------|------------------------|
+| Hamsters | Info, narrative context |
+| Raccoon  | Trade, hints           |
+
+---
+
+## 13. Story
+
+A hamster lives a peaceful life inside a cage
+with food and water in a laboratory.
+
+Different animals are used to create
+virtual environments that test their adaptability
+and simulate experiments to enhance their physical abilities.
+
+The player controls the hamster that is used
+to explore different virtual simulations
+and evaluate if the improvements are ready
+to be implemented in the real world.
+
+### Narrative Justification
+
+| Game Element      | Narrative Reason                              |
+|-------------------|-----------------------------------------------|
+| Each simulation   | A run                                         |
+| Death             | Simulation failure → restart                  |
+| Upgrades          | Data collected from experiments               |
+| Bosses            | Other enhanced laboratory animals             |
+
+---
+
+## 14. Metrics (Initial Reference — Adjust with Playtesting)
+
+| Parameter                | Suggested Value          |
+|--------------------------|--------------------------|
+| Player speed             | Medium                   |
+| Ball speed (shot)        | Fast (~2x player)        |
+| Ball speed (expelled)    | Slow (~0.5x shot speed)  |
+| Normal room size         | ~2s to cross             |
+| Boss room size           | ~3s to cross             |
+| Parry window             | ~0.2s                    |
+| Sonar duration           | ~2s                      |
+| Sonar cooldown           | ~10s (adjust)            |
+| Full run duration        | 5–10 minutes             |
+
+---
+
+## 15. Scope Control
+
+### Phase 1 — MVP
+- 8-direction movement
+- 1 ball system (shield + projectile)
+- Shield expulsion on hit
+- 2 enemy types (Chaser, Shooter)
+- 1 boss (Turtle → Parry)
+- 4 rooms per run
+- Death and restart system
+- Placeholder art
+
+### Phase 2
+- Bat boss (Sonar)
+- Porcupine boss (Spike Shield)
+- Additional enemies
+- Traps (spikes, mines)
+- Final art
+- Sound
+
+### Phase 3
+- Cobra boss (Penetration)
+- NPCs
+- Complete story
+- Hidden rooms
+- Final polish
+
+---
+
+## 16. Future Projects (Separate Games)
+
+> These are NOT part of Hamster Madness.
+> They are independent games in the same universe.
+
+| Project              | Genre                    | Character   |
+|----------------------|--------------------------|-------------|
+| Squirrel Experiment  | Metroidvania             | Squirrel    |
+| Mole Experiment      | Puzzle (Supaplex)        | Mole        |
+| Otter Experiment     | Aquatic Metroidvania     | Otter       |
+| Bat Experiment       | Echolocation / Stealth   | Bat         |
+
+---
+
+## 17. Bonus Games (Far Future)
+
+> Possible expansions or independent games.
+
 - Pong
 - Arkanoid
 - Frogger
+
+---
+
+## 18. Design Principles
+
+1. **Simplicity first.** If it's not fun with 1 ball, it won't be fun with 10.
+2. **Vulnerability is sacred.** No upgrade shall eliminate it.
+3. **Every shot is a decision.** No spam.
+4. **Skill over RNG.** The player improves, not the numbers.
+5. **Less is more.** Only add when existing systems work.
+6. **Bosses teach.** Each boss demonstrates why you need its upgrade.
+7. **Information ≠ Power.** Knowing more doesn't make you invincible.
+8. **The ball is physical.** It always exists in the world, never disappears magically.
