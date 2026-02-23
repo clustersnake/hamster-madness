@@ -1,4 +1,12 @@
 name: "main"
+instances {
+  id: "player"
+  prototype: "/game/player/player.go"
+  position {
+    x: 10.094295
+    y: 11.087351
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "game_manager"

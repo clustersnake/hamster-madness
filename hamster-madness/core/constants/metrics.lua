@@ -5,7 +5,7 @@
 -- core/constants/metrics.lua
 local M = {}
 
-M.PLAYER_SPEED = 200
+M.PLAYER_SPEED = 150
 M.BALL_SHOT_SPEED = 400         -- 2x player
 M.BALL_EXPELLED_SPEED = 200     -- 0.5x shot
 M.PARRY_WINDOW = 0.2            -- seconds
