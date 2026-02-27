@@ -1,0 +1,16 @@
+-- game/manager/spawner.script
+local constants = require "shared.constants"
+
+local WIDTH = 1280 
+local HEIGHT = 720
+local MARGIN = 100 
+
+function init(self)
+	math.randomseed(os.time())
+	local rx = math.random(MARGIN, WIDTH - MARGIN)
+	local ry = math.random(MARGIN, HEIGHT - MARGIN)
+	local pos = vmath.vector3(rx, ry, 0)
+
+	factory.create("#ball_factory", pos)
+	print("Bola generada en: " .. pos.x .. ", " .. pos.y)
+end

@@ -16,7 +16,7 @@ key_trigger {
 }
 key_trigger {
   input: KEY_SPACE
-  action: "shoot"
+  action: "action_shoot"
 }
 mouse_trigger {
   input: MOUSE_BUTTON_1

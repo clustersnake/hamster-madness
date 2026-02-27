@@ -1,0 +1,62 @@
+-- game/ball/ball.script
+local constants = require "shared.constants"
+
+go.property("direction", vmath.vector3())
+go.property("speed", 0)
+
+function init(self)
+	self.data = {
+		direction = self.direction,
+		speed = self.speed,
+		state = constants.BALL_IN_FLIGHT, -- Nace volando
+		distance_traveled = 0,
+		max_distance = 600 -- La bola se detiene tras recorrer 600 píxeles
+	}
+end
+
+function update(self, dt)
+	if self.data.state == constants.BALL_IN_FLIGHT then
+		local pos = go.get_position()
+		local move_step = self.data.direction * self.data.speed * dt
+
+		-- Mover
+		go.set_position(pos + move_step)
+
+		-- Calcular distancia
+		self.data.distance_traveled = self.data.distance_traveled + vmath.length(move_step)
+
+		-- ¿Se cansó la bola? (Frenado)
+		if self.data.distance_traveled >= self.data.max_distance then
+			self.data.speed = 0
+			self.data.state = constants.BALL_ON_GROUND
+			print("La bola se detuvo en el suelo.")
+		end
+	end
+end
+function on_message(self, message_id, message, sender)
+	if message_id == hash("contact_point_response") then
+		-- Rebote contra paredes
+		if message.group == hash("wall") and self.data.state == constants.BALL_IN_FLIGHT then
+			local proj = vmath.dot(self.data.direction, message.normal)
+			if proj < 0 then
+				self.data.direction = self.data.direction - 2 * proj * message.normal
+			end
+			go.set_position(go.get_position() + message.normal * message.distance)
+		end
+	end
+end
+
+-- function on_message(self, message_id, message, sender)
+-- 	if message_id == hash("contact_point_response") then
+-- 		-- Solo rebotamos si la bola está volando y choca con una pared
+-- 		if self.data.state == constants.BALL_IN_FLIGHT and message.group == hash("wall") then
+-- 			-- Calculamos el rebote usando la normal del choque
+-- 			local proj = vmath.dot(self.data.direction, message.normal)
+-- 			if proj < 0 then
+-- 				self.data.direction = self.data.direction - 2 * proj * message.normal
+-- 			end
+-- 			-- Corregimos la posición para que no se "entierre" en la pared
+-- 			go.set_position(go.get_position() + message.normal * message.distance)
+-- 		end
+-- 	end
+-- end

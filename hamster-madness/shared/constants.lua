@@ -1,0 +1,26 @@
+local M = {}
+-- metrics:
+M.PLAYER_SPEED = 150
+M.PLAYER_PROTECTED_SPEED = 120  -- Penalización al estar dentro de la bola
+M.BALL_SHOT_SPEED = 400         -- 2x player (aprox)
+M.BALL_EXPELLED_SPEED = 200     -- 0.5x shot
+M.PARRY_WINDOW = 0.2
+M.SONAR_DURATION = 2.0
+M.SONAR_COOLDOWN = 10.0
+
+-- states:
+M.PLAYER_PROTECTED = "protected"
+M.PLAYER_VULNERABLE = "vulnerable"
+M.PLAYER_DEAD = "dead"
+
+M.BALL_WITH_PLAYER = "with_player"
+M.BALL_IN_FLIGHT = "in_flight"
+M.BALL_ON_GROUND = "on_ground"
+
+-- upgrades: 
+M.PARRY = "parry"
+M.SONAR = "sonar"
+M.SPIKE_SHIELD = "spike_shield"
+M.PENETRATION = "penetration"
+
+return M
