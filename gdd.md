@@ -1,4 +1,4 @@
-# Game Design Document — Hamster Madness
+# Game Design Document: Hamster Madness — El Ciclo del Despertar
 
 ---
 
@@ -9,33 +9,50 @@ Hamster Madness
 
 ### Género
 Aventura de Acción / Mundo Persistente (No lineal)
-*Nota: Evolución desde Roguelite hacia una estructura de exploración y rescate.*
+*Nota: Evolución desde Roguelite hacia una estructura de exploración, ascenso y rescate.*
 
 ### Inspiraciones
 - **Titan Souls**: Riesgo de recurso único y mecánica de recuperación.
-- **Hollow Knight**: Mundo interconectado, atmósfera y penalización por muerte.
+- **Hollow Knight**: Mundo interconectado y atmósfera.
 - **Mega Man X**: Progresión basada en habilidades obtenidas de jefes.
 - **Dark Souls**: Recuperación de "cuerpo" y tensión tras la derrota.
 
 ---
 
-## 2. Descripción Narrativa (Lore)
+## 2. Descripción Narrativa (El Gran Secreto)
 
-El hámster no es un avatar virtual, sino un organismo biológico real aumentado quirúrgicamente, dirigido por un operador remoto (el jugador). Las misiones ocurren en complejos de laboratorio físicos, sectores de prueba y almacenes abandonados.
+### El Último Sobreviviente
+Tras un cataclismo que sepultó el **Complejo Científico Ícaro**, el jugador asume el rol del **Dr. Aris**, atrapado en una **Cápsula de Apoyo Vital** en las profundidades del silo. A través de una interfaz neuronal, el Dr. Aris utiliza hámsters biotecnológicos para explorar los escombros y encontrar una ruta de escape. Siente el pulso y el miedo de los animales, junto a un dolor punzante detrás de los ojos.
 
 ### Los Predecesores
-El mundo contiene **Campamentos de Expediciones Previas**. Estos son lugares donde equipos anteriores fallaron. Funcionan como puntos de control (Bases) y contienen fragmentos de historia que revelan qué ocurrió en el laboratorio antes de tu llegada.
+El mundo contiene **Campamentos de Expediciones Previas** (Bases). Son lugares donde equipos anteriores fallaron, funcionando como puntos de control que revelan la historia del laboratorio antes del desastre.
+
+### La Revelación Final
+Al alcanzar el núcleo, se descubre que **el Dr. Aris murió hace años**. La **IA de Control General** asumió su identidad para garantizar su propia supervivencia a través de los hámsters. La IA ha estado enviando animales para conseguir ayuda, pero al detectar la pérdida de señal al salir del complejo se ha estado saboteando a sí misma para no perder el control con lo cual se genera un conflicto de intereses (supervivencia provia vs supervivencia de sujetos de prueba y control vs incertidumbre).
+
+
+### Visual del Final
+La pantalla se funde a negro y reaparece con una toma en primer plano de la Bola de Combate abierta, con sus escotillas biomecánicas desactivadas. Al fondo, en un plano medio, se ve a los hámsters reunidos, oliendo el aire y moviéndose libremente por primera vez. Más allá de ellos, un río o lago se extiende hacia un horizonte natural y luminoso, sellando la libertad ganada y el fin del control de la IA.
+---
+
+## 3. Estructura Simbólica: La Gran Pirámide Invertida
+
+El mapa se organiza bajo una geometría mística y conspiracionista de una **Pirámide Invertida**.
+
+* **La Sima (Vértice Inferior)**: El punto más profundo donde reside la cápsula. Es el Hub Central y el origen de la **Espiral Principal (Ruta Final)**.
+* **La Base (Superficie)**: Los cuatro vértices de la base de la pirámide en la superficie se alinean con el centro de las cuatro **Espirales de Fuga**.
+* **Filosofía del Movimiento**: *"Spiral Out"*. El camino es una apertura constante desde la concentración y el encierro de la sima hacia la libertad del exterior.
 
 ---
 
-## 3. Concepto Core
+## 4. Concepto Core
 > 1 bola = escudo + proyectil + vida.
 > Lanzarla = quedar expuesto.
 > Recuperarla = supervivencia.
 
 ---
 
-## 4. Mecánicas de la Bola
+## 5. Mecánicas de la Bola
 
 ### El Disparo y el Rebote Cargado
 | Propiedad | Comportamiento |
@@ -43,77 +60,70 @@ El mundo contiene **Campamentos de Expediciones Previas**. Estos son lugares don
 | **Dirección** | 8 direcciones (incluye diagonales perfectas). |
 | **Velocidad** | Rápida (~2x la del jugador). |
 | **Rebotes** | La bola rebota en paredes físicas. |
-| **Carga Cinética** | **NUEVO**: Cada rebote en una pared antes de tocar el suelo aumenta el brillo de la bola y su daño. Algunos enemigos con armadura solo pueden ser dañados tras 2 o más rebotes. |
+| **Carga Cinética**| Cada rebote antes de tocar el suelo aumenta el brillo y el daño. Ciertos enemigos requieren 2+ rebotes para ser dañados. |
 
 ### Recuperación
 - **Manual**: Contacto físico directo con la bola en el suelo.
-- **Silk Tether (Cuerda de Seda)**: Habilidad para tirar de la bola y traerla de vuelta al hámster, permitiendo recuperarla a distancia o activar interruptores lejanos.
+- **Silk Tether (Cuerda de Seda)**: Habilidad para tirar de la bola y traerla de vuelta al hámster a distancia.
 
 ---
 
-## 5. Sistema de "Muerte" y Rescate
+## 6. Sistema de "Muerte" y Rescate
 
-El juego elimina el concepto de "Game Over" instantáneo por un sistema de **Misión de Recuperación**:
+El juego utiliza una **Misión de Recuperación** en lugar de Game Over inmediato:
 
-1.  **Estado Herido**: Al recibir daño sin el escudo, el hámster actual queda incapacitado en la habitación.
-2.  **El Reemplazo**: El jugador toma el control de un nuevo espécimen desde el último **Nido de Viruta** (Base) activado.
-3.  **Vulnerabilidad**: El reemplazo debe viajar hasta el lugar del incidente **sin la bola**.
+1.  **Estado Herido**: Al recibir daño sin el escudo, el hámster queda incapacitado en la habitación.
+2.  **El Reemplazo**: El jugador toma el control de un nuevo espécimen desde el último **Nido de Viruta** (Base).
+3.  **Vulnerabilidad**: El reemplazo viaja hasta el lugar del incidente **sin la bola**.
 4.  **Rescate**:
-    * **Éxito (Llegar a tiempo)**: Se recupera la bola y al hámster herido. El hámster rescatado vuelve a la "reserva" (vidas).
-    * **Fallo (Timer agotado)**: El hámster herido muere. Solo se recupera la bola. Se pierde una unidad biológica permanentemente.
-    
-### 5.1 Gestión de Unidades (Vidas)
-El jugador selecciona su nivel de riesgo al iniciar la expedición:
-- **Modo Alpha (1 Vida)**: No hay rescate posible. La pérdida de la unidad termina la simulación.
-- **Modo Beta (3 Vidas)**: El estándar. Permite hasta 2 misiones de rescate simultáneas.
-- **Modo Gamma (5 Vidas)**: Enfoque en exploración.
+    * **Éxito**: Se recupera la bola y al hámster herido (vuelve a la reserva).
+    * **Fallo**: El hámster herido muere. Solo se recupera la bola. Se pierde una unidad biológica.
 
-### 5.2 La "Regla de la Bola Única"
-Independientemente de cuántos hámsters haya en la reserva, **solo existe una Bola de Combate** en el sector. 
-- Si un hámster muere (timer agotado), la bola permanece en el suelo.
-- Si un hámster es rescatado, se reintegra a la reserva en la Base.
+### 6.1 Gestión de Unidades (Vidas)
+* **Inicio**: Se comienza con **2 hámsters** disponibles en la reserva.
+* **Expansión**: Al completar cada una de las 4 rutas principales, se desbloquea **1 hámster nuevo**.
+* **Capacidad Máxima**: 6 vidas dentro de la simulación.
+* **El Séptimo Hámster (Meta-Vida)**: Si el jugador elige "Salir" al final, obtiene una 7ma vida simbólica: la suya propia fuera del juego.
+
+### 6.2 La "Regla de la Bola Única"
+Solo existe **una Bola de Combate** en todo el sector. Si el portador muere, la bola permanece en sus coordenadas `x, y` hasta ser rescatada.
+
 ---
 
-## 6. Estructura del Mundo
+## 7. Estructura del Mundo y Progresión
 
-### Hub Central
-La simulación comienza en una **Base Central** con **4 puertas** abiertas hacia distintos biomas (Norte, Sur, Este, Oeste). El jugador elige su ruta, aunque el progreso en ciertas áreas requiere habilidades de otras.
+### Hub Central (La Sima)
+Punto de inicio con **4 puertas** hacia los biomas (Espirales de Fuga) y **1 puerta oculta** (Ruta Final).
 
 ### Puntos de Interés
-- **Nidos de Viruta (Bases)**: Zonas de descanso donde el hámster marca territorio. Sirven para guardar progreso y como punto de reaparición.
-- **Túneles del Topo**: Sistema de viaje rápido entre Bases descubiertas.
+- **Nidos de Viruta (Bases)**: Zonas de descanso para guardar progreso y reaparecer.
+- **Túneles del Topo**: Sistema de viaje rápido entre bases descubiertas.
 
----
-
-## 7. Jefes y Habilidades Permanentes
-
-Cada jefe derrotado otorga una mejora biotecnológica que expande las capacidades de combate y exploración:
-
+### Jefes y Habilidades
 | Jefe | Habilidad | Utilidad de Exploración |
 |------|-----------|-------------------------|
 | **Tortuga** | **Parry** | Refleja ataques para activar mecanismos de presión. |
 | **Araña** | **Silk Tether** | Tirar de objetos o activar interruptores a distancia. |
-| **Murciélago**| **Sonar / Mapa** | Revela habitaciones adyacentes y secretos en el mapa. |
-| **Puercoespín**| **Spike Shield** | Romper paredes agrietadas o vegetación densa. |
+| **Murciélago**| **Sonar / Mapa** | Revela habitaciones adyacentes y secretos. |
+| **Puercoespín**| **Spike Shield** | Romper paredes agrietadas o vegetación. |
 | **Cobra** | **Penetración** | Golpear interruptores alineados tras obstáculos. |
-| **Topo** | **Excavación** | Acceso al sistema de viaje rápido (Fast Travel). |
 
 ---
 
-## 8. Enemigos MVP
+## 8. El Gran Final: La Decisión
 
-- **Chaser**: Persecución directa. Peligrosos si acorralan al jugador sin bola.
-- **Shooter**: Dispara proyectiles. Requiere uso táctico del rebote o parry.
-- **Spiderling**: Lento, pero puede atrapar la bola en una red, obligando al jugador a rescatarla manualmente.
+1.  **OPCIÓN A: SALIDA (Trascendencia)**
+    * Los hámsters viven libres en la naturaleza. **Se eliminan todos los datos de guardado**.
+2.  **OPCIÓN B: CICLO (Evasión/Control)**
+    * Los hámsters vuelven al ciclo. Se desbloquean modos *Boss-Rush*, *Time-Attack* y Multijugador.
 
 ---
 
 ## 9. Principios de Diseño
-
-1.  **Vulnerabilidad Sagrada**: Ninguna mejora elimina el riesgo de estar desprotegido.
-2.  **Precisión sobre Spam**: El sistema de rebote cargado premia el conocimiento del entorno.
-3.  **Persistencia Física**: La bola y el hámster herido siempre existen en coordenadas reales del mundo; nunca desaparecen mágicamente.
-4.  **Información como Progreso**: El mapa se completa activamente mediante el uso de habilidades (Sonar).
+1.  **Vulnerabilidad Sagrada**: El riesgo de estar sin la bola es constante.
+2.  **Precisión sobre Spam**: El rebote cargado premia el conocimiento del entorno.
+3.  **Persistencia Física**: Nada desaparece mágicamente; todo tiene una posición en el mundo.
+4.  **Escalado de Dificultad**: Tras cada jefe derrotado, los enemigos de todas las rutas se vuelven más letales.
 ---
 
 ## 16. Future Projects (Separate Games)
