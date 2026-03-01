@@ -23,4 +23,18 @@ M.SONAR = "sonar"
 M.SPIKE_SHIELD = "spike_shield"
 M.PENETRATION = "penetration"
 
+-- Percepción
+M.DETECTION_RADIUS_SMALL = 150
+M.DETECTION_RADIUS_LARGE = 300
+
+-- Estados de IA
+M.STATE_IDLE = "idle"       -- Patrulla o espera
+M.STATE_CHASE = "chase"     -- Persigue al jugador
+M.STATE_ATTACK = "attack"   -- Ejecuta el ataque
+M.STATE_STUN = "stun"       -- Aturdido (por golpe o parry)
+
+-- Tipos de daño
+M.DAMAGE_NORMAL = 1
+M.DAMAGE_CHARGED = 2        -- Tras rebotes
+
 return M
