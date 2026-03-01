@@ -148,3 +148,14 @@ embedded_instances {
   "}\n"
   ""
 }
+embedded_instances {
+  id: "map"
+  data: "components {\n"
+  "  id: \"level_1\"\n"
+  "  component: \"/assets/tilemaps/level_1.tilemap\"\n"
+  "  position {\n"
+  "    z: -1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+}
