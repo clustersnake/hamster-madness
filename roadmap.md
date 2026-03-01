@@ -1,81 +1,76 @@
-# Creating a Defold Snake Game with Advanced Mechanics
-This guide outlines the process for building a dynamic snake-like game in the Defold engine, focusing on the specific features you've requested. The core of the game will be managing a list of game objects and their states.
+# Roadmap: Hamster Madness — Implementación Técnica
 
-## 1. Core Concepts: The Snake as a List
-Instead of treating the snake as a single entity, you will manage it as a collection of individual "node" game objects. The key is to maintain a data structure—like a Lua table—that holds the IDs of all these nodes.
+Este documento detalla la evolución técnica desde el concepto "Snake-like" hacia la mecánica de **Vínculo Vital (Bola Única)** y la estructura narrativa de la **Pirámide Invertida**.
 
-Data Structure: Create a Lua table (e.g., self.nodes) in your head node's script. The first element (self.nodes[1]) will always be the head, and subsequent elements (self.nodes[2], self.nodes[3], etc.) will be the body.
+---
 
-Movement: The head node's movement is handled by player input. The body nodes will follow the node directly in front of them. The most efficient way to do this is to have each body node follow a path. You can simulate this by having each body node get the position of the node in front of it from the previous frame. This creates a smooth, trailing effect.
+## 1. El Vínculo: Hámster y Bola Única
+Sustituimos la lista de nodos del antiguo "Snake" por un sistema de dos entidades con estados de dependencia mutua.
 
--- Inside the head node script
-function init(self)
-    -- Initialize the node list with the head
-    self.nodes = { go.get_id() }
-end
+* **Estado: Unido (Escudo Activo)**
+    * La bola se posiciona mediante `go.set_parent()` o siguiendo al hámster en cada `update`.
+    * **Colisión**: Grupo `heavy_shield`. El hámster es invulnerable a impactos frontales y puede arrollar enemigos menores.
+* **Estado: Lanzado (Vulnerabilidad)**
+    * La bola se desprende y se convierte en un proyectil independiente con `collision_type.DYNAMIC`.
+    * **Colisión**: El hámster cambia su máscara a `fragile_flesh`. Un solo impacto de enemigo o trampa resulta en estado "Herido".
 
-function update(self, dt)
-    -- Move the head based on input
-    local current_pos = go.get_position()
-    -- ... your input logic here to update current_pos ...
-    go.set_position(current_pos)
+---
 
-    -- Update body segments
-    for i = #self.nodes, 2, -1 do
-        local prev_node_id = self.nodes[i-1]
-        local prev_node_pos = go.get_position(prev_node_id)
-        go.set_position(prev_node_pos, self.nodes[i])
-    end
-end
+## 2. El Rebote Cargado (Física Cinética)
+La bola no es un proyectil estático; su efectividad depende de la geometría y los rebotes.
 
-## 2. Growing the Snake
-When your snake's head collides with a food item, you'll need to add a new node to the end of the chain.
+* **Lógica de Carga**: En el script de la bola, detectamos `collision_response`. Si el grupo impactado es `wall`, incrementamos `self.bounce_count`.
+* **Fórmula de Daño**: 
+    $$Daño = Base + (Rebotes \times Multiplicador)$$
+* **Feedback Visual**: A mayor carga, aumentamos la intensidad del brillo (*tint*) y la escala del sprite mediante `go.animate`. El hámster percibe esta energía como una vibración neuronal.
 
-Collision Detection: Add a collision component to both the head node and the food node. Use a script on the head to listen for on_message events with message_id of hash("collision_response").
+---
 
-Spawning a New Node: Upon a collision with a food item, create a new snake body node using a factory component.
+## 3. Sistema de Misión de Recuperación
+Implementación del bucle de "muerte" sin recurrir al Game Over tradicional, reforzando la persistencia del mundo.
 
-Spawn the new node at the last node's position.
+1.  **Incapacitación**: Al recibir daño, el script del hámster desactiva el control del usuario y emite una señal de auxilio al `game_manager`.
+2.  **Persistencia**: El hámster herido y la bola permanecen en sus coordenadas `x, y` actuales. No desaparecen.
+3.  **Spawn de Reemplazo**:
+    * Se utiliza un `factory` en el **Nido de Viruta** (Base) más cercano.
+    * El nuevo hámster nace **sin bola**, totalmente indefenso.
+    * **Objetivo**: Navegar el mapa para rescatar al compañero herido y recuperar el equipo.
 
-Add the new node's game object ID to the end of your self.nodes list.
+---
 
-Destroy the food item and spawn a new one at a random location.
+## 4. Arquitectura: La Pirámide Invertida
+El mundo se gestiona mediante **Collection Proxies** para representar el ascenso desde la profundidad.
 
-## 3. Shooting Nodes Forward
-This action requires you to detach a node from the snake and turn it into a projectile. A good choice is the second-to-last node, as it maintains a minimum snake length.
+* **Nivel -50 (La Sima)**: Colección persistente que actúa como Hub Central y refugio del Dr. Aris.
+* **Las 4 Espirales de Fuga**: Colecciones de biomas (Tortuga, Araña, Murciélago, Cobra).
+* **Progreso Global**: Un módulo Lua (`global_state.lua`) rastrea los jefes derrotados para abrir las 5 puertas de la Sima.
 
-Detach Node: Find the ID of the node to be shot (e.g., self.nodes[#self.nodes - 1]).
+---
 
-Remove from List: Remove that node's ID from your self.nodes list.
+## 5. Lógica del Meta-Final
+Implementación de los dos estados finales del juego en el sistema de archivos de Defold.
 
-Propel Node: Apply a linear velocity to the detached node in the direction the head is currently facing. You can get the head's rotation and use a vector to calculate the direction. The go.set_position() function can be used to manually move it, or a physics component can have a force added to it.
+* **Final B (Control - Ciclo)**: Escribe un flag en `sys.save` que habilita el acceso a los modos *Boss Rush* y *Time Attack*.
+* **Final A (Trascendencia - Salida)**: 
+    * Muestra la cinemática de la bola abierta frente al lago/río.
+    * **Acción Final**: Ejecuta `os.remove(sys.get_save_file("HamsterMadness", "savegame"))`. 
+    * *El jugador debe soltar físicamente su progreso para otorgar la libertad real.*
 
-New Behavior: The detached node should have a new script or a new state that dictates its behavior as a projectile, such as colliding with enemies or obstacles and then being destroyed.
+---
 
-## 4. Leaving a Node as a Mine
-This is similar to the shooting mechanic, but the node is left stationary. The last node is the perfect candidate for this.
+## Plan de Sprints Inmediatos
 
-Detach Node: Get the last node's ID (self.nodes[#self.nodes]) and remove it from the list.
+### Sprint 1: Movimiento y Vínculo (MVP)
+- [ ] Configurar hámster (Kinematic) y Bola (Dynamic) en una colección básica.
+- [ ] Implementar recogida de bola por contacto físico.
+- [ ] Programar lanzamiento en 8 direcciones basado en el input del jugador.
 
-Change Visuals: Change the detached node's sprite to one that looks like a mine.
+### Sprint 2: El Rebote Cinético
+- [ ] Detectar colisiones con muros y aumentar el contador de carga.
+- [ ] Crear efectos de partículas de "estática" al alcanzar cargas altas.
+- [ ] Aplicar el daño multiplicado a un enemigo de prueba.
 
-Mine Logic: The detached node can have its own script that waits for a timer or a collision with an enemy. When triggered, it could play an animation and then be destroyed.
-
-## 5. Creating a Protective Shield
-This feature is the most complex as it requires temporary state changes and precise positioning of multiple nodes.
-
-Activation: When the shield is activated (e.g., by a key press), enter a new state. You'll need to know which body nodes will form the shield. For example, the first three nodes after the head.
-
-Reposition Nodes: Temporarily override the normal follow-the-leader movement for the shield nodes.
-
-Calculate new positions for each of these nodes in a circular or triangular formation around the head.
-
-Use go.set_position() to place them in the correct spots, ensuring they rotate with the head.
-
-Collision and Protection: The shield nodes would have a separate collision group that blocks or destroys incoming enemy projectiles without damaging the head.
-
-Deactivation and Reversion: After a set time or a certain number of hits, deactivate the shield.
-
-Return the nodes to their original "follow the leader" state. You might need to re-insert them into the snake list at their original indices if they were temporarily stored in a separate list for the shield.
-
-Using large sprites simply means you'll design your sprite assets at a larger resolution and scale them up in your Defold game objects. Make sure your camera is zoomed out sufficiently to provide a good view of the action.
+### Sprint 3: El Hub y la Reserva Biológica
+- [ ] Diseñar el Tilemap de la Sima con las puertas alineadas geométricamente.
+- [ ] Implementar la reserva inicial de **2 hámsters**.
+- [ ] Lógica de reaparición del reemplazo tras la caída del hámster activo.
