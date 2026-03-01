@@ -2,449 +2,118 @@
 
 ---
 
-## 1. General Information
+## 1. Información General
 
-### Game Name
+### Nombre del Juego
 Hamster Madness
 
-### Genre
-Roguelite top-down arena
-Skill-based combat
-Structured progression
+### Género
+Aventura de Acción / Mundo Persistente (No lineal)
+*Nota: Evolución desde Roguelite hacia una estructura de exploración y rescate.*
 
-### Inspirations
-- The Binding of Isaac (room structure)
-- Titan Souls (single resource risk)
-- Mega Man X (boss upgrades)
-
-### Platform
-PC (Defold Engine)
-
-### Target Run Duration
-5–10 minutes per run
+### Inspiraciones
+- **Titan Souls**: Riesgo de recurso único y mecánica de recuperación.
+- **Hollow Knight**: Mundo interconectado, atmósfera y penalización por muerte.
+- **Mega Man X**: Progresión basada en habilidades obtenidas de jefes.
+- **Dark Souls**: Recuperación de "cuerpo" y tensión tras la derrota.
 
 ---
 
-## 2. Description
+## 2. Descripción Narrativa (Lore)
 
-A hamster is subjected to virtual simulations in a laboratory.
-His only survival tool is a hamster ball that simultaneously
-serves as a shield and as a weapon.
+El hámster no es un avatar virtual, sino un organismo biológico real aumentado quirúrgicamente, dirigido por un operador remoto (el jugador). Las misiones ocurren en complejos de laboratorio físicos, sectores de prueba y almacenes abandonados.
 
-Every shot is a life-or-death decision:
-throwing the ball means being completely vulnerable.
+### Los Predecesores
+El mundo contiene **Campamentos de Expediciones Previas**. Estos son lugares donde equipos anteriores fallaron. Funcionan como puntos de control (Bases) y contienen fragmentos de historia que revelan qué ocurrió en el laboratorio antes de tu llegada.
 
 ---
 
-## 3. Core Concept
-
-> 1 ball = shield + projectile + life.
-> Throwing it = exposed.
-> Recovering it = survival.
-
----
-
-## 4. Core Loop
-
-1. Enter simulation
-2. Enemies spawn in closed room
-3. Decide when to throw your only ball
-4. Eliminate enemies or dodge
-5. Recover ball manually
-6. Clear room
-7. Advance to next room
-8. Face simulation boss
-9. Obtain permanent upgrade
-10. New harder simulation
-11. Death → restart
+## 3. Concepto Core
+> 1 bola = escudo + proyectil + vida.
+> Lanzarla = quedar expuesto.
+> Recuperarla = supervivencia.
 
 ---
 
-## 5. Player
+## 4. Mecánicas de la Bola
 
-### Character: Hamster
+### El Disparo y el Rebote Cargado
+| Propiedad | Comportamiento |
+|-----------|----------------|
+| **Dirección** | 8 direcciones (incluye diagonales perfectas). |
+| **Velocidad** | Rápida (~2x la del jugador). |
+| **Rebotes** | La bola rebota en paredes físicas. |
+| **Carga Cinética** | **NUEVO**: Cada rebote en una pared antes de tocar el suelo aumenta el brillo de la bola y su daño. Algunos enemigos con armadura solo pueden ser dañados tras 2 o más rebotes. |
 
-#### Movement
-- 8 directions
-- Constant base speed
-
-#### States
-
-| State      | Visual                              | Behavior              |
-|------------|-------------------------------------|-----------------------|
-| Protected  | Hamster inside transparent ball     | Can absorb 1 hit     |
-| Vulnerable | Hamster without ball                | 1 hit = death         |
-
-#### Base Actions
-- Move
-- Throw ball (facing direction)
-- Pick up ball (direct contact)
-
-#### Unlockable Actions
-- Parry (Turtle boss upgrade)
-- Sonar (Bat boss upgrade)
-- Spike Shield (Porcupine boss upgrade)
-- Penetration (Cobra boss upgrade)
+### Recuperación
+- **Manual**: Contacto físico directo con la bola en el suelo.
+- **Silk Tether (Cuerda de Seda)**: Habilidad para tirar de la bola y traerla de vuelta al hámster, permitiendo recuperarla a distancia o activar interruptores lejanos.
 
 ---
 
-## 6. Ball System
+## 5. Sistema de "Muerte" y Rescate
 
-### Intentional Shot (Player throws)
+El juego elimina el concepto de "Game Over" instantáneo por un sistema de **Misión de Recuperación**:
 
-| Property        | Behavior                                      |
-|-----------------|-----------------------------------------------|
-| Direction       | Straight line, facing direction               |
-| Speed           | Fast (~2x player speed)                       |
-| Bounce          | No (base). Yes with upgrade                   |
-| Penetration     | No (base). Yes with upgrade                   |
-| Damage          | Yes                                           |
+1.  **Estado Herido**: Al recibir daño sin el escudo, el hámster actual queda incapacitado en la habitación.
+2.  **El Reemplazo**: El jugador toma el control de un nuevo espécimen desde el último **Nido de Viruta** (Base) activado.
+3.  **Vulnerabilidad**: El reemplazo debe viajar hasta el lugar del incidente **sin la bola**.
+4.  **Rescate**:
+    * **Éxito (Llegar a tiempo)**: Se recupera la bola y al hámster herido. El hámster rescatado vuelve a la "reserva" (vidas).
+    * **Fallo (Timer agotado)**: El hámster herido muere. Solo se recupera la bola. Se pierde una unidad biológica permanentemente.
+    
+### 5.1 Gestión de Unidades (Vidas)
+El jugador selecciona su nivel de riesgo al iniciar la expedición:
+- **Modo Alpha (1 Vida)**: No hay rescate posible. La pérdida de la unidad termina la simulación.
+- **Modo Beta (3 Vidas)**: El estándar. Permite hasta 2 misiones de rescate simultáneas.
+- **Modo Gamma (5 Vidas)**: Enfoque en exploración.
 
-### Shield Lost by Enemy Hit
+### 5.2 La "Regla de la Bola Única"
+Independientemente de cuántos hámsters haya en la reserva, **solo existe una Bola de Combate** en el sector. 
+- Si un hámster muere (timer agotado), la bola permanece en el suelo.
+- Si un hámster es rescatado, se reintegra a la reserva en la Base.
+---
 
-| Property        | Behavior                                      |
-|-----------------|-----------------------------------------------|
-| Direction       | Expelled in hit direction                     |
-| Speed           | Slower than intentional shot                  |
-| Damage          | No (base). Yes with Spike Shield upgrade      |
-| Recovery        | Manual pickup required                        |
+## 6. Estructura del Mundo
 
-### Impact Results
+### Hub Central
+La simulación comienza en una **Base Central** con **4 puertas** abiertas hacia distintos biomas (Norte, Sur, Este, Oeste). El jugador elige su ruta, aunque el progreso en ciertas áreas requiere habilidades de otras.
 
-| Scenario                        | Result                              |
-|---------------------------------|-------------------------------------|
-| Hits enemy and kills            | Ball falls near eliminated enemy    |
-| Hits enemy but doesn't kill     | Ball falls immediately at impact    |
-| Misses and hits wall            | Ball falls where it impacted        |
-
-### Recovery
-- Player must physically touch the ball
-- Ball never returns automatically
-- Ball never disappears from the world
-
-### Fundamental Rule
-
-> No upgrade shall eliminate the vulnerability
-> of being without the ball.
-> The ball ALWAYS separates from the player upon taking damage.
+### Puntos de Interés
+- **Nidos de Viruta (Bases)**: Zonas de descanso donde el hámster marca territorio. Sirven para guardar progreso y como punto de reaparición.
+- **Túneles del Topo**: Sistema de viaje rápido entre Bases descubiertas.
 
 ---
 
-## 7. Damage System
+## 7. Jefes y Habilidades Permanentes
 
-### With Shield (Ball)
-- Absorbs 1 hit
-- Ball is expelled (speed < intentional shot)
-- Expelled ball does NOT damage enemies (base)
-- Expelled ball DOES damage enemies (with Spike Shield)
-- Ball is recoverable from the ground
+Cada jefe derrotado otorga una mejora biotecnológica que expande las capacidades de combate y exploración:
 
-### Without Shield
-- 1 hit = instant death
-
-### Parry (if unlocked)
-- Success → keeps shield + reflects projectile / stuns enemy
-- Failure → loses shield normally
-
-### Parry + Spike Shield
-- Failed parry → loses spiked shield equally
-- Spikes do NOT save from a failed parry
-
-### Summary Table
-
-| Situation                  | Result                                     |
-|----------------------------|--------------------------------------------|
-| Hit with shield            | Lose shield, ball expelled, recoverable    |
-| Hit without shield         | Death                                      |
-| Parry success              | Keep shield, reflect/stun                  |
-| Parry failure              | Lose shield normally                       |
-| Parry failure + spikes     | Lose spiked shield equally                 |
-| Contact enemy + spikes     | Enemy takes damage, keep shield            |
-| Expelled ball + spikes     | Expelled ball damages on contact           |
+| Jefe | Habilidad | Utilidad de Exploración |
+|------|-----------|-------------------------|
+| **Tortuga** | **Parry** | Refleja ataques para activar mecanismos de presión. |
+| **Araña** | **Silk Tether** | Tirar de objetos o activar interruptores a distancia. |
+| **Murciélago**| **Sonar / Mapa** | Revela habitaciones adyacentes y secretos en el mapa. |
+| **Puercoespín**| **Spike Shield** | Romper paredes agrietadas o vegetación densa. |
+| **Cobra** | **Penetración** | Golpear interruptores alineados tras obstáculos. |
+| **Topo** | **Excavación** | Acceso al sistema de viaje rápido (Fast Travel). |
 
 ---
 
-## 8. Room Design
+## 8. Enemigos MVP
 
-### Normal Rooms
-- Compact size
-- Player crosses room in ~2 seconds
-- Ball reaches opposite wall in ~1 second
-- No 100% safe zone ever
-- Doors locked until all enemies eliminated
-
-### Boss Rooms
-- Slightly larger than normal rooms
-- Player crosses room in ~3 seconds
-- Enough space for attack patterns
-- No additional enemies (boss only)
+- **Chaser**: Persecución directa. Peligrosos si acorralan al jugador sin bola.
+- **Shooter**: Dispara proyectiles. Requiere uso táctico del rebote o parry.
+- **Spiderling**: Lento, pero puede atrapar la bola en una red, obligando al jugador a rescatarla manualmente.
 
 ---
 
-## 9. Enemies
-
-### MVP Enemies (2 types)
-
-#### Chaser
-| Property    | Value                          |
-|-------------|--------------------------------|
-| Behavior    | Directly pursues player        |
-| Speed       | Moderate                       |
-| HP          | 1 hit                          |
-| Danger      | Dangerous in groups            |
-
-#### Shooter
-| Property    | Value                          |
-|-------------|--------------------------------|
-| Behavior    | Moves little, shoots slow      |
-| Speed       | Slow                           |
-| HP          | 2 hits                         |
-| Danger      | Forces smart shield usage      |
-
-### Future Enemies (Post-MVP)
-
-| Enemy    | Key Behaviors                              |
-|----------|--------------------------------------------|
-| Hamsters | Collect balls, mimic player actions        |
-| Snakes   | Grow when eating balls                     |
-| Spiders  | Web, hang, sting                           |
-| Roaches  | Quick bite                                 |
-| Cats     | Speed, scratch                             |
-| Bunnies  | Jump, stomp                                |
-| Rats     | Speed, bite                                |
-| Mice     | Speed, bite                                |
-| Bees     | Fly, kamikaze                              |
-| Hornets  | Fly, sting                                 |
-| Moles    | Dig, scratch                               |
-| Dogs     | Speed, destroy ball, bite                  |
-
----
-
-## 10. Bosses
-
-### Boss Upgrade System (Mega Man X style)
-
-Each boss grants a permanent upgrade when defeated.
-Upgrades expand options without eliminating core risk.
-
-> Key Design Rule:
-> Each boss demonstrates WHY you need its upgrade
-> BEFORE giving it to you.
-
----
-
-### Boss 1 — Turtle
-
-**Theme:** Defense and patience
-
-**Attacks:**
-
-| Attack          | Description                                    | Counter                              |
-|-----------------|------------------------------------------------|--------------------------------------|
-| Bite            | Extends neck, surprising range                 | Dodge, respect distance              |
-| Seismic slam    | Hits floor with shell, area damage             | Without parry → lose shield          |
-|                 |                                                | With parry → negate                  |
-| Shell hide      | Hides inside shell, invulnerable               | Wait, reposition                     |
-
-**Phases:**
-
-| Phase              | Behavior                                    |
-|--------------------|---------------------------------------------|
-| Phase 1 (100-50%)  | Alternates bite and shell hide              |
-|                    | Occasional seismic slam                     |
-| Phase 2 (50-0%)    | More aggressive                             |
-|                    | Seismic slam more frequent                  |
-|                    | Less time hiding in shell                   |
-
-**Design Intent:**
-
-> The seismic slam teaches the player
-> they need a way to negate area damage.
-> Defeating the boss grants exactly that: Parry.
-
-**Upgrade: Parry**
-
-| Property          | Value                                       |
-|-------------------|---------------------------------------------|
-| Activation        | Active button press                         |
-| Window            | ~0.2 seconds                                |
-| Success           | Reflects projectile or stuns enemy          |
-| Failure           | Loses shield normally                       |
-
----
-
-### Boss 2 — Bat
-
-**Theme:** Darkness and information
-
-**Attacks:**
-
-| Attack              | Description                                | Counter                      |
-|---------------------|--------------------------------------------|------------------------------|
-| Darkness            | Reduces visibility partially               | Memorize patterns            |
-| Teleport            | Appears at random position                 | React quickly                |
-| Blind side attack   | Charges from off-screen                    | Central positioning          |
-
-**Design Intent:**
-
-> The boss demonstrates that lack of information kills.
-> Defeating it grants the tool that solves
-> exactly that problem.
-
-**Upgrade: Sonar**
-
-| Function              | Description                                |
-|-----------------------|--------------------------------------------|
-| Enemy HP bars         | Shows enemy health bars                    |
-| Trap detection        | Reveals floor spikes and mines             |
-| Hidden rooms          | Shows possible secret room access          |
-| Cooldown              | Prevents abuse, tactical use only          |
-
-**Sonar does NOT:**
-- Deal damage
-- Stun
-- Slow
-
-> Sonar is purely informational.
-
----
-
-### Boss 3 — Porcupine
-
-**Theme:** Dangerous contact
-
-**Attacks:**
-
-| Attack              | Description                                | Counter                      |
-|---------------------|--------------------------------------------|------------------------------|
-| Roll and charge     | Curls into ball and charges                | Dodge                        |
-| Spike spray         | Fan-shaped projectiles                     | Shield or dodge              |
-| Contact damage      | Touching boss deals damage                 | Keep distance                |
-
-**Upgrade: Spike Shield**
-
-| Property                | Behavior                                  |
-|-------------------------|-------------------------------------------|
-| Contact damage          | Melee enemies take damage touching shield |
-| Expelled ball           | Lost shield ball ALSO deals damage        |
-| Parry interaction       | Failed parry → lose spiked shield equally |
-| Projectile protection   | Does NOT add projectile damage            |
-
----
-
-### Boss 4 — Queen Bee (Phase 3)
-
-**Theme:** Flight and venom
-
-**Attacks:**
-
-| Attack              | Description                                | Counter                      |
-|---------------------|--------------------------------------------|------------------------------|
-| Sting               | Moves through arena                        | Positioning                  |
-| Minions             | Quick frontal attack                       | Dodge, attack                |
-| Honey shots         | Honey shots that leave sticky ponds        | Find gaps                    |
-
-**Upgrade: Penetration**
-- Ball passes through 1 enemy before falling
-
----
-
-## 11. Progression System
-
-### Simulation Structure
-
-### Permanent Progression (Roguelite)
-- Boss upgrades are permanent between runs
-- Difficulty scales with obtained upgrades
-- New simulations unlock upon defeating bosses
-
-### There is NO:
-- Random items
-- Shops
-- Coins
-- Upgrade RNG
-
-> Progression is clean and predictable.
-
----
-
-## 12. NPCs (Post-MVP)
-
-| NPC      | Function                |
-|----------|------------------------|
-| Hamsters | Info, narrative context |
-| Raccoon  | Trade, hints           |
-
----
-
-## 13. Story
-
-A hamster lives a peaceful life inside a cage
-with food and water in a laboratory.
-
-Different animals are used to create
-virtual environments that test their adaptability
-and simulate experiments to enhance their physical abilities.
-
-The player controls the hamster that is used
-to explore different virtual simulations
-and evaluate if the improvements are ready
-to be implemented in the real world.
-
-### Narrative Justification
-
-| Game Element      | Narrative Reason                              |
-|-------------------|-----------------------------------------------|
-| Each simulation   | A run                                         |
-| Death             | Simulation failure → restart                  |
-| Upgrades          | Data collected from experiments               |
-| Bosses            | Other enhanced laboratory animals             |
-
----
-
-## 14. Metrics (Initial Reference — Adjust with Playtesting)
-
-| Parameter                | Suggested Value          |
-|--------------------------|--------------------------|
-| Player speed             | Medium                   |
-| Ball speed (shot)        | Fast (~2x player)        |
-| Ball speed (expelled)    | Slow (~0.5x shot speed)  |
-| Normal room size         | ~2s to cross             |
-| Boss room size           | ~3s to cross             |
-| Parry window             | ~0.2s                    |
-| Sonar duration           | ~2s                      |
-| Sonar cooldown           | ~10s (adjust)            |
-| Full run duration        | 5–10 minutes             |
-
----
-
-## 15. Scope Control
-
-### Phase 1 — MVP
-- 8-direction movement
-- 1 ball system (shield + projectile)
-- Shield expulsion on hit
-- 2 enemy types (Chaser, Shooter)
-- 1 boss (Turtle → Parry)
-- 4 rooms per run
-- Death and restart system
-- Placeholder art
-
-### Phase 2
-- Bat boss (Sonar)
-- Porcupine boss (Spike Shield)
-- Additional enemies
-- Traps (spikes, mines)
-- Final art
-- Sound
-
-### Phase 3
-- Cobra boss (Penetration)
-- NPCs
-- Complete story
-- Hidden rooms
-- Final polish
-
+## 9. Principios de Diseño
+
+1.  **Vulnerabilidad Sagrada**: Ninguna mejora elimina el riesgo de estar desprotegido.
+2.  **Precisión sobre Spam**: El sistema de rebote cargado premia el conocimiento del entorno.
+3.  **Persistencia Física**: La bola y el hámster herido siempre existen en coordenadas reales del mundo; nunca desaparecen mágicamente.
+4.  **Información como Progreso**: El mapa se completa activamente mediante el uso de habilidades (Sonar).
 ---
 
 ## 16. Future Projects (Separate Games)
@@ -461,7 +130,7 @@ to be implemented in the real world.
 
 ---
 
-## 17. Bonus Games (Far Future)
+## Bonus Games (Far Future)
 
 > Possible expansions or independent games.
 
@@ -471,7 +140,7 @@ to be implemented in the real world.
 
 ---
 
-## 18. Design Principles
+## Design Principles
 
 1. **Simplicity first.** If it's not fun with 1 ball, it won't be fun with 10.
 2. **Vulnerability is sacred.** No upgrade shall eliminate it.
