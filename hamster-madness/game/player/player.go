@@ -19,7 +19,7 @@ embedded_components {
   ""
 }
 embedded_components {
-  id: "player_collision"
+  id: "collisionobject"
   type: "collisionobject"
   data: "type: COLLISION_OBJECT_TYPE_KINEMATIC\n"
   "mass: 0.0\n"
@@ -28,6 +28,8 @@ embedded_components {
   "group: \"player\"\n"
   "mask: \"ball\"\n"
   "mask: \"wall\"\n"
+  "mask: \"enemy\"\n"
+  "mask: \"wounded\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
