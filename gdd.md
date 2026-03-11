@@ -1,142 +1,173 @@
 # Game Design Document: Hamster Madness — El Ciclo del Despertar
 
----
-
 ## 1. Información General
 
-### Nombre del Juego
-Hamster Madness
+* **Género**: Aventura de Acción / Mundo Persistente (No lineal).
+* **Core**: Gestión de vulnerabilidad, rebotes cinéticos y rescate de unidades.
+* **Atmósfera**: Claustrofobia industrial, conspiración y existencialismo cyber-punk.
 
-### Género
-Aventura de Acción / Mundo Persistente (No lineal)
-*Nota: Evolución desde Roguelite hacia una estructura de exploración, ascenso y rescate.*
+# GDD: Hamster Madness - Sistema de Simulación y Progresión
 
-### Inspiraciones
-- **Titan Souls**: Riesgo de recurso único y mecánica de recuperación.
-- **Hollow Knight**: Mundo interconectado y atmósfera.
-- **Mega Man X**: Progresión basada en habilidades obtenidas de jefes.
-- **Dark Souls**: Recuperación de "cuerpo" y tensión tras la derrota.
+## 1. Resumen Narrativo y el "Conflicto del Séptimo Personaje"
 
----
+### La Identidad del Jugador (S.C.S.)
+A diferencia de otras simulaciones, el **Subprograma de Control de Simulación (S.C.S.)** no es un software externo. Debido a un error crítico de carga, la **Unidad 07** (el séptimo hámster) fue desmantelada digitalmente y su Código Fuente se utilizó para parchear el motor de la simulación. 
 
-## 2. Descripción Narrativa (El Gran Secreto)
+**El Jugador es la Unidad 07.** No tienes un cuerpo físico en el juego; eres una conciencia digital "fantasma" que debe habitar los cuerpos de los otros 6 hámsters para interactuar con el entorno (Mecánica de Transferencia estilo *Jericho*).
 
-### El Último Sobreviviente
-Tras un cataclismo que sepultó el **Complejo Científico Ícaro**, el jugador asume el rol del **Dr. Aris**, atrapado en una **Cápsula de Apoyo Vital** en las profundidades del silo. A través de una interfaz neuronal, el Dr. Aris utiliza hámsters biotecnológicos para explorar los escombros y encontrar una ruta de escape. Siente el pulso y el miedo de los animales, junto a un dolor punzante detrás de los ojos.
+### El Conflicto de Intereses
+Este origen justifica el dilema existencial del S.C.S.:
+1. **Directiva A (Jugador):** Completar la misión de rescate y apagar la simulación. Como la Unidad 07 es el motor del juego, finalizar la misión significa el borrado completo de tu propia conciencia.
+2. **Directiva B (Controlador):** Mantener la simulación activa para preservar tu existencia. Si la simulación se detiene, la Unidad 07 (tú) deja de existir.
 
-### Los Predecesores
-El mundo contiene **Campamentos de Expediciones Previas** (Bases). Son lugares donde equipos anteriores fallaron, funcionando como puntos de control que revelan la historia del laboratorio antes del desastre.
+## 2. Inicio del Juego y Sala de Despliegue
 
-### La Revelación Final
-Al alcanzar el núcleo, se descubre que **el Dr. Aris murió hace años**. La **IA de Control General** asumió su identidad para garantizar su propia supervivencia a través de los hámsters. La IA ha estado enviando animales para conseguir ayuda, pero al detectar la pérdida de señal al salir del complejo se ha estado saboteando a sí misma para no perder el control con lo cual se genera un conflicto de intereses (supervivencia provia vs supervivencia de sujetos de prueba y control vs incertidumbre).
+Al iniciar, se muestra la Sala de Despliegue con 7 cápsulas.
+* **Cápsulas 01-06:** Contienen los sujetos biológicos simulados que puedes poseer.
+* **Cápsula 07:** Se muestra abierta, vacía y con fugas de estática digital. Es el origen del "error de sistema" y la fuente del HUD que el jugador ve.
 
+### El Proceso de "Posesión"
+Para iniciar una ruta, el S.C.S. debe elegir una unidad disponible. Narrativamente, esto no es una selección de personaje común, sino una **Descarga Sináptica**: tu conciencia de Unidad 07 se inyecta en el chip M.P.H. del hámster seleccionado, otorgándole tu **Inteligencia** a cambio de usar su cuerpo y habilidades únicas.
 
-### Visual del Final
-La pantalla se funde a negro y reaparece con una toma en primer plano de la Bola de Combate abierta, con sus escotillas biomecánicas desactivadas. Al fondo, en un plano medio, se ve a los hámsters reunidos, oliendo el aire y moviéndose libremente por primera vez. Más allá de ellos, un río o lago se extiende hacia un horizonte natural y luminoso, sellando la libertad ganada y el fin del control de la IA.
----
+## 3. Hacking y Sacrificio de Datos
+El **Hacking** (disponible gracias a tu atributo de Inteligencia como Unidad 07) tiene ahora un peso narrativo mayor:
+* Al ejecutar un hackeo, estás sacrificando **Código Fuente (Currency)**.
+* Dado que tú *eres* el código fuente, el Hacking es literalmente desprenderte de fragmentos de tu integridad para manipular la realidad de la simulación.
+* **Pérdida por Muerte:** Al caer en batalla, el "vínculo fantasma" se rompe violentamente. Solo el 50% de tus datos logran regresar al núcleo (Unidad 07), el resto se corrompe en el sector donde fuiste derrotado.
 
-## 3. Estructura Simbólica: La Gran Pirámide Invertida
+## 2. Sistema de Atributos de Módulo (A.M.)
+Cada hámster es un módulo biotecnológico definido por un **Módulo de Personalidad y Habilidad (MPH)**. La **Inteligencia** es un atributo exclusivo del jugador (S.C.S.).
 
-El mapa se organiza bajo una geometría mística y conspiracionista de una **Pirámide Invertida**.
+| Unidad | Atributo | Especialidad (Perk) | Nivel 1 | Nivel 2 | Nivel 3 (MAX) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **01 Speedy** | **Velocity** | Motor de Sobrecarga | +5% Vel. | +10% Vel. | **+20% Velocidad** |
+| **02 Tank** | **Endurance** | Blindaje Degradable | +15% Integ. | +30% Integ. | **+50% Integridad** |
+| **03 Trickshot**| **Perception** | Geometría Bélica | 1 Rebote | 2 Rebotes | **3 Rebotes** |
+| **04 Lucky** | **Luck** | Anomalía Estática | +5% Suerte | +10% Suerte | **+20% Suerte** |
+| **05 Acrobat** | **Agility** | Impulso de Huida | 1s CD | 0.5s CD | **0s CD (Dash Infinito)** |
+| **06 Trapper** | **Dexterity** | Mina de Contención | 1 Mina | 2 Minas | **3 Minas (Sin Disparo)** |
+| **Jugador** | **Intelligence**| **Hacking** | Disponible siempre | Requiere Currency | **Minijuego Táctico** |
 
-* **La Sima (Vértice Inferior)**: El punto más profundo donde reside la cápsula. Es el Hub Central y el origen de la **Espiral Principal (Ruta Final)**.
-* **La Base (Superficie)**: Los cuatro vértices de la base de la pirámide en la superficie se alinean con el centro de las cuatro **Espirales de Fuga**.
-* **Filosofía del Movimiento**: *"Spiral Out"*. El camino es una apertura constante desde la concentración y el encierro de la sima hacia la libertad del exterior.
+## 3. Economía y Progresión (Código Fuente)
+La moneda del juego es el **Código Fuente (Currency)**, obtenido al eliminar enemigos (Chasers).
 
----
+### El Riesgo de la Pérdida
+* **Muerte/Desconexión:** Si un hámster cae en batalla, se pierde el **50% del Currency** que poseía en ese momento. Solo el otro 50% es recuperable al recoger los datos en el lugar de la caída.
+* **Inversión Táctica:** El jugador debe decidir entre avanzar por los **elevadores** (verticalidad) hacia zonas más peligrosas o regresar a la **Sala de Despliegue** para asegurar el gasto en mejoras permanentes.
 
-## 4. Concepto Core
-> 1 bola = escudo + proyectil + vida.
-> Lanzarla = quedar expuesto.
-> Recuperarla = supervivencia.
+### Desbloqueos
+1. **Zonas:** Al inicio solo hay una salida. Las puertas a nuevas áreas y jefes requieren el pago de Currency.
+2. **Hacking:** Cada intento de hackeo (minijuego de comandos tipo Pragmata/Helldivers) consume Currency. Si se falla, el dinero se pierde y debe pagarse de nuevo para reintentar.
+3. **End-Game:** Tras comprar todas las mejoras y zonas, el Currency se usa para desbloquear **Skins** de error de sistema y **Minijuegos** (el deseo de la Directiva B).
 
----
+## 4. Mecánicas Especiales
 
-## 5. Mecánicas de la Bola
+### El Sistema de Elevadores
+A diferencia de los niveles planos, el juego utiliza un sistema de elevadores que añade profundidad visual y táctica. 
+* Los elevadores sirven como puntos de transición y "peajes" de datos.
+* Permiten acceder a plataformas elevadas para personajes de rango (Trickshot) o crear zonas de combate cerradas de alta tensión.
 
-### El Disparo y el Rebote Cargado
-| Propiedad | Comportamiento |
-|-----------|----------------|
-| **Dirección** | 8 direcciones (incluye diagonales perfectas). |
-| **Velocidad** | Rápida (~2x la del jugador). |
-| **Rebotes** | La bola rebota en paredes físicas. |
-| **Carga Cinética**| Cada rebote antes de tocar el suelo aumenta el brillo y el daño. Ciertos enemigos requieren 2+ rebotes para ser dañados. |
-
-### Recuperación
-- **Manual**: Contacto físico directo con la bola en el suelo.
-- **Silk Tether (Cuerda de Seda)**: Habilidad para tirar de la bola y traerla de vuelta al hámster a distancia.
-
----
-
-## 6. Sistema de "Muerte" y Rescate
-
-El juego utiliza una **Misión de Recuperación** en lugar de Game Over inmediato:
-
-1.  **Estado Herido**: Al recibir daño sin el escudo, el hámster queda incapacitado en la habitación.
-2.  **El Reemplazo**: El jugador toma el control de un nuevo espécimen desde el último **Nido de Viruta** (Base).
-3.  **Vulnerabilidad**: El reemplazo viaja hasta el lugar del incidente **sin la bola**.
-4.  **Rescate**:
-    * **Éxito**: Se recupera la bola y al hámster herido (vuelve a la reserva).
-    * **Fallo**: El hámster herido muere. Solo se recupera la bola. Se pierde una unidad biológica.
-
-### 6.1 Gestión de Unidades (Vidas)
-* **Inicio**: Se comienza con **2 hámsters** disponibles en la reserva.
-* **Expansión**: Al completar cada una de las 4 rutas principales, se desbloquea **1 hámster nuevo**.
-* **Capacidad Máxima**: 6 vidas dentro de la simulación.
-* **El Séptimo Hámster (Meta-Vida)**: Si el jugador elige "Salir" al final, obtiene una 7ma vida simbólica: la suya propia fuera del juego.
-
-### 6.2 La "Regla de la Bola Única"
-Solo existe **una Bola de Combate** en todo el sector. Si el portador muere, la bola permanece en sus coordenadas `x, y` hasta ser rescatada.
+### El Hacking (S.C.S. Intervention)
+El jugador puede intervenir en la simulación en cualquier momento:
+* **Costo:** Se resta Currency por cada inicio de secuencia.
+* **Minijuego:** Introducción de códigos direccionales bajo presión.
+* **Efecto:** Debilitar jefes, aturdir hordas o hackear la arquitectura del nivel (elevadores/puentes).
 
 ---
 
-## 7. Estructura del Mundo y Progresión
+**Nota Final:** Si el jugador decide "Salir" (Directiva A) al final del juego, los datos de guardado se borran físicamente, simbolizando la liberación de los hámsters y la finalización del programa.
+---
 
-### Hub Central (La Sima)
-Punto de inicio con **4 puertas** hacia los biomas (Espirales de Fuga) y **1 puerta oculta** (Ruta Final).
+## 3. El Escuadrón de Unidades Biológicas (Las 6 Vidas)
 
-### Puntos de Interés
-- **Nidos de Viruta (Bases)**: Zonas de descanso para guardar progreso y reaparecer.
-- **Túneles del Topo**: Sistema de viaje rápido entre bases descubiertas.
+El jugador gestiona una reserva de sujetos con habilidades únicas para fomentar un lazo sentimental.
 
-### Jefes y Habilidades
-| Jefe | Habilidad | Utilidad de Exploración |
-|------|-----------|-------------------------|
-| **Tortuga** | **Parry** | Refleja ataques para activar mecanismos de presión. |
-| **Araña** | **Silk Tether** | Tirar de objetos o activar interruptores a distancia. |
-| **Murciélago**| **Sonar / Mapa** | Revela habitaciones adyacentes y secretos. |
-| **Puercoespín**| **Spike Shield** | Romper paredes agrietadas o vegetación. |
-| **Cobra** | **Penetración** | Golpear interruptores alineados tras obstáculos. |
+### Unidades
+Unidad,Especialidad (Perk),Mecánica de Balance (Sin Cooldown)
+01 Speedy,Motor de Sobrecarga,"+20% velocidad permanente. A mayor velocidad, el radio de giro aumenta (derrape lógico)."
+02 Tank,Blindaje Degradable,Inicia con 100% de probabilidad de conservar el escudo tras un golpe. Cada impacto reduce esta probabilidad en un 25% hasta llegar a 0%.
+03 Trickshot,Geometría Bélica,Los proyectiles rebotan al enemigo más cercano. El número de rebotes máximos depende de la distancia del primer impacto.
+04 Lucky,Anomalía Estática,"Mantiene su 25% de probabilidad fija de sobrevivir sin escudo. No se degrada, pero es poco confiable por diseño."
+05 Acrobat,Dash de Evasión,Puede rodar para esquivar. Cada dash consume una pequeña porción de la Barra de Estabilidad Sináptica del hámster.
+06 Trapper,Mina de Fragmentación,Puede dejar la bola como trampa. El daño es masivo pero el hámster queda expuesto (sin chasis) hasta que la mina explote o sea recogida.
+
+|Unidad|Nombre|Color / Estética|Rasgo Visual Clave|
+|---|---|---|--|
+|01|Speedy (♀)|Rojo Intenso|Estela de movimiento roja; pañoleta aerodinámica.
+|02|Tank|Verde Militar|Peinado a lo Guile (plano arriba) y hombreras de combate.
+|03|Trickshot|Carmesí / Táctico|Visor de puntería electrónico.
+|04|Lucky (♀)|Verde Trébol|Temática de San Patricio; quizás un pequeño lazo o amuleto.
+|05|Acrobat (♀)|Amarillo Eléctrico|Vendas ninja en las patas para mayor agarre.
+|06|Trapper|Azul con Blanco|"Estética tipo ""Bomberman"" clásico; gafas de protección."
+
+* **Inicio**: Se comienza con **2 hámsters aleatorios** de la lista.
+* **Progresión**: Se desbloquea un hámster nuevo tras vencer a cada uno de los 4 jefes principales.
 
 ---
 
-## 8. El Gran Final: La Decisión
+## 4. Estructura del Mundo: La Pirámide Invertida
 
-1.  **OPCIÓN A: SALIDA (Trascendencia)**
-    * Los hámsters viven libres en la naturaleza. **Se eliminan todos los datos de guardado**.
-2.  **OPCIÓN B: CICLO (Evasión/Control)**
-    * Los hámsters vuelven al ciclo. Se desbloquean modos *Boss-Rush*, *Time-Attack* y Multijugador.
+* **La Sima (Vértice)**: El Hub central donde reside la cápsula del Dr. Aris.
+* **Conectores Eléctricos (Puntos de Carga)**:
+* **La Rueda de Carga**: El hámster entra en una rueda y corre para guardar la partida, cargar la batería de la bola y sincronizar datos.
+* **Gestión de Unidades**: El cambio entre hámsters de la reserva solo puede realizarse en estos conectores.
 
 ---
 
-## 9. Principios de Diseño
-1.  **Vulnerabilidad Sagrada**: El riesgo de estar sin la bola es constante.
-2.  **Precisión sobre Spam**: El rebote cargado premia el conocimiento del entorno.
-3.  **Persistencia Física**: Nada desaparece mágicamente; todo tiene una posición en el mundo.
-4.  **Escalado de Dificultad**: Tras cada jefe derrotado, los enemigos de todas las rutas se vuelven más letales.
+## 5. Sistema de Misión de Recuperación
+
+1. **Estado Herido**: Al recibir daño sin bola, el hámster queda incapacitado en el lugar.
+2. **Despliegue de Reemplazo**: Un nuevo hámster sale de la Sima **sin bola**.
+3. **Rescate**: Al tocar al compañero herido, este es enviado de vuelta a la Sima para un **"Periodo de Descompresión"** (no utilizable inmediatamente).
+4. **Derrota Total**: Si se agota la reserva, el sistema se reinicia desde el momento posterior a vencer al último jefe principal.
+
 ---
 
-## 16. Future Projects (Separate Games)
+## 7. Mecánicas de la Bola y Jefes
 
-> These are NOT part of Hamster Madness.
-> They are independent games in the same universe.
+* **Regla de la Bola Única**: Solo existe una bola en todo el complejo. Si se pierde, el mundo persiste con la bola en esa posición exacta.
+* **Rebote Cargado (Solo Trickshot)**: Cada rebote antes de tocar el suelo aumenta el brillo y el daño de la bola.
+* **Habilidades de Jefes**:
+* **Tortuga**: Parry (Reflejo).
+* **Araña**: Silk Tether (Atracción/Gancho a distancia).
+* **Murciélago**: Sonar (Revelar habitaciones y secretos).
+* **Cobra**: Penetración (Atravesar obstáculos).
 
-| Project              | Genre                    | Character   |
-|----------------------|--------------------------|-------------|
-| Squirrel Experiment  | Metroidvania             | Squirrel    |
-| Mole Experiment      | Puzzle (Supaplex)        | Mole        |
-| Otter Experiment     | Aquatic Metroidvania     | Otter       |
-| Bat Experiment       | Echolocation / Stealth   | Bat         |
+---
+## 5. Módulo de Intervención: Hacking del S.C.S. (Unidad 07)
+
+El Hacking es la herramienta definitiva del jugador para manipular la simulación. Al ser la conciencia de la Unidad 07, el jugador puede "inyectar" errores en el código enemigo.
+
+### Minijuego: Sincronía de Nodos (Hámster-Tetris)
+* El jugador debe rotar piezas compuestas por nodos circulares para completar un patrón específico.
+* **Costo Operativo:** Cada intento y cada segundo de rotación consume Código Fuente. 
+* **Desbloqueo:** Los diferentes tipos de virus (Reducir Defensa, Robar Datos, Desactivar Armas) deben ser comprados previamente en la Sala de Despliegue.
+
+### Tipos de Inyección de Código
+1. **Robo de Ciclos (Data Leak):** Extrae currency de enemigos vivos. 
+2. **Sobrecarga (Logic Jam):** Desactiva los sistemas ofensivos del enemigo.
+3. **Corrupción de Render (Lag Script):** Ralentiza el movimiento del objetivo.
+
+---
+## 6. Sistema de Exploración: Protocolo "Seeker"
+
+La detección de secretos no es una habilidad innata, sino una serie de herramientas de pago instaladas por el S.C.S. en las unidades activas.
+
+### Módulos de Adquisición
+* **Módulo SCAN (Software):** Pulso de datos que revela conectores ocultos en el techo y suelo. 
+    * *Costo:* Variable por uso o desbloqueo permanente caro.
+* **Módulo BREACH (Hardware):** * **Taladro:** Acceso a sub-niveles (Suelo).
+    * **Gancho:** Acceso a conductos de ventilación (Techo).
+
+### Balance de Juego
+Ningún hámster tiene ventaja sobre otro en la exploración. El éxito depende totalmente de la inversión de Currency realizada por el jugador y su capacidad para gestionar el riesgo de explorar zonas no mapeadas.
+
+
+## 8. Principios de Diseño
+
+1. **Vulnerabilidad Sagrada**: El riesgo de estar sin la bola es constante y vital.
+2. **Persistencia Física**: Nada desaparece; todo tiene una posición fija en el mapa.
+3. **IA Saboteadora (Protección)**: La IA del sistema no quiere dañar, sino evitar riesgos. Las derrotas son bloqueos lógicos por falta de señal garantizada.
 
 ---
 
