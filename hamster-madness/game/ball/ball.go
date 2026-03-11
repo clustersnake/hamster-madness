@@ -1,6 +1,11 @@
 components {
   id: "ball"
   component: "/game/ball/ball.script"
+  properties {
+    id: "max_distance"
+    value: "10000.0"
+    type: PROPERTY_TYPE_NUMBER
+  }
 }
 embedded_components {
   id: "collisionobject"
@@ -12,6 +17,7 @@ embedded_components {
   "group: \"ball\"\n"
   "mask: \"player\"\n"
   "mask: \"wall\"\n"
+  "mask: \"enemy\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
@@ -30,7 +36,7 @@ embedded_components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"bubble_1\"\n"
+  data: "default_animation: \"shield\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
   "  x: 32.0\n"
