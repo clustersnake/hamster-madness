@@ -1,0 +1,42 @@
+animations {
+  id: "idle"
+  images {
+    image: "/assets/sprites/enemies/slime-idle-1.png"
+    pivot_x: 0.491394
+    pivot_y: 0.620487
+  }
+  images {
+    image: "/assets/sprites/enemies/slime-idle-2.png"
+  }
+  images {
+    image: "/assets/sprites/enemies/slime-idle-3.png"
+    pivot_x: -0.601596
+    pivot_y: 0.474181
+  }
+  images {
+    image: "/assets/sprites/enemies/slime-idle-4.png"
+  }
+  images {
+    image: "/assets/sprites/enemies/slime-idle-5.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 5
+}
+animations {
+  id: "walk"
+  images {
+    image: "/assets/sprites/enemies/slime-walk-1.png"
+  }
+  images {
+    image: "/assets/sprites/enemies/slime-walk-2.png"
+  }
+  images {
+    image: "/assets/sprites/enemies/slime-walk-3.png"
+  }
+  images {
+    image: "/assets/sprites/enemies/slime-walk-4.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 5
+}
+extrude_borders: 2
