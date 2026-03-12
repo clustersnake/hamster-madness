@@ -4786,6 +4786,11 @@ layers {
     tile: 1837
   }
   cell {
+    x: 24
+    y: 10
+    tile: 619
+  }
+  cell {
     x: 39
     y: 10
     tile: 1841
@@ -4801,6 +4806,16 @@ layers {
     tile: 896
   }
   cell {
+    x: 11
+    y: 11
+    tile: 619
+  }
+  cell {
+    x: 24
+    y: 11
+    tile: 551
+  }
+  cell {
     x: 39
     y: 11
     tile: 1841
@@ -4816,6 +4831,16 @@ layers {
     tile: 896
   }
   cell {
+    x: 11
+    y: 12
+    tile: 551
+  }
+  cell {
+    x: 24
+    y: 12
+    tile: 551
+  }
+  cell {
     x: 39
     y: 12
     tile: 1841
@@ -4831,6 +4856,16 @@ layers {
     tile: 896
   }
   cell {
+    x: 11
+    y: 13
+    tile: 483
+  }
+  cell {
+    x: 24
+    y: 13
+    tile: 551
+  }
+  cell {
     x: 39
     y: 13
     tile: 1841
@@ -4839,6 +4874,11 @@ layers {
     x: 0
     y: 14
     tile: 1837
+  }
+  cell {
+    x: 24
+    y: 14
+    tile: 483
   }
   cell {
     x: 39
