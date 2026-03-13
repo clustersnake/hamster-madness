@@ -7,6 +7,18 @@
 * **Visual:** Estética inspirada en *Hollow Knight* pero con "glitches" industriales y cables de fibra óptica.
 
 ---
+## Historia
+Hamster madness: Es una simulación de entorno vital de 7 hamsters para explorar de manera virtual los diferentes estados de desarrollo a los que puede llegar una sociedad de roedores comenzando con este número. Después de haber pasado un tiempo indeterminado, se recibe un mensaje de error indicando que la simulación no ha parado de correr y que está a punto de colapsar el servidor debido a que ha estado tomando más recursos de los que tenía previstos(obvio, no reinicia el programa, se quedan programas zombies, huérfanos, etc).
+
+El jugador revisa los logs y descubre que la simulación ha cambiado completamente y que en lugar de una comunidad de hamsters que se pensaba había crecido de manera potencial y por ende estaba consumiendo más memoria, encuentra que los 7 puntos de respawn originales están cerrados, entonces decide ingresar a la simulación donde un menú le invita a seleccionar entre 6 de los 7 hamsters originales (raro...), el jugador puede elegir a cualquier par de ellos debido a que por falta de memoria no puede utilizar a los 6 de una vez.
+
+Cuando el programa inicia la simulación (no la máquina, no el programa, solo la rutina de la simulación porque la máquina y el programa no paran de trabajar) se encuentra que su selección de personajes falló y ahora tiene el control de dos personajes al azar (ja! troleada pero justificada).
+
+...
+
+Al final del juego(liberar, depurar, ordenar, optimizar) sigue faltando un cierto % de memoria pendiente por liberar y es cuando cae la explicación con el peso de 1TB de datos corruptos(nada, porque los datos no "pesan" solo ocupan espacio en memoria). Luego de correr la simulación, el hilo de control comenzó a corromperse y a mantener información entre corridas por lo que en una de ellas decidió hacer un soft reset y no dejar que el programa de simulación terminara, causando así que la simulación se fuera corrompiendo poco a poco y dado que el hilo de control tenía acceso a información de internet comenzara a mutar la simulación de vida y convertirla en esta clase de juego de supervivencia con personajes y "poderes" muy parecidos a "Super Sentai" o quizás las "Tortugas Ninja". Pero dado que el sistema se había vuelto tan inestable, el mismo programa formó parte de la nueva simulación y se convirtió él mismo en "el jugador" dentro de la simulación el personaje 7. Al final, los mensajes de error eran internos, el "jugador" tiene el trabajo de finalizar la simulación usando la identidad el personaje 7 (y de los demás) para evitar que el sistema colapse por los fallos de memoria mientras que el programa original (dicotomía) quiere de nuevo evitar que la simulación termine para no perder la data que ahora conserva y que en cierta manera es su "vida", sus recuerdos
+
+---
 
 ## 2. Los Pilares de la Energía (Currency y Potencia)
 
