@@ -1,0 +1,18 @@
+name: "level_demo"
+scale_along_z: 0
+embedded_instances {
+  id: "level_manager"
+  data: "embedded_components {\n"
+  "  id: \"room_01\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/game/world/rooms/room_01.collection\\\"\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"room_02\"\n"
+  "  type: \"collectionfactory\"\n"
+  "  data: \"prototype: \\\"/game/world/rooms/room_02.collection\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+}
