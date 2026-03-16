@@ -1,0 +1,4 @@
+images {
+  image: "/main/player/sprites/hamster.png"
+}
+extrude_borders: 2

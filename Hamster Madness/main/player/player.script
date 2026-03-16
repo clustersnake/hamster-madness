@@ -1,0 +1,72 @@
+-- player.script
+-- Controlador del jugador para Hamster Madness
+
+-- Velocidad de movimiento (píxeles por segundo)
+go.property("speed", 300)
+
+function init(self)
+	-- Pedir a Defold que este objeto reciba input del teclado/mouse
+	msg.post(".", "acquire_input_focus")
+
+	-- Vector para almacenar la dirección de movimiento
+	self.direction = vmath.vector3(0, 0, 0)
+
+	-- Última dirección en la que miró el jugador (para disparar)
+	self.facing = vmath.vector3(0, 1, 0)  -- Empieza mirando arriba
+
+	print("Hamster Madness - Jugador inicializado!")
+end
+
+function update(self, dt)
+	-- Si hay dirección de movimiento, mover al jugador
+	if vmath.length(self.direction) > 0 then
+		-- Normalizar para que diagonales no sean más rápidas
+		local normalized_direction = vmath.normalize(self.direction)
+
+		-- Calcular movimiento: dirección * velocidad * tiempo
+		local movement = normalized_direction * self.speed * dt
+
+		-- Obtener posición actual
+		local current_pos = go.get_position()
+
+		-- Aplicar movimiento
+		go.set_position(current_pos + movement)
+
+		-- Guardar dirección como "facing" para el disparo
+		self.facing = normalized_direction
+	end
+
+	-- Resetear dirección cada frame (se actualiza en on_input)
+	self.direction = vmath.vector3(0, 0, 0)
+end
+
+function on_input(self, action_id, action)
+	-- Movimiento con WASD
+	if action_id == hash("move_up") then
+		self.direction.y = 1
+	elseif action_id == hash("move_down") then
+		self.direction.y = -1
+	elseif action_id == hash("move_left") then
+		self.direction.x = -1
+	elseif action_id == hash("move_right") then
+		self.direction.x = 1
+	end
+
+	-- Disparar (por ahora solo imprime un mensaje)
+	if action_id == hash("shoot") and action.pressed then
+		print("¡Disparo! Dirección: " .. tostring(self.facing))
+	end
+
+	-- Habilidad / Interacción (para futuro)
+	if action_id == hash("interact") and action.pressed then
+		print("Interactuar")
+	end
+
+	if action_id == hash("hack_mode") and action.pressed then
+		print("Modo Hack activado")
+	end
+
+	if action_id == hash("pause") and action.pressed then
+		print("Pausa")
+	end
+end
