@@ -1,0 +1,7 @@
+images {
+  image: "/main/projectile/sprites/ball_large.png"
+}
+images {
+  image: "/main/projectile/sprites/ball_small.png"
+}
+extrude_borders: 2

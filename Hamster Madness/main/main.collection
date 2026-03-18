@@ -3,8 +3,8 @@ instances {
   id: "player"
   prototype: "/main/player/player.go"
   position {
-    x: 640.0
-    y: 360.0
+    x: 320.0
+    y: 240.0
   }
 }
 instances {
@@ -12,3 +12,24 @@ instances {
   prototype: "/orthographic/camera.go"
 }
 scale_along_z: 0
+embedded_instances {
+  id: "room"
+  data: "components {\n"
+  "  id: \"test_room\"\n"
+  "  component: \"/main/rooms/test_room.tilemap\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"collisionobject\"\n"
+  "  type: \"collisionobject\"\n"
+  "  data: \"collision_shape: \\\"/main/rooms/test_room.tilemap\\\"\\n"
+  "type: COLLISION_OBJECT_TYPE_STATIC\\n"
+  "mass: 0.0\\n"
+  "friction: 0.1\\n"
+  "restitution: 0.5\\n"
+  "group: \\\"default\\\"\\n"
+  "mask: \\\"player\\\"\\n"
+  "mask: \\\"projectile\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+}

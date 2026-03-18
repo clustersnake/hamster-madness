@@ -1,0 +1,85 @@
+-- projectile.script
+-- Bola de hamster con distancia máxima de recorrido
+
+go.property("speed", 400)
+go.property("max_distance", 500)  -- Distancia máxima en píxeles
+
+function init(self)
+	self.direction = vmath.vector3(0, 0, 0)
+	self.is_moving = false
+	self.distance_traveled = 0
+
+	-- Cooldown para evitar rebotes múltiples en esquinas
+	self.bounce_cooldown = 0
+	self.cooldown_time = 0.05
+end
+
+function update(self, dt)
+	-- Reducir cooldown
+	if self.bounce_cooldown > 0 then
+		self.bounce_cooldown = self.bounce_cooldown - dt
+	end
+
+	if self.is_moving then
+		-- Calcular movimiento de este frame
+		local movement_distance = self.speed * dt
+		local movement = self.direction * movement_distance
+
+		-- Actualizar posición
+		local current_pos = go.get_position()
+		go.set_position(current_pos + movement)
+
+		-- Acumular distancia recorrida
+		self.distance_traveled = self.distance_traveled + movement_distance
+
+		-- Verificar si alcanzó la distancia máxima
+		if self.distance_traveled >= self.max_distance then
+			self.is_moving = false
+			print("Proyectil detenido - Distancia máxima alcanzada: " .. math.floor(self.distance_traveled) .. "px")
+		end
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	-- Mensaje para disparar el proyectil
+	if message_id == hash("fire") then
+		self.direction = vmath.normalize(message.direction)
+		self.is_moving = true
+		self.distance_traveled = 0
+		self.bounce_cooldown = 0
+		print("Proyectil disparado! Distancia máx: " .. self.max_distance .. "px")
+	end
+
+	-- Colisión detectada
+	if message_id == hash("contact_point_response") then
+		-- Recogida por el jugador (siempre que lo toque)
+		if message.group == hash("player") then
+			print("¡Proyectil recogido por el jugador!")
+			msg.post(message.other_id, "projectile_picked_up")
+			go.delete()
+			return
+		end
+
+		-- Rebote contra paredes (solo si está en movimiento)
+		if message.group == hash("default") then
+			if self.is_moving and self.bounce_cooldown <= 0 then
+				local normal = message.normal
+				local dot = vmath.dot(self.direction, normal)
+				self.direction = self.direction - 2 * dot * normal
+				self.direction = vmath.normalize(self.direction)
+
+				local correction = normal * message.distance
+				local current_pos = go.get_position()
+				go.set_position(current_pos + correction)
+
+				self.bounce_cooldown = self.cooldown_time
+				print("Rebote! Distancia restante: " .. math.floor(self.max_distance - self.distance_traveled) .. "px")
+			end
+		end
+	end
+
+	-- Mensaje para destruir el proyectil (usado por otros sistemas)
+	if message_id == hash("pickup") then
+		go.delete()
+	end
+end

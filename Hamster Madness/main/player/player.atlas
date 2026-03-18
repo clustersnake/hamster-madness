@@ -1,4 +1,10 @@
 images {
   image: "/main/player/sprites/hamster.png"
 }
+images {
+  image: "/main/player/sprites/player.png"
+}
+images {
+  image: "/main/projectile/sprites/ball_large.png"
+}
 extrude_borders: 2
