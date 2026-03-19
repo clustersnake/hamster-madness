@@ -92,3 +92,325 @@ El segundo hámster inicia una **Misión de Rescate**.
 * **Ventana Deslizante:** El S.C.S. solo puede "iluminar" $N$ habitaciones. Al abrir una nueva, la más antigua vuelve a la oscuridad (corrupción).
 * **Cajas de Datos:** La energía se usa para "instalar" los módulos de jefe y abrir cofres de Código Fuente (moneda para la base permanente).
 
+1. Evitar Monotonía - Rotación Forzada ✅
+text
+┌─────────────────────────────────────────────────────────────────┐
+│              ANTI-MONOTONÍA                                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  PROBLEMA EN OTROS JUEGOS:                                      │
+│  • Jugador encuentra su "main" favorito                        │
+│  • Ignora otros personajes                                      │
+│  • Experiencia repetitiva                                       │
+│                                                                 │
+│  TU SOLUCIÓN:                                                   │
+│  • Muerte = cambio OBLIGATORIO de personaje                    │
+│  • Para recuperar tu favorito, debes jugar con otro           │
+│  • Fuerza al jugador a dominar todos los estilos              │
+│  • Cada run se siente diferente                                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+2. Cascada de Muertes - Mi Recomendación: Opción C
+text
+┌─────────────────────────────────────────────────────────────────┐
+│         OPCIÓN C: PÉRDIDA CON RECUPERACIÓN ESPECIAL            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ESCENARIO:                                                    │
+│  • Speedy cae en Sala C                                        │
+│  • Tank va a rescatarlo pero TAMBIÉN muere en Sala C          │
+│                                                                 │
+│  RESULTADO:                                                     │
+│  • Speedy se PIERDE (desaparece)                              │
+│  • Tank queda como caído (rescatable)                         │
+│  • La bola queda donde Tank murió                             │
+│                                                                 │
+│  RECUPERACIÓN DE SPEEDY:                                       │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ 🌀 PORTAL ESPECIAL / RUTA DE RESCATE                   │   │
+│  │                                                         │   │
+│  │ Costo: Sacrificar X ranuras de energía                │   │
+│  │ Desafío: Arena especial o mini-boss                   │   │
+│  │ Recompensa: Recuperar personaje perdido               │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  VENTAJAS:                                                      │
+│  ✅ Penaliza cascada de muertes (pierdes un personaje)        │
+│  ✅ No es permanente (puedes recuperarlo)                     │
+│  ✅ Tiene un costo estratégico (ranuras)                      │
+│  ✅ Añade contenido opcional (rutas especiales)               │
+│  ✅ Decisión táctica: ¿Vale la pena recuperarlo?              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+3. Sistema de Ranuras de Energía
+text
+┌─────────────────────────────────────────────────────────────────┐
+│              SISTEMA DE PROGRESIÓN POR RANURAS                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  TIPOS DE HABILIDADES:                                         │
+│                                                                 │
+│  🔷 HABILIDAD PROPIA (única del personaje)                     │
+│  🔶 HABILIDAD DE JEFE (compartida por todos)                   │
+│                                                                 │
+│  EJEMPLO UI - TANK:                                            │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ 🔷 Resistencia  [⚡][⚡][ ][ ]  (2/4 ranuras abiertas)   │   │
+│  │ 🔶 Parry        [⚡][ ][ ][ ]  (1/4 ranuras abiertas)    │   │
+│  │ 🔶 Hilo         [ ][ ][ ][ ]  (0/4 - bloqueada aún)     │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  EJEMPLO UI - LUCKY:                                           │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ 🔷 Criticals    [ ][ ][ ][ ]  (0/4 - sin energía)       │   │
+│  │ 🔶 Parry        [⚡][⚡][ ][ ] (2/4 - más que Tank!)     │   │
+│  │ 🔶 Hilo         [ ][ ][ ][ ]  (0/4)                      │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  [⚡] = Ranura abierta/energizada                              │
+│  [ ] = Ranura vacía (esperando energía)                       │
+│  [🔒] = Ranura bloqueada (requiere desbloquear jefe)          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Flujo de Energía
+text
+┌─────────────────────────────────────────────────────────────────┐
+│              CICLO DE ENERGÍA                                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  1. OBTENCIÓN:                                                 │
+│     Enemigo muere → suelta energía                             │
+│                                                                 │
+│  2. DISTRIBUCIÓN (decisión del jugador):                       │
+│     ┌─────────────────────────────────────┐                    │
+│     │ Tienes 3 energías. ¿Dónde asignar?  │                    │
+│     │                                      │                    │
+│     │ > Resistencia  [⚡][⚡][+][ ]        │                    │
+│     │   Parry        [⚡][+][+][ ]        │                    │
+│     │                                      │                    │
+│     │ [Confirmar distribución]            │                    │
+│     └─────────────────────────────────────┘                    │
+│                                                                 │
+│  3. ACTIVACIÓN:                                                 │
+│     Ranura energizada → habilidad mejora                       │
+│                                                                 │
+│  4. RECARGA (automática con el tiempo):                        │
+│     • PASIVAS (Criticals): se activan solas                    │
+│     • ACTIVAS (Parry): cooldown después de usar               │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Habilidades de Jefe (Ejemplos)
+text
+┌─────────────────────────────────────────────────────────────────┐
+│              JEFES Y SUS RECOMPENSAS                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  🐢 TORTUGA → PARRY                                            │
+│  • Nivel 1: Refleja proyectiles enemigos (10% prob)           │
+│  • Nivel 2: 25% probabilidad                                   │
+│  • Nivel 3: 40% probabilidad                                   │
+│  • Nivel 4: 60% + knockback al enemigo                        │
+│                                                                 │
+│  🦔 PUERCO ESPÍN → BOLA DENTADA                               │
+│  • Nivel 1: Proyectil hace +25% daño                          │
+│  • Nivel 2: +50% daño                                          │
+│  • Nivel 3: +75% daño + atraviesa 1 enemigo                  │
+│  • Nivel 4: +100% daño + atraviesa 2 enemigos                │
+│                                                                 │
+│  🕷️ ARAÑA → HILO DE RETORNO                                   │
+│  • Nivel 1: Proyectil regresa lento (como magnetismo)         │
+│  • Nivel 2: Regresa más rápido                                │
+│  • Nivel 3: Regresa al instante con [E]                       │
+│  • Nivel 4: Regresa automático + arrastra enemigos pequeños   │
+│                                                                 │
+│  🦅 ÁGUILA → DISPARO AÉREO                                     │
+│  • Nivel 1: Puede disparar mientras salta                     │
+│  • Nivel 2: Doble salto                                        │
+│  • Nivel 3: Planeo corto                                      │
+│  • Nivel 4: Dash aéreo                                        │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Sacrificio de Ranuras (Rescate Especial)
+text
+┌─────────────────────────────────────────────────────────────────┐
+│              PORTAL DE RESCATE                                  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  Aparece después de perder un personaje permanentemente        │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │ 🌀 Portal detectado - Rescate disponible                │   │
+│  │                                                         │   │
+│  │ Personaje perdido: Speedy                              │   │
+│  │                                                         │   │
+│  │ Costo: Sacrificar 3 ranuras energizadas               │   │
+│  │                                                         │   │
+│  │ Ranuras actuales:                                      │   │
+│  │ • Resistencia [⚡][⚡][ ][ ] (perderías 2)             │   │
+│  │ • Parry [⚡][ ][ ][ ] (perderías 1)                   │   │
+│  │                                                         │   │
+│  │ [Aceptar] [Rechazar]                                   │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                                                                 │
+│  Si aceptas → Mini-boss o desafío especial                    │
+│  Si ganas → Recuperas el personaje perdido                    │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+
+Diseño Final: Misión de Rescate
+text
+┌─────────────────────────────────────────────────────────────────┐
+│              FLUJO COMPLETO DE MISIÓN DE RESCATE                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ══════════════════════════════════════════════════════════    │
+│  OLEADAS NORMALES                                              │
+│  ══════════════════════════════════════════════════════════    │
+│  🐹 P1 + 🔵 Bola → Oleada 1, 2, 3...                          │
+│           │                                                     │
+│           │ [P1 MUERE]                                         │
+│           ▼                                                     │
+│  ══════════════════════════════════════════════════════════    │
+│  TRANSICIÓN                                                    │
+│  ══════════════════════════════════════════════════════════    │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │         🎬 STAGE ESPECIAL                              │   │
+│  │         MISIÓN DE RESCATE                               │   │
+│  │                                                         │   │
+│  │    (fade dramático, música cambia?)                    │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│           │                                                     │
+│           ▼                                                     │
+│  ══════════════════════════════════════════════════════════    │
+│  PREPARACIÓN (P2 estático)                                     │
+│  ══════════════════════════════════════════════════════════    │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  👻👻     💀P1      👻👻                               │   │
+│  │       👻   ⚪bola   👻                                  │   │
+│  │  👻                    👻                               │   │
+│  │            🐹P2                                         │   │
+│  │          (estático)                                     │   │
+│  │                                                         │   │
+│  │          ⏱️ 3...                                       │   │
+│  │          ⏱️ 2...                                       │   │
+│  │          ⏱️ 1...                                       │   │
+│  │          🚀 ¡ADELANTE!                                 │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│           │                                                     │
+│           ▼                                                     │
+│  ══════════════════════════════════════════════════════════    │
+│  OLEADAS DE RESCATE (3 fijas, más enemigos)                   │
+│  ══════════════════════════════════════════════════════════    │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  P2 puede moverse (SIN bola)                           │   │
+│  │                                                         │   │
+│  │  Objetivos:                                            │   │
+│  │  □ Recoger la bola                                     │   │
+│  │  □ Sobrevivir oleada de rescate 1/3                   │   │
+│  │  □ Sobrevivir oleada de rescate 2/3                   │   │
+│  │  □ Sobrevivir oleada de rescate 3/3                   │   │
+│  │  □ Rescatar a P1 (Rueda de Hamster 🎡)                │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│           │                                                     │
+│           │ [3 OLEADAS COMPLETADAS]                            │
+│           ▼                                                     │
+│  ══════════════════════════════════════════════════════════    │
+│  RESCATE (Momento cómico/recompensa)                          │
+│  ══════════════════════════════════════════════════════════    │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                                                         │   │
+│  │    P2 llega a P1, presiona [E]                        │   │
+│  │                                                         │   │
+│  │         🐹🔄  ← "Generando energía..."                 │   │
+│  │         [████████░░] 80%                               │   │
+│  │                                                         │   │
+│  │    💀P1 → ✨ → 🐹 (rescatado)                         │   │
+│  │                                                         │   │
+│  │    Animación cómica: hamster corriendo en ruedita     │   │
+│  │    Alivio de tensión = chiste visual                  │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│           │                                                     │
+│           ▼                                                     │
+│  ══════════════════════════════════════════════════════════    │
+│  MENSAJE DE ÉXITO                                              │
+│  ══════════════════════════════════════════════════════════    │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │          ✅ ¡RESCATE EXITOSO!                         │   │
+│  │                                                         │   │
+│  │     Oleadas normales regresan...                       │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│           │                                                     │
+│           ▼                                                     │
+│  ══════════════════════════════════════════════════════════    │
+│  OLEADAS NORMALES (continúan)                                  │
+│  ══════════════════════════════════════════════════════════    │
+│  🐹 P2 (activo) + 🐹 P1 (respaldo)                            │
+│  Oleada N+1, N+2...                                            │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Arquitectura de Managers
+text
+┌─────────────────────────────────────────────────────────────────┐
+│              MANAGERS NECESARIOS                                │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  game_manager.script                                           │
+│  ├── Estado global del juego                                   │
+│  ├── lives = { "player1", "player2" }                         │
+│  ├── current_player = 1                                        │
+│  ├── game_mode = "normal" | "rescue"                          │
+│  ├── Spawn del personaje                                       │
+│  └── Mensajes: player_died, rescue_complete                   │
+│                                                                 │
+│  wave_manager.script                                           │
+│  ├── current_wave = 1                                          │
+│  ├── enemies_remaining = 0                                     │
+│  ├── is_rescue_mode = false                                    │
+│  ├── rescue_waves_completed = 0                                │
+│  ├── wave_data (normal y rescate)                             │
+│  └── Mensajes: enemy_died, wave_complete                      │
+│                                                                 │
+│  ui_manager.script (futuro)                                    │
+│  ├── Mostrar mensajes                                          │
+│  ├── Countdown                                                 │
+│  ├── HUD (vidas, oleada, energía)                             │
+│  └── Animaciones de transición                                │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Plan de Implementación (Actualizado)
+text
+┌─────────────────────────────────────────────────────────────────┐
+│              FASES DE IMPLEMENTACIÓN                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  FASE 1: Managers Base                                         │
+│  ├── 1.1 Crear game_manager.go/script                         │
+│  ├── 1.2 Crear wave_manager.go/script                         │
+│  ├── 1.3 Mover spawn de chaser al wave_manager                │
+│  └── 1.4 Probar oleadas normales básicas                      │
+│                                                                 │
+│  FASE 2: Sistema de Vidas                                      │
+│  ├── 2.1 Implementar 2 vidas en game_manager                  │
+│  ├── 2.2 Crear fallen_player.go (marcador de P1 caído)        │
+│  ├── 2.3 Modificar player.script (notificar muerte)           │
+│  └── 2.4 Probar: P1 muere → P2 respawnea                      │
+│                                                                 │
+│  FASE 3: Misión de Rescate                                     │
+│  ├── 3.1 Implementar game_mode "rescue"                       │
+│  ├── 3.2 Oleadas de rescate (3 fijas, x2 enemigos)           │
+│  ├── 3.3 Countdown antes de comenzar (3,2,1,¡Adelante!)      │
+│  ├── 3.4 Mecánica de rescate (Rueda de Hamster)              │
+│  └── 3.5 Transición de vuelta a modo normal                   │
+│                                                                 │
+│  FASE 4: UI Básica                                             │
+│  ├── 4.1 Crear hud.gui/script                                 │
+│  ├── 4.2 Mensajes en pantalla (rescue, success, etc.)        │
+│  ├── 4.3 Contador de oleada                                   │
+│  └── 4.4 Indicador de vidas                                   │
+│                                                                 │
+│  FASE 5: Sistema de Drops (puede ser después)                 │
+│  ├── 5.1 Crear energy_drop.go/script                          │
+│  ├── 5.2 Enemigos sueltan drops al morir                      │
+│  └── 5.3 Contador de energía                                  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
