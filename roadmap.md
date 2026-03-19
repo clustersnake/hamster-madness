@@ -354,7 +354,7 @@ text
 - 🟢 **Nice-to-have:** Puede esperar o cortarse
 
 
-📁 soul_relay/
+📁 Hamster Madness/
 │
 ├── 📄 game.project
 ├── 📄 ROADMAP.md
