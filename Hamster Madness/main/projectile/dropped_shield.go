@@ -1,16 +1,11 @@
 components {
-  id: "projectile"
-  component: "/main/projectile/projectile.script"
-  properties {
-    id: "speed"
-    value: "400.0"
-    type: PROPERTY_TYPE_NUMBER
-  }
+  id: "dropped_shield"
+  component: "/main/projectile/dropped_shield.script"
 }
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"ball_small\"\n"
+  data: "default_animation: \"ball_small_2\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -21,19 +16,16 @@ embedded_components {
 embedded_components {
   id: "collisionobject"
   type: "collisionobject"
-  data: "type: COLLISION_OBJECT_TYPE_KINEMATIC\n"
+  data: "type: COLLISION_OBJECT_TYPE_TRIGGER\n"
   "mass: 0.0\n"
   "friction: 0.1\n"
   "restitution: 0.5\n"
   "group: \"projectile\"\n"
-  "mask: \"default\"\n"
   "mask: \"player\"\n"
-  "mask: \"enemy\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
   "    position {\n"
-  "      z: 1.0\n"
   "    }\n"
   "    rotation {\n"
   "    }\n"
@@ -42,11 +34,5 @@ embedded_components {
   "  }\n"
   "  data: 13.0\n"
   "}\n"
-  ""
-}
-embedded_components {
-  id: "dropped_shield_factory"
-  type: "factory"
-  data: "prototype: \"/main/projectile/dropped_shield.go\"\n"
   ""
 }

@@ -1,10 +1,10 @@
--- projectile.script
--- Disparo activo - rebota y MATA enemigos
+-- active_shield.script
+-- Escudo en movimiento (knockback) - rebota pero NO mata
 
 go.property("speed", 400)
-go.property("max_distance", 500)
+go.property("max_distance", 200)
 
--- Declarar funciones locales al inicio
+-- Declarar función local al inicio
 local become_dropped_shield
 
 function init(self)
@@ -15,7 +15,7 @@ function init(self)
 	self.bounce_cooldown = 0
 	self.cooldown_time = 0.05
 
-	print("Projectile creado")
+	print("Active shield creado")
 end
 
 function update(self, dt)
@@ -33,14 +33,14 @@ function update(self, dt)
 		self.distance_traveled = self.distance_traveled + movement_distance
 
 		if self.distance_traveled >= self.max_distance then
-			become_dropped_shield(self)  -- Llamada sin self:
+			become_dropped_shield(self)  -- Sin self:
 		end
 	end
 end
 
 -- Definir la función local
 become_dropped_shield = function(self)
-	print("Projectile → Dropped shield")
+	print("Active shield → Dropped shield")
 
 	local pos = go.get_position()
 	factory.create("#dropped_shield_factory", pos)
@@ -54,7 +54,7 @@ function on_message(self, message_id, message, sender)
 		self.is_moving = true
 		self.distance_traveled = 0
 		self.bounce_cooldown = 0
-		print("Projectile disparado! Distancia máx: " .. self.max_distance .. "px")
+		print("Active shield disparado! Distancia máx: " .. self.max_distance .. "px")
 	end
 
 	if message_id == hash("contact_point_response") then
@@ -70,13 +70,8 @@ function on_message(self, message_id, message, sender)
 				go.set_position(current_pos + correction)
 
 				self.bounce_cooldown = self.cooldown_time
-				print("Projectile rebote!")
+				print("Active shield rebote!")
 			end
-		end
-
-		if message.group == hash("enemy") then
-			print("Projectile impactó enemigo!")
-			msg.post(message.other_id, "take_damage")
 		end
 	end
 end

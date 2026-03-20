@@ -1,16 +1,11 @@
 components {
-  id: "projectile"
-  component: "/main/projectile/projectile.script"
-  properties {
-    id: "speed"
-    value: "400.0"
-    type: PROPERTY_TYPE_NUMBER
-  }
+  id: "active_shield"
+  component: "/main/projectile/active_shield.script"
 }
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"ball_small\"\n"
+  data: "default_animation: \"ball_small_3\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -27,13 +22,10 @@ embedded_components {
   "restitution: 0.5\n"
   "group: \"projectile\"\n"
   "mask: \"default\"\n"
-  "mask: \"player\"\n"
-  "mask: \"enemy\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
   "    position {\n"
-  "      z: 1.0\n"
   "    }\n"
   "    rotation {\n"
   "    }\n"
