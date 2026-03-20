@@ -1,0 +1,301 @@
+-- wave_manager.script
+-- Controla el spawn de enemigos y las oleadas
+
+local room_data = require "main.data.room_data"
+
+-- Forward declarations
+local start_next_wave
+local spawn_enemy
+local on_wave_complete
+local on_rescue_waves_complete
+local start_rescue_mode
+local end_rescue_mode
+local get_valid_spawn_points
+local get_player_position
+
+-- Configuración de oleadas
+local WAVE_CONFIG = {
+	normal = {
+		{enemies = 3, spawn_delay = 0.5},
+		{enemies = 5, spawn_delay = 0.4},
+		{enemies = 7, spawn_delay = 0.3},
+		{enemies = 10, spawn_delay = 0.25},
+	},
+	rescue = {
+		{enemies = 6, spawn_delay = 0.4},
+		{enemies = 8, spawn_delay = 0.3},
+		{enemies = 10, spawn_delay = 0.25},
+	}
+}
+
+function init(self)
+	self.current_wave = 0
+	self.enemies_alive = 0
+	self.enemies_to_spawn = 0
+	self.spawn_timer = 0
+	self.spawn_delay = 0.5
+	self.spawned_enemies = {}
+	-- Referencia al player activo
+	self.active_player_id = go.get_id("/player")  -- Player inicial
+
+	-- Cola de puntos a usar para spawn escalonado
+	self.spawn_queue = {}
+
+	-- Modo rescate
+	self.is_rescue_mode = false
+	self.rescue_wave = 0
+
+	-- Cargar datos de la room actual
+	self.room = room_data.current
+	self.min_distance = room_data.config.min_distance_from_player
+
+	print("[WaveManager] Inicializado")
+	print("[WaveManager] Room: " .. self.room.name)
+	print("[WaveManager] Spawn points disponibles: " .. #self.room.spawn_points)
+
+	-- Comenzar primera oleada
+	timer.delay(2.0, false, function()
+		start_next_wave(self)
+	end)
+end
+
+function update(self, dt)
+	-- Spawn escalonado desde la cola
+	if #self.spawn_queue > 0 then
+		self.spawn_timer = self.spawn_timer - dt
+
+		if self.spawn_timer <= 0 then
+			local point = table.remove(self.spawn_queue, 1)
+			spawn_enemy(self, point)
+			self.spawn_timer = self.spawn_delay
+		end
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("enemy_died") then
+		self.enemies_alive = self.enemies_alive - 1
+
+		-- Remover de la lista de enemigos activos
+		for i, enemy_id in ipairs(self.spawned_enemies) do
+			if enemy_id == sender then
+				table.remove(self.spawned_enemies, i)
+				break
+			end
+		end
+
+		print("[WaveManager] Enemigo eliminado. Restantes: " .. self.enemies_alive)
+
+		if self.enemies_alive <= 0 and #self.spawn_queue <= 0 then
+			on_wave_complete(self)
+		end
+		return
+	end
+
+	-- Pausar todos los enemigos
+	if message_id == hash("pause_enemies") then
+		print("[WaveManager] Pausando " .. #self.spawned_enemies .. " enemigos")
+		for _, enemy_id in ipairs(self.spawned_enemies) do
+			if go.exists(enemy_id) then
+				msg.post(enemy_id, "pause")
+			end
+		end
+		return
+	end
+
+	-- Reanudar todos los enemigos
+	if message_id == hash("resume_enemies") then
+		print("[WaveManager] Reanudando enemigos")
+		for _, enemy_id in ipairs(self.spawned_enemies) do
+			if go.exists(enemy_id) then
+				msg.post(enemy_id, "resume")
+			end
+		end
+		return
+	end
+
+	-- Un chaser pregunta quién es el player
+	if message_id == hash("get_player_target") then
+		if self.active_player_id then
+			msg.post(message.requester, "set_target", { player_id = self.active_player_id })
+		end
+		return
+	end
+
+	-- El game_manager notifica que hay un nuevo player
+	if message_id == hash("update_player_target") then
+		self.active_player_id = message.player_id
+		print("[WaveManager] Player activo actualizado: " .. tostring(self.active_player_id))
+
+		-- Notificar a todos los enemigos activos
+		for _, enemy_id in ipairs(self.spawned_enemies) do
+			if go.exists(enemy_id) then
+				msg.post(enemy_id, "set_target", { player_id = self.active_player_id })
+			end
+		end
+		return
+	end
+end
+
+-- Obtiene la posición actual del jugador
+get_player_position = function()
+	local success, pos = pcall(function()
+		return go.get_position("/player")
+	end)
+
+	if success then
+		return pos
+	else
+		-- Fallback si el player no existe
+		return vmath.vector3(room_data.current.player_spawn.x, room_data.current.player_spawn.y, 0)
+	end
+end
+
+-- Filtra spawn points válidos (lejos del jugador)
+get_valid_spawn_points = function(self, count)
+	local player_pos = get_player_position()
+	local valid_points = {}
+
+	-- Filtrar por distancia del jugador
+	for _, point in ipairs(self.room.spawn_points) do
+		local point_vec = vmath.vector3(point.x, point.y, 0)
+		local distance = vmath.length(point_vec - player_pos)
+
+		if distance >= self.min_distance then
+			table.insert(valid_points, point)
+		end
+	end
+
+	print("[WaveManager] Puntos válidos (lejos del jugador): " .. #valid_points .. "/" .. #self.room.spawn_points)
+
+	-- Mezclar aleatoriamente (Fisher-Yates shuffle)
+	for i = #valid_points, 2, -1 do
+		local j = math.random(i)
+		valid_points[i], valid_points[j] = valid_points[j], valid_points[i]
+	end
+
+	-- Devolver solo los que necesitamos
+	local selected = {}
+	for i = 1, math.min(count, #valid_points) do
+		table.insert(selected, valid_points[i])
+	end
+
+	return selected
+end
+
+start_next_wave = function(self)
+	local config
+	local wave_name
+
+	if self.is_rescue_mode then
+		self.rescue_wave = self.rescue_wave + 1
+
+		if self.rescue_wave > #WAVE_CONFIG.rescue then
+			on_rescue_waves_complete(self)
+			return
+		end
+
+		config = WAVE_CONFIG.rescue[self.rescue_wave]
+		wave_name = "RESCATE " .. self.rescue_wave .. "/3"
+	else
+		self.current_wave = self.current_wave + 1
+
+		local wave_index = math.min(self.current_wave, #WAVE_CONFIG.normal)
+		config = WAVE_CONFIG.normal[wave_index]
+
+		-- Escalar si superamos oleadas definidas
+		if self.current_wave > #WAVE_CONFIG.normal then
+			local extra = self.current_wave - #WAVE_CONFIG.normal
+			config = {
+				enemies = config.enemies + (extra * 2),
+				spawn_delay = math.max(0.15, config.spawn_delay - (extra * 0.05))
+			}
+		end
+
+		wave_name = "OLEADA " .. self.current_wave
+	end
+
+	print("[WaveManager] ═══════════════════════════")
+	print("[WaveManager] " .. wave_name)
+	print("[WaveManager] Enemigos: " .. config.enemies)
+	print("[WaveManager] ═══════════════════════════")
+
+	self.spawn_delay = config.spawn_delay
+
+	-- Obtener puntos válidos
+	local points = get_valid_spawn_points(self, config.enemies)
+
+	-- Si necesitamos más enemigos que puntos, reutilizar puntos
+	local enemies_remaining = config.enemies
+	while enemies_remaining > 0 do
+		for _, point in ipairs(points) do
+			if enemies_remaining <= 0 then break end
+			table.insert(self.spawn_queue, point)
+			enemies_remaining = enemies_remaining - 1
+		end
+	end
+
+	print("[WaveManager] Enemigos en cola: " .. #self.spawn_queue)
+	self.spawn_timer = 0.3  -- Pequeño delay inicial
+end
+
+spawn_enemy = function(self, point)
+	local pos = vmath.vector3(point.x, point.y, 0)
+	local enemy_id = factory.create("#chaser_factory", pos)
+
+	if enemy_id then
+		self.enemies_alive = self.enemies_alive + 1
+		table.insert(self.spawned_enemies, enemy_id)
+		print("[WaveManager] Enemigo spawneado: " .. tostring(enemy_id))
+	else
+		print("[WaveManager] ERROR: No se pudo crear enemigo")
+	end
+end
+
+on_wave_complete = function(self)
+	print("[WaveManager] ¡Oleada completada!")
+
+	timer.delay(3.0, false, function()
+		start_next_wave(self)
+	end)
+end
+
+start_rescue_mode = function(self, fallen_pos)
+	print("[WaveManager] ═══════════════════════════")
+	print("[WaveManager]   MODO RESCATE INICIADO    ")
+	print("[WaveManager] ═══════════════════════════")
+
+	self.is_rescue_mode = true
+	self.rescue_wave = 0
+	self.spawn_queue = {}
+
+	print("[WaveManager] 3...")
+	timer.delay(1.0, false, function()
+		print("[WaveManager] 2...")
+	end)
+	timer.delay(2.0, false, function()
+		print("[WaveManager] 1...")
+	end)
+	timer.delay(3.0, false, function()
+		print("[WaveManager] ¡ADELANTE!")
+		start_next_wave(self)
+	end)
+end
+
+end_rescue_mode = function(self)
+	print("[WaveManager] Modo rescate terminado")
+	self.is_rescue_mode = false
+	self.rescue_wave = 0
+
+	timer.delay(2.0, false, function()
+		start_next_wave(self)
+	end)
+end
+
+on_rescue_waves_complete = function(self)
+	print("[WaveManager] ═══════════════════════════")
+	print("[WaveManager] ¡OLEADAS DE RESCATE COMPLETADAS!")
+	print("[WaveManager] ═══════════════════════════")
+
+	msg.post("/game_manager", "rescue_available")
+end
