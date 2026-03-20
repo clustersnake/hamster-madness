@@ -11,6 +11,14 @@ instances {
   id: "camera"
   prototype: "/orthographic/camera.go"
 }
+instances {
+  id: "game_manager"
+  prototype: "/main/managers/game_manager.go"
+}
+instances {
+  id: "wave_manager"
+  prototype: "/main/managers/wave_manager.go"
+}
 scale_along_z: 0
 embedded_instances {
   id: "room"
