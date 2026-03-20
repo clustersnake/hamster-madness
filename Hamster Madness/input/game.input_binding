@@ -20,7 +20,7 @@ key_trigger {
 }
 key_trigger {
   input: KEY_E
-  action: "interact"
+  action: "rescue"
 }
 key_trigger {
   input: KEY_TAB
