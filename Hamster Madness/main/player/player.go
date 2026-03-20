@@ -5,7 +5,7 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"player\"\n"
+  data: "default_animation: \"walk_down\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -23,6 +23,8 @@ embedded_components {
   "group: \"player\"\n"
   "mask: \"default\"\n"
   "mask: \"projectile\"\n"
+  "mask: \"enemy\"\n"
+  "mask: \"fallen\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
@@ -56,4 +58,10 @@ embedded_components {
   position {
     z: 0.1
   }
+}
+embedded_components {
+  id: "active_shield_factory"
+  type: "factory"
+  data: "prototype: \"/main/projectile/active_shield.go\"\n"
+  ""
 }
