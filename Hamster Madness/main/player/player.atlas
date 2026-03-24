@@ -1,51 +1,27 @@
 images {
   image: "/main/projectile/sprites/ball_large.png"
 }
-images {
-  image: "/main/player/sprites/player_1.png"
-}
-images {
-  image: "/main/player/sprites/player.png"
-}
-images {
-  image: "/main/player/sprites/player_2.png"
-}
-images {
-  image: "/main/player/sprites/player_3.png"
-}
-images {
-  image: "/main/player/sprites/player_4.png"
-}
-images {
-  image: "/main/player/sprites/player_5.png"
-}
-images {
-  image: "/main/player/sprites/player_6.png"
-}
-images {
-  image: "/main/player/sprites/side_1.png"
-}
 animations {
   id: "walk_down"
   images {
-    image: "/main/player/sprites/player_2.png"
+    image: "/main/player/sprites/walk_0.png"
   }
   images {
-    image: "/main/player/sprites/player_3.png"
+    image: "/main/player/sprites/walk_2.png"
+  }
+  images {
+    image: "/main/player/sprites/walk_5.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 2
+  fps: 3
 }
 animations {
   id: "idle_down"
   images {
-    image: "/main/player/sprites/player_4.png"
+    image: "/main/player/sprites/idle_1.png"
   }
   images {
-    image: "/main/player/sprites/player_5.png"
-  }
-  images {
-    image: "/main/player/sprites/player_6.png"
+    image: "/main/player/sprites/idle_2.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 3
@@ -63,5 +39,58 @@ animations {
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 4
+}
+animations {
+  id: "walk_right"
+  images {
+    image: "/main/player/sprites/walk_right_1.png"
+  }
+  images {
+    image: "/main/player/sprites/walk_right_2.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 3
+}
+animations {
+  id: "idle_right"
+  images {
+    image: "/main/player/sprites/idle_right_1.png"
+  }
+  images {
+    image: "/main/player/sprites/idle_right_2.png"
+  }
+  images {
+    image: "/main/player/sprites/idle_right_3.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 3
+}
+animations {
+  id: "idle_up"
+  images {
+    image: "/main/player/sprites/idle_up_1.png"
+  }
+  images {
+    image: "/main/player/sprites/idle_up_2.png"
+  }
+  images {
+    image: "/main/player/sprites/idle_up_3.png"
+  }
+  images {
+    image: "/main/player/sprites/idle_up_4.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 3
+}
+animations {
+  id: "walk_up"
+  images {
+    image: "/main/player/sprites/walk_up_1.png"
+  }
+  images {
+    image: "/main/player/sprites/walk_up_2.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 3
 }
 extrude_borders: 2
