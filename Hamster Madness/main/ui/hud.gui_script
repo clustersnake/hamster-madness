@@ -1,0 +1,88 @@
+-- hud.gui_script
+-- Maneja la interfaz del usuario durante el juego
+
+local update_lives_display
+local update_wave_display
+local update_mode_display
+local show_temporary_message
+
+function init(self)
+	self.lives_nodes = {}
+	self.current_lives = 2
+	self.current_wave = 1
+	self.game_mode = "NORMAL"
+
+	-- Obtener referencias a los nodos
+	self.node_lives_text = gui.get_node("lives")
+	self.node_wave_text = gui.get_node("wave")
+	self.node_mode_text = gui.get_node("mode")
+	self.node_message = gui.get_node("message")
+	self.node_message_bg = gui.get_node("message_bg")
+
+	gui.set_text(self.node_mode_text, "NORMAL")
+
+	print("[HUD] Inicializado")
+
+	-- Ocultar mensaje al inicio
+	gui.set_enabled(self.node_message, false)
+	gui.set_enabled(self.node_message_bg, false)
+
+	print("[HUD] Inicializado")
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("update_lives") then
+		update_lives_display(self, message.lives)
+
+	elseif message_id == hash("update_wave") then
+		update_wave_display(self, message.wave)
+
+	elseif message_id == hash("update_mode") then
+		update_mode_display(self, message.mode)
+
+	elseif message_id == hash("show_message") then
+		show_temporary_message(self, message.text, message.duration or 2.0)
+	end
+end
+
+update_lives_display = function (self, lives)
+	self.current_lives = lives
+	-- Usar texto simple en lugar de emojis
+	gui.set_text(self.node_lives_text, "VIDAS: " .. lives)
+end
+
+update_wave_display = function (self, wave)
+	self.current_wave = wave
+	gui.set_text(self.node_wave_text, "OLEADA " .. wave)
+end
+
+update_mode_display = function (self, mode)
+	self.game_mode = mode
+	if mode == "rescue" then
+		gui.set_text(self.node_mode_text, "RESCATE")
+		gui.set_color(self.node_mode_text, vmath.vector4(1, 0.5, 0, 1)) -- Naranja
+	else
+		gui.set_text(self.node_mode_text, "NORMAL")
+		gui.set_color(self.node_mode_text, vmath.vector4(1, 1, 1, 1)) -- Blanco
+	end
+end
+
+show_temporary_message = function (self, text, duration)
+	gui.set_text(self.node_message, text)
+	gui.set_enabled(self.node_message, true)
+	gui.set_enabled(self.node_message_bg, true)
+
+	-- Animación de entrada
+	gui.set_scale(self.node_message, vmath.vector3(0.8, 0.8, 1))
+	gui.animate(self.node_message, gui.PROP_SCALE, vmath.vector3(1, 1, 1), 
+	gui.EASING_OUTBACK, 0.3)
+
+	-- Ocultar después de la duración
+	timer.delay(duration, false, function()
+		gui.animate(self.node_message, gui.PROP_SCALE, vmath.vector3(0.8, 0.8, 1), 
+		gui.EASING_INBACK, 0.2, 0, function()
+			gui.set_enabled(self.node_message, false)
+			gui.set_enabled(self.node_message_bg, false)
+		end)
+	end)
+end
