@@ -35,8 +35,9 @@ function init(self)
 	self.spawn_timer = 0
 	self.spawn_delay = 0.5
 	self.spawned_enemies = {}
+
 	-- Referencia al player activo
-	self.active_player_id = go.get_id("/player")  -- Player inicial
+	self.active_player_id = go.get_id("/player")
 
 	-- Cola de puntos a usar para spawn escalonado
 	self.spawn_queue = {}
@@ -92,7 +93,6 @@ function on_message(self, message_id, message, sender)
 		return
 	end
 
-	-- Pausar todos los enemigos
 	if message_id == hash("pause_enemies") then
 		print("[WaveManager] Pausando " .. #self.spawned_enemies .. " enemigos")
 		for _, enemy_id in ipairs(self.spawned_enemies) do
@@ -103,7 +103,6 @@ function on_message(self, message_id, message, sender)
 		return
 	end
 
-	-- Reanudar todos los enemigos
 	if message_id == hash("resume_enemies") then
 		print("[WaveManager] Reanudando enemigos")
 		for _, enemy_id in ipairs(self.spawned_enemies) do
@@ -114,7 +113,6 @@ function on_message(self, message_id, message, sender)
 		return
 	end
 
-	-- Un chaser pregunta quién es el player
 	if message_id == hash("get_player_target") then
 		if self.active_player_id then
 			msg.post(message.requester, "set_target", { player_id = self.active_player_id })
@@ -122,17 +120,32 @@ function on_message(self, message_id, message, sender)
 		return
 	end
 
-	-- El game_manager notifica que hay un nuevo player
 	if message_id == hash("update_player_target") then
 		self.active_player_id = message.player_id
 		print("[WaveManager] Player activo actualizado: " .. tostring(self.active_player_id))
 
-		-- Notificar a todos los enemigos activos
 		for _, enemy_id in ipairs(self.spawned_enemies) do
 			if go.exists(enemy_id) then
 				msg.post(enemy_id, "set_target", { player_id = self.active_player_id })
 			end
 		end
+		return
+	end
+
+	if message_id == hash("start_rescue_mode") then
+		start_rescue_mode(self, message.fallen_pos)
+		return
+	end
+
+	if message_id == hash("end_rescue_mode") then
+		end_rescue_mode(self)
+		return
+	end
+
+	if message_id == hash("game_over") then
+		self.spawn_queue = {}
+		self.is_spawning = false
+		print("[WaveManager] Detenido por Game Over")
 		return
 	end
 end
@@ -146,7 +159,6 @@ get_player_position = function()
 	if success then
 		return pos
 	else
-		-- Fallback si el player no existe
 		return vmath.vector3(room_data.current.player_spawn.x, room_data.current.player_spawn.y, 0)
 	end
 end
@@ -156,7 +168,6 @@ get_valid_spawn_points = function(self, count)
 	local player_pos = get_player_position()
 	local valid_points = {}
 
-	-- Filtrar por distancia del jugador
 	for _, point in ipairs(self.room.spawn_points) do
 		local point_vec = vmath.vector3(point.x, point.y, 0)
 		local distance = vmath.length(point_vec - player_pos)
@@ -174,7 +185,6 @@ get_valid_spawn_points = function(self, count)
 		valid_points[i], valid_points[j] = valid_points[j], valid_points[i]
 	end
 
-	-- Devolver solo los que necesitamos
 	local selected = {}
 	for i = 1, math.min(count, #valid_points) do
 		table.insert(selected, valid_points[i])
@@ -203,7 +213,6 @@ start_next_wave = function(self)
 		local wave_index = math.min(self.current_wave, #WAVE_CONFIG.normal)
 		config = WAVE_CONFIG.normal[wave_index]
 
-		-- Escalar si superamos oleadas definidas
 		if self.current_wave > #WAVE_CONFIG.normal then
 			local extra = self.current_wave - #WAVE_CONFIG.normal
 			config = {
@@ -220,12 +229,15 @@ start_next_wave = function(self)
 	print("[WaveManager] Enemigos: " .. config.enemies)
 	print("[WaveManager] ═══════════════════════════")
 
+	-- Actualizar HUD (solo oleadas normales)
+	if not self.is_rescue_mode then
+		msg.post("/hud#hud", "update_wave", { wave = self.current_wave })
+	end
+
 	self.spawn_delay = config.spawn_delay
 
-	-- Obtener puntos válidos
 	local points = get_valid_spawn_points(self, config.enemies)
 
-	-- Si necesitamos más enemigos que puntos, reutilizar puntos
 	local enemies_remaining = config.enemies
 	while enemies_remaining > 0 do
 		for _, point in ipairs(points) do
@@ -236,7 +248,7 @@ start_next_wave = function(self)
 	end
 
 	print("[WaveManager] Enemigos en cola: " .. #self.spawn_queue)
-	self.spawn_timer = 0.3  -- Pequeño delay inicial
+	self.spawn_timer = 0.3
 end
 
 spawn_enemy = function(self, point)
@@ -254,32 +266,25 @@ end
 
 on_wave_complete = function(self)
 	print("[WaveManager] ¡Oleada completada!")
+	msg.post("/hud#hud", "show_message", { text = "¡OLEADA COMPLETADA!", duration = 1.5 })
 
 	timer.delay(3.0, false, function()
 		start_next_wave(self)
 	end)
 end
 
+-- SIN countdown aquí - game_manager ya lo hizo
 start_rescue_mode = function(self, fallen_pos)
 	print("[WaveManager] ═══════════════════════════")
-	print("[WaveManager]   MODO RESCATE INICIADO    ")
+	print("[WaveManager]   INICIANDO OLEADAS RESCATE")
 	print("[WaveManager] ═══════════════════════════")
 
 	self.is_rescue_mode = true
 	self.rescue_wave = 0
 	self.spawn_queue = {}
 
-	print("[WaveManager] 3...")
-	timer.delay(1.0, false, function()
-		print("[WaveManager] 2...")
-	end)
-	timer.delay(2.0, false, function()
-		print("[WaveManager] 1...")
-	end)
-	timer.delay(3.0, false, function()
-		print("[WaveManager] ¡ADELANTE!")
-		start_next_wave(self)
-	end)
+	-- Iniciar primera oleada de rescate directamente
+	start_next_wave(self)
 end
 
 end_rescue_mode = function(self)

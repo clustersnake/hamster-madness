@@ -28,166 +28,190 @@ function init(self)
 	local ball_pos = vmath.vector3(
 	room_data.current.ball_spawn.x,
 	room_data.current.ball_spawn.y,
-	0.5)
-	factory.create("#ball_factory", ball_pos)
+	0.5
+)
+factory.create("#ball_factory", ball_pos)
+print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
 
-	print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
+print("[GameManager] Inicializado")
+print("[GameManager] Vidas disponibles: " .. #self.lives)
 
-	print("[GameManager] Inicializado")
-	print("[GameManager] Vidas disponibles: " .. #self.lives)
-	print("[GameManager] Estado: " .. self.game_state)
+-- Actualizar HUD inicial
+msg.post("/hud#hud", "update_lives", { lives = #self.lives })
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("register_player") then
-		self.active_player_id = sender
-		print("[GameManager] Player registrado: " .. tostring(sender))
-		return
-	end
+if message_id == hash("register_player") then
+	self.active_player_id = sender
+	print("[GameManager] Player registrado: " .. tostring(sender))
+	return
+end
 
-	if message_id == hash("player_died") then
-		handle_player_death(self, message)
-		return
-	end
+if message_id == hash("player_died") then
+	handle_player_death(self, message)
+	return
+end
 
-	if message_id == hash("rescue_started") then
-		print("[GameManager] Rescate iniciado - mantén E para rescatar")
-		return
-	end
+if message_id == hash("rescue_started") then
+	print("[GameManager] Rescate iniciado - mantén E para rescatar")
+	return
+end
 
-	if message_id == hash("rescue_cancelled") then
-		print("[GameManager] Rescate cancelado")
-		return
-	end
+if message_id == hash("rescue_cancelled") then
+	print("[GameManager] Rescate cancelado")
+	return
+end
 
-	if message_id == hash("rescue_available") then
-		print("[GameManager] ═══════════════════════════")
-		print("[GameManager] ¡Oleadas completadas!")
-		print("[GameManager] Acércate al caído y mantén E")
-		print("[GameManager] ═══════════════════════════")
-		return
-	end
+if message_id == hash("rescue_available") then
+	print("[GameManager] ═══════════════════════════")
+	print("[GameManager] ¡Oleadas completadas!")
+	print("[GameManager] Acércate al caído y mantén E")
+	print("[GameManager] ═══════════════════════════")
+	msg.post("/hud#hud", "show_message", { text = "¡RESCATA A TU COMPAÑERO!", duration = 2.0 })
+	return
+end
 
-	if message_id == hash("rescue_complete") then
-		handle_rescue_complete(self)
-		return
-	end
+if message_id == hash("rescue_complete") then
+	handle_rescue_complete(self)
+	return
+end
 end
 
 find_farthest_spawn_point = function(self, from_position)
-	local spawn_points = room_data.current.spawn_points
-	local farthest_point = spawn_points[1]
-	local max_distance = 0
+local spawn_points = room_data.current.spawn_points
+local farthest_point = spawn_points[1]
+local max_distance = 0
 
-	for _, point in ipairs(spawn_points) do
-		local point_vec = vmath.vector3(point.x, point.y, 0)
-		local distance = vmath.length(point_vec - from_position)
+for _, point in ipairs(spawn_points) do
+	local point_vec = vmath.vector3(point.x, point.y, 0)
+	local distance = vmath.length(point_vec - from_position)
 
-		if distance > max_distance then
-			max_distance = distance
-			farthest_point = point
-		end
+	if distance > max_distance then
+		max_distance = distance
+		farthest_point = point
 	end
+end
 
-	return vmath.vector3(farthest_point.x, farthest_point.y, 0)
+return vmath.vector3(farthest_point.x, farthest_point.y, 0)
 end
 
 handle_player_death = function(self, message)
-	print("[GameManager] ¡Jugador murió!")
+print("[GameManager] ¡Jugador murió!")
 
-	local death_position = message.position
-	self.fallen_position = death_position
+local death_position = message.position
+self.fallen_position = death_position
 
-	if self.current_life_index < #self.lives then
-		self.current_life_index = self.current_life_index + 1
-		print("[GameManager] Vida " .. self.current_life_index .. "/" .. #self.lives)
+if self.current_life_index < #self.lives then
+	self.current_life_index = self.current_life_index + 1
+	print("[GameManager] Vida " .. self.current_life_index .. "/" .. #self.lives)
 
-		self.game_state = STATE.TRANSITIONING
+	self.game_state = STATE.TRANSITIONING
 
-		-- Eliminar player actual
-		if self.active_player_id then
-			go.delete(self.active_player_id)
-			self.active_player_id = nil
-		end
-
-		-- Crear fallen_player en posición de muerte
-		self.fallen_player_id = factory.create("#fallen_player_factory", death_position)
-		print("[GameManager] Fallen player creado: " .. tostring(self.fallen_player_id))
-
-		-- Pausar enemigos
-		msg.post("/wave_manager", "pause_enemies")
-
-		print("[GameManager] ═══════════════════════════")
-		print("[GameManager]   MODO RESCATE ACTIVADO    ")
-		print("[GameManager] ═══════════════════════════")
-
-		print("[GameManager] 3...")
-		timer.delay(1.0, false, function()
-			print("[GameManager] 2...")
-		end)
-		timer.delay(2.0, false, function()
-			print("[GameManager] 1...")
-		end)
-		timer.delay(3.0, false, function()
-			print("[GameManager] ¡ADELANTE!")
-
-			local spawn_pos = find_farthest_spawn_point(self, death_position)
-			self.active_player_id = factory.create("#player_factory", spawn_pos)
-			print("[GameManager] Nuevo player creado en: " .. spawn_pos.x .. ", " .. spawn_pos.y)
-
-			-- Notificar al wave_manager quién es el nuevo player
-			msg.post("/wave_manager", "update_player_target", {
-				player_id = self.active_player_id
-			})
-
-			-- Notificar a la cámara que siga al nuevo player
-			msg.post("/camera#script", "follow", {
-				target = self.active_player_id
-			})
-
-			self.game_state = STATE.RESCUE
-
-			msg.post("/wave_manager", "resume_enemies")
-			msg.post("/wave_manager", "start_rescue_mode", {
-				fallen_pos = death_position
-			})
-		end)
-	else
-		self.game_state = STATE.GAME_OVER
-
-		if self.active_player_id then
-			go.delete(self.active_player_id)
-			self.active_player_id = nil
-		end
-
-		print("[GameManager] ═══════════════════════════")
-		print("[GameManager]        GAME OVER           ")
-		print("[GameManager] ═══════════════════════════")
-
-		msg.post("/wave_manager", "game_over")
-
-		-- AGREGAR ESTA LÍNEA:
-		msg.post("/wave_manager", "pause_enemies")  -- Congelar enemigos para efecto dramático
-
-		timer.delay(3, false, function()
-			print("[GameManager] Reiniciando...")
-			msg.post("@system:", "reboot")
-		end)
+	-- Eliminar player actual
+	if self.active_player_id then
+		go.delete(self.active_player_id)
+		self.active_player_id = nil
 	end
+
+	-- Crear fallen_player en posición de muerte
+	self.fallen_player_id = factory.create("#fallen_player_factory", death_position)
+	print("[GameManager] Fallen player creado: " .. tostring(self.fallen_player_id))
+
+	-- Pausar enemigos durante transición
+	msg.post("/wave_manager", "pause_enemies")
+
+	print("[GameManager] ═══════════════════════════")
+	print("[GameManager]   MODO RESCATE ACTIVADO    ")
+	print("[GameManager] ═══════════════════════════")
+
+	-- Countdown con mensajes al HUD
+	print("[GameManager] 3...")
+	msg.post("/hud#hud", "show_message", { text = "3", duration = 0.9 })
+
+	timer.delay(1.0, false, function()
+		print("[GameManager] 2...")
+		msg.post("/hud#hud", "show_message", { text = "2", duration = 0.9 })
+	end)
+
+	timer.delay(2.0, false, function()
+		print("[GameManager] 1...")
+		msg.post("/hud#hud", "show_message", { text = "1", duration = 0.9 })
+	end)
+
+	timer.delay(3.0, false, function()
+		print("[GameManager] ¡ADELANTE!")
+		msg.post("/hud#hud", "show_message", { text = "¡ADELANTE!", duration = 1.5 })
+
+		-- Crear nuevo player
+		local spawn_pos = find_farthest_spawn_point(self, death_position)
+		self.active_player_id = factory.create("#player_factory", spawn_pos)
+		print("[GameManager] Nuevo player creado en: " .. spawn_pos.x .. ", " .. spawn_pos.y)
+
+		-- Notificar al wave_manager quién es el nuevo player
+		msg.post("/wave_manager", "update_player_target", {
+			player_id = self.active_player_id
+		})
+
+		-- Notificar a la cámara que siga al nuevo player
+		msg.post("/camera#script", "follow", {
+			target = self.active_player_id
+		})
+
+		-- Cambiar estado
+		self.game_state = STATE.RESCUE
+
+		-- Actualizar HUD
+		msg.post("/hud#hud", "update_lives", { lives = #self.lives - self.current_life_index + 1 })
+		msg.post("/hud#hud", "update_mode", { mode = "rescue" })
+
+		-- Iniciar oleadas de rescate y reanudar enemigos
+		msg.post("/wave_manager", "start_rescue_mode", {
+			fallen_pos = death_position
+		})
+		msg.post("/wave_manager", "resume_enemies")
+	end)
+else
+	-- GAME OVER
+	self.game_state = STATE.GAME_OVER
+
+	if self.active_player_id then
+		go.delete(self.active_player_id)
+		self.active_player_id = nil
+	end
+
+	print("[GameManager] ═══════════════════════════")
+	print("[GameManager]        GAME OVER           ")
+	print("[GameManager] ═══════════════════════════")
+
+	msg.post("/hud#hud", "show_message", { text = "GAME OVER", duration = 3.0 })
+	msg.post("/wave_manager", "game_over")
+	msg.post("/wave_manager", "pause_enemies")
+
+	timer.delay(3, false, function()
+		print("[GameManager] Reiniciando...")
+		msg.post("@system:", "reboot")
+	end)
+end
 end
 
 handle_rescue_complete = function(self)
-	print("[GameManager] ═══════════════════════════")
-	print("[GameManager]    ¡RESCATE EXITOSO!       ")
-	print("[GameManager] ═══════════════════════════")
+print("[GameManager] ═══════════════════════════")
+print("[GameManager]    ¡RESCATE EXITOSO!       ")
+print("[GameManager] ═══════════════════════════")
 
-	self.current_life_index = self.current_life_index - 1
-	print("[GameManager] Vidas: " .. (#self.lives - self.current_life_index + 1))
+msg.post("/hud#hud", "show_message", { text = "¡RESCATE EXITOSO!", duration = 2.0 })
 
-	self.fallen_player_id = nil
-	self.fallen_position = nil
+self.current_life_index = self.current_life_index - 1
+print("[GameManager] Vidas: " .. (#self.lives - self.current_life_index + 1))
 
-	self.game_state = STATE.PLAYING
+self.fallen_player_id = nil
+self.fallen_position = nil
 
-	msg.post("/wave_manager", "end_rescue_mode")
+self.game_state = STATE.PLAYING
+
+-- Actualizar HUD
+msg.post("/hud#hud", "update_lives", { lives = #self.lives - self.current_life_index + 1 })
+msg.post("/hud#hud", "update_mode", { mode = "normal" })
+
+msg.post("/wave_manager", "end_rescue_mode")
 end
