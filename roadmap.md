@@ -526,3 +526,36 @@ text
     │
     └── 📁 fonts/
         └── 📄 main_font.font
+
+
+CONFIGURACIÓN DE INKSCAPE:
+□ Canvas: 192 x 192 px
+□ Área segura del personaje: ~160 x 180 px (centrado)
+□ Exportar como PNG a 192x192
+
+LÍNEAS DE CONTORNO:
+□ Exterior: 3-4px, color #1a1a1a (o marrón oscuro para calidez)
+□ Interior principal: 2-2.5px
+□ Detalles: 1.5-2px
+□ Detalles finos: 1px
+
+COLORES:
+□ Paleta limitada (5-8 colores por personaje)
+□ Colores planos, sin muchos gradientes
+□ Sombras simples con un tono más oscuro del color base
+
+SOMBRA:
+□ Elipse separada como su propio sprite
+□ Color: #000000, Opacidad: 40%
+□ Tamaño: ~60% del ancho del personaje
+□ Posición: sprite separado, Z=-0.1
+
+VISTA 3/4:
+□ Ambos ojos visibles en vistas laterales
+□ Cabeza casi frontal, cuerpo ligeramente desde arriba
+□ Pies simplificados/acortados
+
+ANIMACIONES NECESARIAS (por dirección):
+□ idle_down, walk_down (mirando a cámara)
+□ idle_up, walk_up (mirando away)  
+□ idle_right, walk_right (perfil - se flippea para left)
