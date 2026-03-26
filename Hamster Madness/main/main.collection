@@ -40,12 +40,15 @@ embedded_instances {
   "\"\n"
   "}\n"
   ""
+  position {
+    y: 80.0
+  }
 }
 embedded_instances {
   id: "hud"
   data: "components {\n"
   "  id: \"hud\"\n"
-  "  component: \"/main/ui/hud.gui\"\n"
+  "  component: \"/main/ui/hud/hud.gui\"\n"
   "}\n"
   ""
 }
