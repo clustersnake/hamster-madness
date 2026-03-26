@@ -19,6 +19,10 @@ instances {
   id: "wave_manager"
   prototype: "/main/managers/wave_manager.go"
 }
+instances {
+  id: "crosshair"
+  prototype: "/main/crosshair/crosshair.go"
+}
 scale_along_z: 0
 embedded_instances {
   id: "room"

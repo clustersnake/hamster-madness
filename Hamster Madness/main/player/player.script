@@ -2,6 +2,7 @@
 -- Controlador del jugador para Hamster Madness
 
 local camera = require "orthographic.camera"
+local room_data = require "main.data.room_data"  -- AGREGAR
 
 go.property("speed", 300)
 go.property("invulnerability_time", 1.5)
@@ -36,10 +37,26 @@ function init(self)
 	self.is_invulnerable = false
 	self.is_alive = true
 
-	-- Conectar cámara al jugador
+	-- ========================================
+	-- CONFIGURAR CÁMARA SEGÚN TIPO DE SALA
+	-- ========================================
 	local camera_id = go.get_id("/camera")
-	camera.follow(camera_id, go.get_id())
+	local room = room_data.current
 
+	if room.scrollable then
+		-- Sala grande: cámara sigue al jugador con límites
+		camera.follow(camera_id, go.get_id())
+
+		local bounds = room.camera_bounds
+		camera.bounds(camera_id, bounds.left, bounds.bottom, bounds.right, bounds.top)
+
+		print("[Player] Cámara: follow con bounds")
+	else
+		-- Sala del tamaño de pantalla: cámara fija
+		go.set_position(vmath.vector3(room.camera_center.x, room.camera_center.y, 0), camera_id)
+		print("[Player] Cámara: fija en centro")
+	end
+	-- ========================================
 	-- Mostrar escudo al inicio
 	update_shield_visual(self)
 
@@ -126,6 +143,15 @@ function update(self, dt)
 		end
 	end
 
+	-- Actualizar facing hacia el crosshair (para visual)
+	local crosshair_pos = go.get_position("/crosshair")
+	local player_pos = go.get_position()
+	local aim_dir = crosshair_pos - player_pos
+
+	if vmath.length(aim_dir) > 10 then  -- Evitar jitter si están muy cerca
+		self.facing = vmath.normalize(aim_dir)
+	end
+
 	-- Actualizar animación
 	update_animation(self, false)
 
@@ -175,20 +201,86 @@ function on_input(self, action_id, action)
 	end
 end
 
+-- fire_projectile = function(self)
+-- 	local player_pos = go.get_position()
+-- 	local spawn_offset = self.facing * 50
+-- 	local spawn_pos = player_pos + spawn_offset
+-- 	spawn_pos.z = 0.5
+-- 
+-- 	local projectile_id = factory.create("#projectile_factory", spawn_pos)
+-- 
+-- 	self.has_projectile = false
+-- 	update_shield_visual(self)
+-- 
+-- 	msg.post(projectile_id, "fire", { direction = self.facing })
+-- 	msg.post("/hud#hud", "update_shield", { has_shield = false })  -- AGREGAR
+-- 
+-- 	print("¡Disparo!")
+-- end
+-- fire_projectile = function(self)
+-- 	local player_pos = go.get_position()
+-- 
+-- 	-- Calcular dirección hacia el crosshair
+-- 	local crosshair_pos = go.get_position("/crosshair")
+-- 	local aim_vector = crosshair_pos - player_pos
+-- 
+-- 	-- Verificar que hay distancia suficiente
+-- 	local aim_direction
+-- 	if vmath.length(aim_vector) > 10 then
+-- 		aim_direction = vmath.normalize(aim_vector)
+-- 	else
+-- 		-- Fallback: usar dirección donde mira el jugador
+-- 		aim_direction = self.facing
+-- 	end
+-- 
+-- 	-- Spawn del proyectil en la dirección de apuntado
+-- 	local spawn_offset = aim_direction * 50
+-- 	local spawn_pos = player_pos + spawn_offset
+-- 	spawn_pos.z = 0.5
+-- 
+-- 	local projectile_id = factory.create("#projectile_factory", spawn_pos)
+-- 
+-- 	self.has_projectile = false
+-- 	update_shield_visual(self)
+-- 
+-- 	msg.post(projectile_id, "fire", { direction = aim_direction })
+-- 	msg.post("/hud#hud", "update_shield", { has_shield = false })
+-- 
+-- 	print("¡Disparo!")
+-- end
 fire_projectile = function(self)
 	local player_pos = go.get_position()
-	local spawn_offset = self.facing * 50
-	local spawn_pos = player_pos + spawn_offset
-	spawn_pos.z = 0.5
 
-	local projectile_id = factory.create("#projectile_factory", spawn_pos)
+	-- Calcular dirección hacia el crosshair (solo X e Y)
+	local crosshair_pos = go.get_position("/crosshair")
+	local aim_vector = vmath.vector3(
+	crosshair_pos.x - player_pos.x,
+	crosshair_pos.y - player_pos.y,
+	0  -- Forzar Z a cero
+)
 
-	self.has_projectile = false
-	update_shield_visual(self)
+-- Verificar que hay distancia suficiente
+local aim_direction
+if vmath.length(aim_vector) > 10 then
+	aim_direction = vmath.normalize(aim_vector)
+else
+	aim_direction = self.facing
+end
 
-	msg.post(projectile_id, "fire", { direction = self.facing })
+-- Spawn del proyectil
+local spawn_offset = aim_direction * 50
+local spawn_pos = player_pos + spawn_offset
+spawn_pos.z = 0.5
 
-	print("¡Disparo!")
+local projectile_id = factory.create("#projectile_factory", spawn_pos)
+
+self.has_projectile = false
+update_shield_visual(self)
+
+msg.post(projectile_id, "fire", { direction = aim_direction })
+msg.post("/hud#hud", "update_shield", { has_shield = false })
+
+print("¡Disparo!")
 end
 
 update_shield_visual = function(self)
@@ -222,6 +314,7 @@ take_damage = function(self, enemy_position)
 
 		self.has_projectile = false
 		update_shield_visual(self)
+		msg.post("/hud#hud", "update_shield", { has_shield = false })  -- AGREGAR
 
 		self.is_invulnerable = true
 		start_invulnerability_flash(self)
@@ -275,6 +368,7 @@ function on_message(self, message_id, message, sender)
 	if message_id == hash("projectile_picked_up") then
 		self.has_projectile = true
 		update_shield_visual(self)
+		msg.post("/hud#hud", "update_shield", { has_shield = true })  -- AGREGAR
 		print("¡Escudo recogido!")
 	end
 
@@ -305,270 +399,3 @@ function on_message(self, message_id, message, sender)
 		print("[Player] Rescate completado - referencias limpiadas")
 	end
 end
-
--- -- player.script
--- -- Controlador del jugador para Hamster Madness
--- 
--- local camera = require "orthographic.camera"
--- 
--- go.property("speed", 300)
--- go.property("invulnerability_time", 1.5)
--- 
--- local update_shield_visual
--- local fire_projectile
--- local take_damage
--- local start_invulnerability_flash
--- 
--- function init(self)
--- 	msg.post(".", "acquire_input_focus")
--- 
--- 	-- Variables para rescate
--- 	self.near_fallen = false
--- 	self.fallen_id = nil
--- 	self.is_rescuing = false
--- 
--- 	self.direction = vmath.vector3(0, 0, 0)
--- 	self.facing = vmath.vector3(0, 1, 0)
--- 	self.correction = vmath.vector3(0, 0, 0)
--- 
--- 	-- Estado del escudo
--- 	self.has_projectile = false
--- 
--- 	-- Estado del jugador
--- 	self.is_invulnerable = false
--- 	self.is_alive = true
--- 
--- 	-- Conectar cámara al jugador
--- 	local camera_id = go.get_id("/camera")
--- 	camera.follow(camera_id, go.get_id())
--- 
--- 	-- Mostrar escudo al inicio
--- 	update_shield_visual(self)
--- 
--- 	msg.post("/game_manager", "register_player")
--- 
--- 	-- Si somos P2 (creados por factory), activar invulnerabilidad
--- 	-- El player original tiene path "/player", los creados por factory tienen "/instanceX"
--- 	local my_url = msg.url()
--- 	if string.find(tostring(my_url), "instance") then
--- 		print("[Player] Soy P2 - activando invulnerabilidad inicial")
--- 		self.is_invulnerable = true
--- 		start_invulnerability_flash(self)
--- 
--- 		timer.delay(2.0, false, function()
--- 			self.is_invulnerable = false
--- 			print("[Player] Invulnerabilidad terminada")
--- 		end)
--- 	end
--- end
--- 
--- function update(self, dt)
--- 	if not self.is_alive then
--- 		return
--- 	end
--- 
--- 	if vmath.length(self.direction) > 0 then
--- 		local normalized_direction = vmath.normalize(self.direction)
--- 		local movement = normalized_direction * self.speed * dt
--- 		local current_pos = go.get_position()
--- 		go.set_position(current_pos + movement + self.correction)
--- 		self.facing = normalized_direction
--- 	else
--- 		if vmath.length(self.correction) > 0 then
--- 			local current_pos = go.get_position()
--- 			go.set_position(current_pos + self.correction)
--- 		end
--- 	end
--- 
--- 	self.direction = vmath.vector3(0, 0, 0)
--- 	self.correction = vmath.vector3(0, 0, 0)
--- end
--- 
--- function on_input(self, action_id, action)
--- 	if not self.is_alive then
--- 		return
--- 	end
--- 
--- 	-- Movimiento
--- 	if action_id == hash("move_up") then
--- 		self.direction.y = 1
--- 	elseif action_id == hash("move_down") then
--- 		self.direction.y = -1
--- 	elseif action_id == hash("move_left") then
--- 		self.direction.x = -1
--- 	elseif action_id == hash("move_right") then
--- 		self.direction.x = 1
--- 	end
--- 
--- 	-- Disparar
--- 	if action_id == hash("shoot") and action.pressed then
--- 		if self.has_projectile then
--- 			fire_projectile(self)
--- 		else
--- 			print("No tienes proyectil - ¡recógelo primero!")
--- 		end
--- 	end
--- 	-- Rescate (mantener E)
--- 	if action_id == hash("rescue") then
--- 		if self.near_fallen and self.fallen_id then
--- 			if action.pressed then
--- 				print("[Player] Iniciando rescate...")
--- 				self.is_rescuing = true
--- 				msg.post(self.fallen_id, "rescue_hold")
--- 			elseif action.released then
--- 				print("[Player] Rescate interrumpido")
--- 				self.is_rescuing = false
--- 				-- Verificar que el fallen aún existe antes de enviar mensaje
--- 				if go.exists(self.fallen_id) then
--- 					msg.post(self.fallen_id, "rescue_release")
--- 				end
--- 			end
--- 		end
--- 	end
--- end
--- 
--- fire_projectile = function(self)
--- 	local player_pos = go.get_position()
--- 	local spawn_offset = self.facing * 50
--- 	local spawn_pos = player_pos + spawn_offset
--- 	spawn_pos.z = 0.5
--- 
--- 	-- Crear PROJECTILE (el que mata)
--- 	local projectile_id = factory.create("#projectile_factory", spawn_pos)
--- 
--- 	self.has_projectile = false
--- 	update_shield_visual(self)
--- 
--- 	msg.post(projectile_id, "fire", { direction = self.facing })
--- 
--- 	print("¡Disparo!")
--- end
--- 
--- update_shield_visual = function(self)
--- 	if self.has_projectile then
--- 		sprite.set_constant("#shield", "tint", vmath.vector4(1, 1, 1, 1))
--- 	else
--- 		sprite.set_constant("#shield", "tint", vmath.vector4(1, 1, 1, 0))
--- 	end
--- end
--- 
--- take_damage = function(self, enemy_position)
--- 	if self.is_invulnerable then
--- 		return
--- 	end
--- 
--- 	if self.has_projectile then
--- 		-- TIENE ESCUDO: pierde el escudo, crea active_shield
--- 		print("¡Escudo destruido!")
--- 
--- 		-- Calcular dirección contraria al impacto
--- 		local player_pos = go.get_position()
--- 		local knockback_dir = player_pos - enemy_position
--- 		if vmath.length(knockback_dir) > 0 then
--- 			knockback_dir = vmath.normalize(knockback_dir)
--- 		else
--- 			knockback_dir = vmath.vector3(0, 1, 0)
--- 		end
--- 
--- 		-- Crear ACTIVE_SHIELD (el que NO mata)
--- 		local spawn_pos = player_pos + knockback_dir * 40
--- 		spawn_pos.z = 0.5
--- 		local shield_id = factory.create("#active_shield_factory", spawn_pos)
--- 		msg.post(shield_id, "fire", { direction = knockback_dir })
--- 
--- 		-- Perder el escudo
--- 		self.has_projectile = false
--- 		update_shield_visual(self)
--- 
--- 		-- Activar invulnerabilidad
--- 		self.is_invulnerable = true
--- 		start_invulnerability_flash(self)
--- 
--- 		timer.delay(self.invulnerability_time, false, function()
--- 			self.is_invulnerable = false
--- 			sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
--- 			print("Invulnerabilidad terminada")
--- 		end)
--- 
--- 	else
--- 		-- SIN ESCUDO: muerte
--- 		print("¡Jugador eliminado!")
--- 		self.is_alive = false
--- 
--- 		-- Desactivar controles inmediatamente
--- 		msg.post(".", "release_input_focus")
--- 
--- 		-- Notificar al game_manager con la posición
--- 		msg.post("/game_manager", "player_died", {
--- 			position = go.get_position()
--- 		})
--- 
--- 		-- NO eliminamos el GO aquí, lo hace el game_manager
--- 	end
--- end
--- 
--- start_invulnerability_flash = function(self)
--- 	local flash_duration = 0.15
--- 	local num_flashes = math.floor(self.invulnerability_time / (flash_duration * 2))
--- 
--- 	for i = 0, num_flashes - 1 do
--- 		timer.delay(flash_duration * 2 * i, false, function()
--- 			if self.is_invulnerable then
--- 				sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 0.3))
--- 			end
--- 		end)
--- 		timer.delay(flash_duration * (2 * i + 1), false, function()
--- 			if self.is_invulnerable then
--- 				sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
--- 			end
--- 		end)
--- 	end
--- end
--- 
--- function on_message(self, message_id, message, sender)
--- 	if message_id == hash("contact_point_response") then
--- 		if message.group == hash("default") then
--- 			if message.distance > 0 then
--- 				local correction = message.normal * message.distance
--- 				self.correction = self.correction + correction
--- 			end
--- 		end
--- 	end
--- 
--- 	-- Recoger escudo (desde dropped_shield)
--- 	if message_id == hash("projectile_picked_up") then
--- 		self.has_projectile = true
--- 		update_shield_visual(self)
--- 		print("¡Escudo recogido!")
--- 	end
--- 
--- 	-- Daño de enemigo
--- 	if message_id == hash("enemy_damage") then
--- 		local enemy_pos = message.enemy_position or go.get_position()
--- 		take_damage(self, enemy_pos)
--- 	end
--- 
--- 	-- Detectar trigger con fallen_player
--- 	if message_id == hash("trigger_response") then
--- 		if message.group == hash("fallen") then
--- 			if message.enter then
--- 				print("[Player] Cerca del caído - mantén E para rescatar")
--- 				self.near_fallen = true
--- 				self.fallen_id = message.other_id
--- 			else
--- 				print("[Player] Te alejaste del caído")
--- 				self.near_fallen = false
--- 				self.fallen_id = nil
--- 				self.is_rescuing = false
--- 			end
--- 		end
--- 	end
--- 
--- 	-- Rescate completado, limpiar referencias
--- 	if message_id == hash("rescue_completed") then
--- 		self.near_fallen = false
--- 		self.fallen_id = nil
--- 		self.is_rescuing = false
--- 		print("[Player] Rescate completado - referencias limpiadas")
--- 	end
--- end
