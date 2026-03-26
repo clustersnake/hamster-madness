@@ -10,7 +10,7 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"chaser\"\n"
+  data: "default_animation: \"enemy\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -39,7 +39,7 @@ embedded_components {
   "    index: 0\n"
   "    count: 1\n"
   "  }\n"
-  "  data: 14.0\n"
+  "  data: 25.0\n"
   "}\n"
   ""
 }
