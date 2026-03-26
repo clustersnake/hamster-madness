@@ -722,3 +722,158 @@ DAMAGED (SCREAM):    CRITICAL (Sad):       DEAD:
    └───────┘           └───────┘            └───────┘
    (Boca abierta       (Ojos brillantes     
     gritando)           con lágrimas)        
+
+    ========================================
+    Plan de Implementación: Jefe Tortuga
+Resumen
+Implementar el primer jefe del juego: una tortuga con tres fases de combate que enseña mecánicas al jugador de forma orgánica.
+
+Fase 0: Preparación
+0.1 Assets necesarios
+Asset	Descripción	Estado
+turtle_idle	Tortuga caminando	⬜
+turtle_shell	Tortuga en caparazón	⬜
+turtle_belly	Tortuga panza arriba (vulnerable)	⬜
+turtle_indicator	Indicador de ataque listo	⬜
+shockwave	Onda expansiva del aplastón	⬜
+wind_particles	Partículas de brisa para rodada	⬜
+projectile_enemy	Proyectil reflejado (rojo/fuego)	⬜
+0.2 Estructura de archivos
+text
+📁 main/
+  📁 enemies/
+    📁 bosses/
+      📁 turtle/
+        📁 sprites/
+          🖼️ turtle_idle.png
+          🖼️ turtle_shell.png
+          🖼️ turtle_belly.png
+          🖼️ shockwave.png
+        📄 turtle.atlas
+        📄 turtle.go
+        📄 turtle.script
+        📄 turtle_states.lua
+      📁 effects/
+        📄 shockwave.go
+        📄 shockwave.script
+        📄 wind.particlefx
+Fase 1: Estructura Base
+1.1 Crear Game Object de la tortuga
+ Crear turtle.go con sprite y collisionobject
+ Configurar grupos de colisión
+ Agregar factories necesarias (shockwave, etc.)
+1.2 Implementar máquina de estados
+ Crear turtle_states.lua con estructura FSM
+ Definir estados: IDLE, APLASTON, RODADA, PARRY, VULNERABLE
+ Implementar transiciones entre estados
+ Agregar sistema de cooldowns
+1.3 Script principal
+ Crear turtle.script con propiedades configurables
+ Implementar init() con variables de fase y vida
+ Implementar update() que delegue al estado actual
+ Implementar on_message() para recibir daño
+Fase 2: Ataque Aplastón
+2.1 Comportamiento básico
+ Caminar lento hacia el jugador
+ Detectar distancia de activación
+ Transición a caparazón
+2.2 Onda expansiva
+ Crear shockwave.go con animación de expansión
+ Implementar detección de colisión circular
+ Configurar área normal vs área 100% (tutorial)
+2.3 Tutorial encubierto
+ Enviar mensaje al jugador para desactivar controles
+ Forzar escudo activo al inicio
+ Ejecutar primer aplastón con área completa
+ Devolver controles al jugador
+Fase 3: Ataque Rodada
+3.1 Movimiento
+ Implementar transición a caparazón rodante
+ Calcular velocidad y dirección inicial
+ Implementar rebotes en paredes (5-7 aleatorios)
+ Detectar fin de rebotes
+3.2 Efectos visuales
+ Crear sistema de partículas para brisa
+ Orientar partículas en dirección contraria al movimiento
+ Activar/desactivar según estado
+3.3 Mecánica de counter
+ Detectar impacto de proyectil durante rodada
+ Transición a estado VULNERABLE (panza arriba)
+ Temporizador de recuperación
+Fase 4: Ataque Parry
+4.1 Estado defensivo
+ Implementar transición a caparazón defensivo
+ Configurar inmunidad a daño durante parry
+4.2 Reflejo de proyectil
+ Detectar colisión con proyectil del jugador
+ Cambiar sprite del proyectil a versión enemiga
+ Invertir dirección con variación irregular
+ Cambiar grupo de colisión a enemy_projectile
+4.3 Modificar proyectil
+ Agregar sprite alternativo (rojo/fuego) al atlas
+ Implementar mensaje reflect en projectile.script
+ Agregar lógica para dañar al jugador si es reflejado
+Fase 5: Sistema de Fases del Jefe
+5.1 Control de tiempo
+ Implementar temporizador de fase
+ Fase 1: Solo aplastón
+ Fase 2: Aplastón + Rodada
+ Fase 3: Aplastón + Rodada + Parry
+5.2 Transiciones de fase
+ Animación de transición Fase 1 → 2 (aplastón 100%)
+ Animación de transición Fase 2 → 3 (rodada corta)
+ Animación de transición Fase 3 activa (parry visual)
+5.3 Indicadores visuales
+ Mostrar indicador cuando el jefe está listo para atacar
+ Ocultar indicador durante ataque
+ Feedback visual de fase actual
+Fase 6: Integración
+6.1 Spawn del jefe
+ Crear factory en wave_manager o boss_manager
+ Definir condiciones de aparición (oleada específica)
+ Configurar sala de jefe si es necesario
+6.2 Condición de victoria
+ Detectar muerte del jefe
+ Enviar mensaje al game_manager
+ Mostrar feedback de victoria
+6.3 Balanceo
+ Ajustar vida del jefe
+ Ajustar cooldowns de ataques
+ Ajustar velocidades (caminata, rodada)
+ Ajustar áreas de daño
+ Playtesting
+Propiedades configurables
+lua
+-- turtle.script
+go.property("max_health", 10)
+go.property("walk_speed", 50)
+go.property("roll_speed", 400)
+go.property("aplaston_range", 150)
+go.property("aplaston_cooldown", 3.0)
+go.property("rodada_cooldown", 5.0)
+go.property("parry_cooldown", 4.0)
+go.property("vulnerable_duration", 2.0)
+go.property("phase2_time", 30.0)
+go.property("phase3_time", 60.0)
+Dependencias
+Sistema	Modificación necesaria
+projectile.script	Agregar mensaje reflect y sprite enemigo
+player.script	Agregar mensaje disable_input / enable_input
+player.script	Detectar daño de enemy_projectile
+wave_manager	Agregar soporte para spawn de jefes
+hud	Mostrar barra de vida del jefe (opcional)
+Estimación de tiempo
+Fase	Estimación
+Fase 0: Preparación	2-3 horas
+Fase 1: Estructura Base	2-3 horas
+Fase 2: Aplastón	3-4 horas
+Fase 3: Rodada	3-4 horas
+Fase 4: Parry	2-3 horas
+Fase 5: Sistema de Fases	2-3 horas
+Fase 6: Integración	2-3 horas
+Total	16-23 horas
+Notas adicionales
+Priorizar mecánicas sobre animaciones pulidas inicialmente
+Testear cada fase antes de pasar a la siguiente
+El "tutorial encubierto" es crítico para la experiencia del jugador
+Considerar agregar sonidos para cada ataque (feedback auditivo)
