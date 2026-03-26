@@ -559,3 +559,166 @@ ANIMACIONES NECESARIAS (por dirección):
 □ idle_down, walk_down (mirando a cámara)
 □ idle_up, walk_up (mirando away)  
 □ idle_right, walk_right (perfil - se flippea para left)
+
+# 📐 HAMSTER MADNESS - ESPECIFICACIONES DE ARTE Y MEDIDAS
+
+## Configuración del Proyecto
+
+- **Resolución de pantalla:** 1280 x 720 px
+- **Filtrado de texturas:** Linear (para arte suave, NO pixel art)
+
+---
+
+## Sistema de Medidas
+
+| Elemento | Tamaño en Pantalla | Sprite Source (archivo) | Scale en Defold |
+|----------|-------------------|-------------------------|-----------------|
+| **Tile base** | 64 x 64 px | 64 x 64 px | 1.0 |
+| **Personaje jugable** | 96 x 96 px | 192 x 192 px | 0.5 |
+| **Enemigo pequeño** | 48 x 48 px | 96 x 96 px | 0.5 |
+| **Enemigo mediano** | 64 x 64 px | 128 x 128 px | 0.5 |
+| **Enemigo grande** | 128 x 128 px | 256 x 256 px | 0.5 |
+| **Boss** | 192 x 192 px | 384 x 384 px | 0.5 |
+| **Proyectil/Bullet** | 32 x 32 px | 64 x 64 px | 0.5 |
+| **Escudo (activo)** | 32 x 32 px | 64 x 64 px | 0.5 |
+| **Items/Pickups** | 32 x 32 px | 64 x 64 px | 0.5 |
+| **Sombra personaje** | ~60 x 30 px | 120 x 60 px | 0.5 |
+
+---
+
+## Tamaño de Habitaciones
+
+| Tipo | Tiles | Píxeles | Notas |
+|------|-------|---------|-------|
+| **Pequeña (1 pantalla)** | 20 x 11 | 1280 x 704 px | Cabe exacto en pantalla |
+| **Mediana** | 30 x 16 | 1920 x 1024 px | ~1.5 pantallas |
+| **Grande** | 40 x 22 | 2560 x 1408 px | ~2 pantallas |
+
+---
+
+## Especificaciones de Arte (Estilo Hilda)
+
+### Canvas en Inkscape
+
+- **Personajes:** 192 x 192 px
+- **Área segura:** 160 x 180 px (centrado, dejar margen)
+
+### Grosor de Líneas (a 192px)
+
+| Tipo | Grosor | Uso |
+|------|--------|-----|
+| Contorno exterior | 3-4 px | Silueta completa |
+| Contorno interior | 2-2.5 px | Orejas, brazos, partes grandes |
+| Detalles | 1.5-2 px | Ojos, boca, patrones |
+| Detalles finos | 1 px | Pestañas, texturas sutiles |
+
+### Color de Líneas
+
+- **Opción simple:** #1a1a1a (negro suave)
+- **Opción Hilda:** Versión oscura del color que bordea
+
+### Sombra del Personaje
+
+- **Tipo:** Sprite separado (elipse)
+- **Color:** #000000
+- **Opacidad:** 40%
+- **Tamaño:** ~60% del ancho del personaje
+- **Posición Z:** -0.1 (detrás del personaje)
+
+---
+
+## Frames de Animación
+
+### FPS Recomendados
+
+| Animación | FPS |
+|-----------|-----|
+| Idle | 4-6 |
+| Walk | 8-10 |
+| Run | 12-16 |
+
+### Frames por Animación
+
+| Animación | Mínimo | Recomendado |
+|-----------|--------|-------------|
+| Idle | 2 | 4 (+2 parpadeo) |
+| Walk | 4 | 6 |
+| Hurt | 2 | 3 |
+| Death | 4 | 6 |
+
+### Set Completo por Personaje
+
+- **Direcciones:** down, up, right (left = flip de right)
+- **Total mínimo:** 18-24 frames
+- **Total recomendado:** 36-48 frames
+
+---
+
+## Vista 3/4 (Three-Quarter View)
+
+- Ambos ojos visibles en todas las direcciones (excepto up)
+- Cabeza casi frontal
+- Cuerpo ligeramente visto desde arriba
+- Pies simplificados/acortados
+
+---
+
+## Proporciones en Tiles
+
+| Elemento | Tamaño en tiles |
+|----------|-----------------|
+| Personaje | 1.5 x 1.5 tiles |
+| Enemigo pequeño | 0.75 x 0.75 tiles |
+| Enemigo mediano | 1 x 1 tile |
+| Proyectil | 0.5 x 0.5 tiles |
+
+---
+
+## Colisiones (Referencia)
+
+| Elemento | Tipo | Radio/Tamaño |
+|----------|------|--------------|
+| Personaje | Sphere | 32 px (0.5 tiles) |
+| Enemigo pequeño | Sphere | 20 px |
+| Enemigo mediano | Sphere | 28 px |
+| Proyectil | Sphere | 12 px |
+
+---
+
+*Última actualización: [fecha]*
+*Estilo de arte: Hilda / The Plucky Squire (líneas suaves, no pixel art)*
+
+ESTADOS DEL ROSTRO EN EL HUD:
+
+┌─────────────────────────────────────────────────────────────────┐
+│ ESTADO          │ EXPRESIÓN           │ CUÁNDO SE ACTIVA        │
+├─────────────────┼─────────────────────┼─────────────────────────┤
+│ normal          │ 😊 Tranquilo        │ Idle, todo bien         │
+│ happy           │ 😄 Feliz/Peace sign │ Victoria, recoger item  │
+│ shooting        │ 😤 Determinado      │ Al disparar             │
+│ damaged         │ 😱 SCREAM           │ Recibe daño             │
+│ critical        │ 😢 Sad hamster      │ 1 vida restante         │
+│ dead            │ 💀 X_X              │ Al morir                │
+│ shield_ready    │ 😏 Confiado         │ Tiene escudo            │
+│ shield_lost     │ 😰 Preocupado       │ Pierde escudo           │
+│ wave_complete   │ 🎉 Celebrando       │ Termina oleada          │
+│ boss_appear     │ 😨 Terror           │ Aparece un boss         │
+└─────────────────────────────────────────────────────────────────┘
+
+NORMAL:              HAPPY (Peace):        SHOOTING:
+   ┌───────┐           ┌───────┐            ┌───────┐
+   │ ∩   ∩ │           │ ∩   ∩ │            │ ∩   ∩ │
+   │ ●   ● │           │ ^   ^ │            │ ◉   ◉ │
+   │   ◡   │           │   ◡   │            │   △   │
+   │  ╰‿╯  │           │  ╰▽╯ ✌│            │  ╰○╯  │
+   └───────┘           └───────┘            └───────┘
+
+DAMAGED (SCREAM):    CRITICAL (Sad):       DEAD:
+   ┌───────┐           ┌───────┐            ┌───────┐
+   │ ∩   ∩ │           │ ∩   ∩ │            │ ∩   ∩ │
+   │ ◉   ◉ │           │ ●̣   ●̣ │            │ ×   × │
+   │   ◇   │   ←AAAA   │  ╥ ╥  │  ←llorando │       │
+   │  ╰□╯  │           │  ╰︵╯ │            │  ───  │
+   └───────┘           └───────┘            └───────┘
+   (Boca abierta       (Ojos brillantes     
+    gritando)           con lágrimas)        
