@@ -1,0 +1,4 @@
+images {
+  image: "/main/player/sprites/face_normal.png"
+}
+extrude_borders: 2

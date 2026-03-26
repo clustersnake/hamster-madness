@@ -1,0 +1,58 @@
+name: "main"
+instances {
+  id: "player"
+  prototype: "/main/player/player.go"
+  position {
+    x: 320.0
+    y: 240.0
+  }
+}
+instances {
+  id: "camera"
+  prototype: "/orthographic/camera.go"
+}
+instances {
+  id: "game_manager"
+  prototype: "/main/managers/game_manager.go"
+}
+instances {
+  id: "wave_manager"
+  prototype: "/main/managers/wave_manager.go"
+}
+instances {
+  id: "crosshair"
+  prototype: "/main/crosshair/crosshair.go"
+}
+scale_along_z: 0
+embedded_instances {
+  id: "room"
+  data: "components {\n"
+  "  id: \"test_room\"\n"
+  "  component: \"/main/rooms/test_room.tilemap\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"collisionobject\"\n"
+  "  type: \"collisionobject\"\n"
+  "  data: \"collision_shape: \\\"/main/rooms/test_room.tilemap\\\"\\n"
+  "type: COLLISION_OBJECT_TYPE_STATIC\\n"
+  "mass: 0.0\\n"
+  "friction: 0.1\\n"
+  "restitution: 0.5\\n"
+  "group: \\\"default\\\"\\n"
+  "mask: \\\"player\\\"\\n"
+  "mask: \\\"projectile\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+  position {
+    y: 80.0
+  }
+}
+embedded_instances {
+  id: "hud"
+  data: "components {\n"
+  "  id: \"hud\"\n"
+  "  component: \"/main/ui/hud/hud.gui\"\n"
+  "}\n"
+  ""
+}

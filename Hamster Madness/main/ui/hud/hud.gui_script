@@ -1,0 +1,101 @@
+-- hud.gui_script
+
+local update_lives
+local update_mode
+local update_shield
+local update_wave_display
+local show_message
+
+function init(self)
+	self.lives = 3
+	self.max_lives = 3
+	self.wave = 1
+	self.has_shield = false
+	self.mode = "normal"
+
+	-- Timer para mensajes temporales
+	self.message_timer = nil
+end
+
+update_lives = function (self)
+	local hearts = ""
+	for i = 1, self.max_lives do
+		if i <= self.lives then
+			hearts = hearts .. "*"
+		else
+			hearts = hearts .. "."
+		end
+	end
+	gui.set_text(gui.get_node("lives_count"), hearts)
+end
+
+update_wave_display = function (self)
+	gui.set_text(gui.get_node("wave_count"), tostring(self.wave))
+end
+
+update_shield = function (self, has_shield)
+	self.has_shield = has_shield
+	local status_node = gui.get_node("shield_status")
+
+	if has_shield then
+		gui.set_text(status_node, "READY")
+		gui.set_color(status_node, vmath.vector4(0.4, 0.83, 0.57, 1)) -- verde
+	else
+		gui.set_text(status_node, "---")
+		gui.set_color(status_node, vmath.vector4(0.5, 0.5, 0.5, 1)) -- gris
+	end
+end
+
+update_mode = function (self, mode)
+	self.mode = mode
+	local diff_node = gui.get_node("difficulty")
+
+	if mode == "rescue" then
+		gui.set_text(diff_node, "¡RESCATE!")
+		gui.set_color(diff_node, vmath.vector4(1, 0.4, 0.4, 1)) -- rojo
+	else
+		gui.set_text(diff_node, "NORMAL")
+		gui.set_color(diff_node, vmath.vector4(1, 1, 1, 1)) -- blanco
+	end
+end
+
+show_message = function (self, text, duration)
+	-- Por ahora solo actualiza el texto de dificultad temporalmente
+	-- Después podemos agregar un nodo de mensaje dedicado
+	local diff_node = gui.get_node("difficulty")
+	local original_text = gui.get_text(diff_node)
+	local original_color = gui.get_color(diff_node)
+
+	gui.set_text(diff_node, text)
+	gui.set_color(diff_node, vmath.vector4(1, 1, 0, 1)) -- amarillo
+
+	-- Cancelar timer anterior si existe
+	if self.message_timer then
+		timer.cancel(self.message_timer)
+	end
+
+	-- Restaurar después de duration
+	self.message_timer = timer.delay(duration, false, function()
+		update_mode(self, self.mode)
+	end)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("update_lives") then
+		self.lives = message.lives
+		update_lives(self)
+
+	elseif message_id == hash("update_wave") then
+		self.wave = message.wave
+		update_wave_display(self)
+
+	elseif message_id == hash("update_shield") then
+		update_shield(self, message.has_shield)
+
+	elseif message_id == hash("update_mode") then
+		update_mode(self, message.mode)
+
+	elseif message_id == hash("show_message") then
+		show_message(self, message.text, message.duration)
+	end
+end

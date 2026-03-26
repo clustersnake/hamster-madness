@@ -1,0 +1,103 @@
+-- chaser.script
+-- Enemigo que persigue al jugador
+
+go.property("speed", 100)
+
+function init(self)
+	self.player_id = nil
+	self.direction = vmath.vector3(0, 0, 0)
+	self.correction = vmath.vector3(0, 0, 0)
+	self.is_alive = true
+	self.is_paused = false
+
+	-- Intentar obtener el player original
+	timer.delay(0.1, false, function()
+		-- Preguntar al wave_manager quién es el player activo
+		msg.post("/wave_manager", "get_player_target", { requester = go.get_id() })
+	end)
+end
+
+function update(self, dt)
+
+	if not self.is_alive or self.is_paused then
+		return
+	end
+
+	if self.player_id then
+		-- Verificar que el player aún existe
+		if go.exists(self.player_id) then
+			local my_pos = go.get_position()
+			local player_pos = go.get_position(self.player_id)
+
+			local to_player = player_pos - my_pos
+
+			if vmath.length(to_player) > 10 then
+				self.direction = vmath.normalize(to_player)
+				local movement = self.direction * self.speed * dt
+				go.set_position(my_pos + movement + self.correction)
+			end
+		else
+			-- Player ya no existe, limpiar referencia
+			self.player_id = nil
+			print("[Chaser] Target perdido...")
+		end
+	end
+
+	self.correction = vmath.vector3(0, 0, 0)
+end
+
+function on_message(self, message_id, message, sender)
+	if not self.is_alive then
+		return
+	end
+
+	if message_id == hash("contact_point_response") then
+		-- Colisión con paredes
+		if message.group == hash("default") then
+			if message.distance > 0 then
+				local correction = message.normal * message.distance
+				self.correction = self.correction + correction
+			end
+		end
+
+		-- Colisión con jugador - hacer daño
+		if message.group == hash("player") then
+			print("¡Enemigo tocó al jugador!")
+			local my_pos = go.get_position()
+			msg.post(message.other_id, "enemy_damage", { enemy_position = my_pos })
+		end
+
+		-- Colisión con projectile - NO morir directamente
+		-- El projectile enviará "take_damage" si puede matar
+	end
+
+	-- Recibir daño (del projectile)
+	if message_id == hash("take_damage") then
+		self.is_alive = false
+		print("¡Enemigo eliminado!")
+
+		-- Notificar al wave_manager que este enemigo murió
+		msg.post("/wave_manager", "enemy_died")
+
+		go.delete()
+	end
+
+	-- Pausar enemigo
+	if message_id == hash("pause") then
+		self.is_paused = true
+		print("[Chaser] Pausado")
+	end
+
+	-- Reanudar enemigo
+	if message_id == hash("resume") then
+		self.is_paused = false
+		print("[Chaser] Reanudado")
+	end
+
+	-- Recibir el target del player
+	if message_id == hash("set_target") then
+		self.player_id = message.player_id
+		print("[Chaser] Target actualizado: " .. tostring(self.player_id))
+		return
+	end
+end

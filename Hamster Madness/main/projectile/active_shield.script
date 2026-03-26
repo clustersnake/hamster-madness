@@ -1,0 +1,77 @@
+-- active_shield.script
+-- Escudo en movimiento (knockback) - rebota pero NO mata
+
+go.property("speed", 400)
+go.property("max_distance", 200)
+
+-- Declarar función local al inicio
+local become_dropped_shield
+
+function init(self)
+	self.direction = vmath.vector3(0, 0, 0)
+	self.is_moving = false
+	self.distance_traveled = 0
+
+	self.bounce_cooldown = 0
+	self.cooldown_time = 0.05
+
+	print("Active shield creado")
+end
+
+function update(self, dt)
+	if self.bounce_cooldown > 0 then
+		self.bounce_cooldown = self.bounce_cooldown - dt
+	end
+
+	if self.is_moving then
+		local movement_distance = self.speed * dt
+		local movement = self.direction * movement_distance
+
+		local current_pos = go.get_position()
+		go.set_position(current_pos + movement)
+
+		self.distance_traveled = self.distance_traveled + movement_distance
+
+		if self.distance_traveled >= self.max_distance then
+			become_dropped_shield(self)  -- Sin self:
+		end
+	end
+end
+
+-- Definir la función local
+become_dropped_shield = function(self)
+	print("Active shield → Dropped shield")
+
+	local pos = go.get_position()
+	factory.create("#dropped_shield_factory", pos)
+
+	go.delete()
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("fire") then
+		self.direction = vmath.normalize(message.direction)
+		self.is_moving = true
+		self.distance_traveled = 0
+		self.bounce_cooldown = 0
+		print("Active shield disparado! Distancia máx: " .. self.max_distance .. "px")
+	end
+
+	if message_id == hash("contact_point_response") then
+		if message.group == hash("default") then
+			if self.is_moving and self.bounce_cooldown <= 0 then
+				local normal = message.normal
+				local dot = vmath.dot(self.direction, normal)
+				self.direction = self.direction - 2 * dot * normal
+				self.direction = vmath.normalize(self.direction)
+
+				local correction = normal * message.distance
+				local current_pos = go.get_position()
+				go.set_position(current_pos + correction)
+
+				self.bounce_cooldown = self.cooldown_time
+				print("Active shield rebote!")
+			end
+		end
+	end
+end
