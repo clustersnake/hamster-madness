@@ -1,6 +1,7 @@
 -- game_manager.script
 -- Controla el estado global: vidas, jugador activo, modo de juego
 
+local camera = require "orthographic.camera"
 local room_data = require "main.data.room_data"
 
 -- Forward declarations
@@ -30,14 +31,14 @@ function init(self)
 	room_data.current.ball_spawn.y,
 	0.5
 )
-factory.create("#ball_factory", ball_pos)
-print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
+	factory.create("#ball_factory", ball_pos)
+	print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
 
-print("[GameManager] Inicializado")
-print("[GameManager] Vidas disponibles: " .. #self.lives)
+	print("[GameManager] Inicializado")
+	print("[GameManager] Vidas disponibles: " .. #self.lives)
 
--- Actualizar HUD inicial
-msg.post("/hud#hud", "update_lives", { lives = #self.lives })
+	-- Actualizar HUD inicial
+	msg.post("/hud#hud", "update_lives", { lives = #self.lives })
 end
 
 function on_message(self, message_id, message, sender)
@@ -152,10 +153,22 @@ if self.current_life_index < #self.lives then
 			player_id = self.active_player_id
 		})
 
-		-- Notificar a la cámara que siga al nuevo player
-		msg.post("/camera#script", "follow", {
-			target = self.active_player_id
-		})
+		-- -- Notificar a la cámara que siga al nuevo player
+		-- msg.post("/camera#script", "follow", {
+		-- 	target = self.active_player_id
+		-- })
+		local room = room_data.current
+		local camera_id = go.get_id("/camera")
+
+		if room.scrollable then
+			-- Sala grande: activar follow
+			camera.follow(camera_id, self.active_player_id)
+			print("[GameManager] Cámara: follow activado para P2")
+		else
+			-- Sala fija: resetear posición por si acaso
+			go.set_position(vmath.vector3(room.camera_center.x, room.camera_center.y, 0), camera_id)
+			print("[GameManager] Cámara: fija en centro")
+		end
 
 		-- Cambiar estado
 		self.game_state = STATE.RESCUE
