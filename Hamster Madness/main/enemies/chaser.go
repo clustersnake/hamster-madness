@@ -10,8 +10,12 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"enemy\"\n"
+  data: "default_animation: \"idle\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
+  "size {\n"
+  "  x: 32.0\n"
+  "  y: 32.0\n"
+  "}\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
   "  texture: \"/main/enemies/enemies.atlas\"\n"
@@ -42,4 +46,18 @@ embedded_components {
   "  data: 25.0\n"
   "}\n"
   ""
+}
+embedded_components {
+  id: "shadow"
+  type: "sprite"
+  data: "default_animation: \"shadow\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/main/enemies/enemies.atlas\"\n"
+  "}\n"
+  ""
+  position {
+    y: -10.0
+  }
 }
