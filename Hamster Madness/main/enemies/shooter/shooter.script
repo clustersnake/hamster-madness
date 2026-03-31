@@ -1,0 +1,43 @@
+-- shooter.script
+-- Enemigo que dispara al jugador - Solo funciones de Defold
+
+local common = require "main.enemies.common.enemy_common"
+local behavior = require "main.enemies.shooter.shooter_behavior"
+
+go.property("speed", 40)
+
+-- ============================================================
+-- FUNCIONES DE DEFOLD
+-- ============================================================
+
+function init(self)
+	common.init_state(self)
+	common.request_target(self)
+
+	-- Estado específico del shooter
+	self.preferred_distance = 120
+	self.shoot_cooldown = 2.0
+	self.shoot_timer = 0
+	self.can_shoot = true
+end
+
+function update(self, dt)
+	behavior.update(self, dt)
+end
+
+function on_message(self, message_id, message, sender)
+	if not self.is_alive then
+		return
+	end
+
+	-- Mensajes comunes (daño, pausa, target)
+	if common.handle_message(self, message_id, message, sender) then
+		return
+	end
+
+	-- Colisiones
+	if message_id == hash("contact_point_response") then
+		common.handle_collision(self, message)
+		return
+	end
+end

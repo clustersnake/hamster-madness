@@ -3,9 +3,19 @@
 
 local room_data = require "main.data.room_data"
 
+-- ============================================================
+-- FACTORIES DE ENEMIGOS
+-- ============================================================
+
+local ENEMY_FACTORIES = {
+	chaser = "#chaser_factory",
+	shooter = "#shooter_factory",
+}
+
 -- Forward declarations
 local start_next_wave
 local spawn_enemy
+local get_enemy_type_for_wave
 local on_wave_complete
 local on_rescue_waves_complete
 local start_rescue_mode
@@ -16,26 +26,25 @@ local get_player_position
 -- Configuración de oleadas BALANCEADA
 local WAVE_CONFIG = {
 	normal = {
-		-- Fase de aprendizaje (oleadas 1-3)
-		{enemies = 2, spawn_delay = 0.6},   -- Introducción suave
-		{enemies = 3, spawn_delay = 0.55},  -- +1 enemigo
-		{enemies = 4, spawn_delay = 0.5},   -- +1 enemigo
+		-- Fase de aprendizaje (oleadas 1-3): solo chasers
+		{enemies = 2, spawn_delay = 0.6,  shooter_chance = 0},
+		{enemies = 3, spawn_delay = 0.55, shooter_chance = 0},
+		{enemies = 4, spawn_delay = 0.5,  shooter_chance = 0},
 
-		-- Fase de desafío moderado (oleadas 4-6)
-		{enemies = 5, spawn_delay = 0.45},  -- +1 enemigo
-		{enemies = 6, spawn_delay = 0.4},   -- +1 enemigo
-		{enemies = 7, spawn_delay = 0.38},  -- +1 enemigo
+		-- Fase de desafío moderado (oleadas 4-6): introducir shooters
+		{enemies = 5, spawn_delay = 0.45, shooter_chance = 0.2},
+		{enemies = 6, spawn_delay = 0.4,  shooter_chance = 0.3},
+		{enemies = 7, spawn_delay = 0.38, shooter_chance = 0.35},
 
-		-- Fase intensa (oleadas 7-9)
-		{enemies = 8, spawn_delay = 0.35},  -- +1 enemigo
-		{enemies = 9, spawn_delay = 0.32},  -- +1 enemigo
-		{enemies = 10, spawn_delay = 0.3},  -- +1 enemigo (cap base)
+		-- Fase intensa (oleadas 7-9): mix balanceado
+		{enemies = 8, spawn_delay = 0.35, shooter_chance = 0.4},
+		{enemies = 9, spawn_delay = 0.32, shooter_chance = 0.45},
+		{enemies = 10, spawn_delay = 0.3, shooter_chance = 0.5},
 	},
 	rescue = {
-		-- Rescate debe ser tenso pero justo
-		{enemies = 4, spawn_delay = 0.45},  -- Menos que antes
-		{enemies = 5, spawn_delay = 0.4},   -- Incremento gradual
-		{enemies = 6, spawn_delay = 0.35},  -- Clímax manejable
+		{enemies = 4, spawn_delay = 0.45, shooter_chance = 0.25},
+		{enemies = 5, spawn_delay = 0.4,  shooter_chance = 0.3},
+		{enemies = 6, spawn_delay = 0.35, shooter_chance = 0.35},
 	}
 }
 
@@ -51,7 +60,11 @@ function init(self)
 	self.active_player_id = go.get_id("/player")
 
 	-- Cola de puntos a usar para spawn escalonado
+	-- Ahora guarda {point, enemy_type}
 	self.spawn_queue = {}
+
+	-- Configuración de oleada actual
+	self.current_shooter_chance = 0
 
 	-- Modo rescate
 	self.is_rescue_mode = false
@@ -77,8 +90,8 @@ function update(self, dt)
 		self.spawn_timer = self.spawn_timer - dt
 
 		if self.spawn_timer <= 0 then
-			local point = table.remove(self.spawn_queue, 1)
-			spawn_enemy(self, point)
+			local spawn_data = table.remove(self.spawn_queue, 1)
+			spawn_enemy(self, spawn_data.point, spawn_data.enemy_type)
 			self.spawn_timer = self.spawn_delay
 		end
 	end
@@ -161,6 +174,10 @@ function on_message(self, message_id, message, sender)
 	end
 end
 
+-- ============================================================
+-- HELPERS
+-- ============================================================
+
 -- Obtiene la posición actual del jugador
 get_player_position = function()
 	local success, pos = pcall(function()
@@ -204,7 +221,18 @@ get_valid_spawn_points = function(self, count)
 	return selected
 end
 
-------------------
+-- Decide qué tipo de enemigo spawnear
+get_enemy_type_for_wave = function(self)
+	if math.random() < self.current_shooter_chance then
+		return "shooter"
+	else
+		return "chaser"
+	end
+end
+
+-- ============================================================
+-- OLEADAS
+-- ============================================================
 
 start_next_wave = function(self)
 	local config
@@ -230,24 +258,26 @@ start_next_wave = function(self)
 		if self.current_wave > #WAVE_CONFIG.normal then
 			local extra = self.current_wave - #WAVE_CONFIG.normal
 
-			-- Incremento logarítmico: cada vez añade menos enemigos
 			local enemy_bonus = math.floor(math.log(extra + 1) / math.log(2)) + 1
-
-			-- Cap máximo de enemigos para evitar caos total
 			local max_enemies = 15
 
 			config = {
 				enemies = math.min(config.enemies + enemy_bonus, max_enemies),
-				spawn_delay = math.max(0.25, config.spawn_delay - (extra * 0.02))
+				spawn_delay = math.max(0.25, config.spawn_delay - (extra * 0.02)),
+				shooter_chance = math.min(0.6, config.shooter_chance + (extra * 0.02))
 			}
 		end
 
 		wave_name = "OLEADA " .. self.current_wave
 	end
 
+	-- Guardar chance actual para usar en get_enemy_type_for_wave
+	self.current_shooter_chance = config.shooter_chance or 0
+
 	print("[WaveManager] ═══════════════════════════")
 	print("[WaveManager] " .. wave_name)
 	print("[WaveManager] Enemigos: " .. config.enemies)
+	print("[WaveManager] Shooter chance: " .. (self.current_shooter_chance * 100) .. "%")
 	print("[WaveManager] ═══════════════════════════")
 
 	-- Actualizar HUD (solo oleadas normales)
@@ -263,7 +293,14 @@ start_next_wave = function(self)
 	while enemies_remaining > 0 do
 		for _, point in ipairs(points) do
 			if enemies_remaining <= 0 then break end
-			table.insert(self.spawn_queue, point)
+
+			-- Determinar tipo de enemigo
+			local enemy_type = get_enemy_type_for_wave(self)
+
+			table.insert(self.spawn_queue, {
+				point = point,
+				enemy_type = enemy_type
+			})
 			enemies_remaining = enemies_remaining - 1
 		end
 	end
@@ -272,20 +309,33 @@ start_next_wave = function(self)
 	self.spawn_timer = 0.3
 end
 
------------------
+-- ============================================================
+-- SPAWN
+-- ============================================================
 
-spawn_enemy = function(self, point)
+spawn_enemy = function(self, point, enemy_type)
+	local factory_url = ENEMY_FACTORIES[enemy_type]
+
+	if not factory_url then
+		print("[WaveManager] ERROR: Factory no encontrada para: " .. tostring(enemy_type))
+		return
+	end
+
 	local pos = vmath.vector3(point.x, point.y, 0)
-	local enemy_id = factory.create("#chaser_factory", pos)
+	local enemy_id = factory.create(factory_url, pos)
 
 	if enemy_id then
 		self.enemies_alive = self.enemies_alive + 1
 		table.insert(self.spawned_enemies, enemy_id)
-		print("[WaveManager] Enemigo spawneado: " .. tostring(enemy_id))
+		print("[WaveManager] " .. enemy_type .. " spawneado: " .. tostring(enemy_id))
 	else
-		print("[WaveManager] ERROR: No se pudo crear enemigo")
+		print("[WaveManager] ERROR: No se pudo crear " .. enemy_type)
 	end
 end
+
+-- ============================================================
+-- COMPLETAR OLEADAS
+-- ============================================================
 
 on_wave_complete = function(self)
 	print("[WaveManager] ¡Oleada completada!")
@@ -296,7 +346,6 @@ on_wave_complete = function(self)
 	end)
 end
 
--- SIN countdown aquí - game_manager ya lo hizo
 start_rescue_mode = function(self, fallen_pos)
 	print("[WaveManager] ═══════════════════════════")
 	print("[WaveManager]   INICIANDO OLEADAS RESCATE")
@@ -306,7 +355,6 @@ start_rescue_mode = function(self, fallen_pos)
 	self.rescue_wave = 0
 	self.spawn_queue = {}
 
-	-- Iniciar primera oleada de rescate directamente
 	start_next_wave(self)
 end
 
