@@ -1,6 +1,6 @@
 components {
   id: "chaser"
-  component: "/main/enemies/chaser.script"
+  component: "/main/enemies/chaser/chaser.script"
   properties {
     id: "speed"
     value: "50.0"
@@ -10,7 +10,7 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"idle\"\n"
+  data: "default_animation: \"chaser_idle\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
   "  x: 32.0\n"
@@ -18,7 +18,7 @@ embedded_components {
   "}\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/enemies/enemies.atlas\"\n"
+  "  texture: \"/main/enemies/common/enemies.atlas\"\n"
   "}\n"
   ""
 }
@@ -54,7 +54,7 @@ embedded_components {
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/enemies/enemies.atlas\"\n"
+  "  texture: \"/main/enemies/common/enemies.atlas\"\n"
   "}\n"
   ""
   position {
