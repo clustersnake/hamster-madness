@@ -2,6 +2,7 @@
 -- Controla el spawn de enemigos y las oleadas
 
 local room_data = require "main.data.room_data"
+local BOSS_TRIGGER_WAVE = 1  -- El boss aparece después de esta oleada
 
 -- ============================================================
 -- FACTORIES DE ENEMIGOS
@@ -337,14 +338,37 @@ end
 -- COMPLETAR OLEADAS
 -- ============================================================
 
+-- on_wave_complete = function(self)
+-- 	print("[WaveManager] ¡Oleada completada!")
+-- 	msg.post("/hud#hud", "show_message", { text = "¡OLEADA COMPLETADA!", duration = 1.5 })
+-- 
+-- 	timer.delay(3.0, false, function()
+-- 		start_next_wave(self)
+-- 	end)
+-- end
+
 on_wave_complete = function(self)
 	print("[WaveManager] ¡Oleada completada!")
 	msg.post("/hud#hud", "show_message", { text = "¡OLEADA COMPLETADA!", duration = 1.5 })
 
+	-- ¿Es hora del boss? (solo en modo normal, no en rescate)
+	if not self.is_rescue_mode and self.current_wave >= BOSS_TRIGGER_WAVE then
+		print("[WaveManager] ═══════════════════════════")
+		print("[WaveManager]   ¡PREPARANDO BOSS FIGHT!  ")
+		print("[WaveManager] ═══════════════════════════")
+
+		timer.delay(2.0, false, function()
+			msg.post("/game_manager", "start_boss_fight")
+		end)
+		return  -- No iniciar más oleadas
+	end
+
+	-- Continuar con siguiente oleada normal
 	timer.delay(3.0, false, function()
 		start_next_wave(self)
 	end)
 end
+
 
 start_rescue_mode = function(self, fallen_pos)
 	print("[WaveManager] ═══════════════════════════")
