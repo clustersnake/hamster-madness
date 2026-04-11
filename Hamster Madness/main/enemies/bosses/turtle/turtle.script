@@ -1,0 +1,188 @@
+-- turtle.script
+-- Boss: Tortuga con 3 fases
+
+local states = require "main.enemies.bosses.turtle.turtle_states"
+
+-- ============================================================
+-- PROPIEDADES CONFIGURABLES
+-- ============================================================
+
+go.property("max_health", 3)
+go.property("walk_speed", 60)
+
+-- Aplastón normal
+go.property("aplaston_range", 120)
+go.property("aplaston_radius", 150)
+go.property("aplaston_telegraph", 0.8)
+go.property("aplaston_recovery", 1.2)
+
+-- Ataque especial (Mega/Rodada)
+go.property("special_cooldown_max", 8.0)
+go.property("charge_duration", 1.5)
+
+-- Rodada
+go.property("rodada_speed", 350)
+
+-- Parry
+go.property("parry_duration", 2.0)
+
+-- Vulnerable
+go.property("vulnerable_duration", 3.0)
+
+-- ============================================================
+-- INIT
+-- ============================================================
+
+function init(self)
+	-- Estado
+	self.current_state = nil
+	self.state_timer = 0
+
+	-- Vida y fase
+	self.health = self.max_health
+	self.current_phase = 1
+
+	-- Flags
+	self.can_be_damaged = false
+	self.is_parrying = false
+
+	-- Cooldowns
+	self.special_cooldown = 0  -- Empieza en 0 para el mega inicial
+
+	-- Target
+	self.player_id = nil
+
+	-- Rodada
+	self.rodada_direction = vmath.vector3(1, 0, 0)
+	self.rodada_bounces = 0
+	self.max_bounces = 5
+
+	print("[Turtle] ═══════════════════════════")
+	print("[Turtle]   BOSS INICIALIZADO        ")
+	print("[Turtle]   Vida: " .. self.health)
+	print("[Turtle]   Fase: " .. self.current_phase)
+	print("[Turtle] ═══════════════════════════")
+
+	-- Iniciar en INTRO (mega aplastón forzado)
+	states.change_state(self, states.STATE.INTRO)
+end
+
+-- ============================================================
+-- UPDATE
+-- ============================================================
+
+function update(self, dt)
+	states.update(self, dt)
+
+	-- Actualizar cooldown del especial
+	if self.special_cooldown > 0 then
+		self.special_cooldown = self.special_cooldown - dt
+	end
+end
+
+-- ============================================================
+-- MENSAJES
+-- ============================================================
+
+function on_message(self, message_id, message, sender)
+	-- Recibir target
+	if message_id == hash("set_target") then
+		self.player_id = message.player_id
+		print("[Turtle] Target: " .. tostring(self.player_id))
+		return
+	end
+
+	-- Pausa (para cuando muere el jugador)
+	if message_id == hash("pause") then
+		self.is_paused = true
+		return
+	end
+
+	if message_id == hash("resume") then
+		self.is_paused = false
+		return
+	end
+
+	-- Colisiones físicas
+	if message_id == hash("contact_point_response") then
+		-- Rebote en paredes durante rodada
+		if message.group == hash("default") then
+			states.on_hit_wall(self, message.normal)
+		end
+
+		-- Impacto con proyectil del jugador
+		if message.group == hash("projectile") then
+			local result = states.on_hit_by_projectile(self)
+
+			if result == "damage" then
+				-- Recibir daño (ya está vulnerable)
+				self.health = self.health - 1
+				print("[Turtle] ¡DAÑO! Vida restante: " .. self.health)
+
+				-- ═══════════════════════════════════════
+				-- FEEDBACK DE IMPACTO (NUEVO)
+				-- ═══════════════════════════════════════
+				states.on_damage_taken(self)
+				
+				-- Destruir el proyectil
+				-- msg.post(message.other_id, "destroy")
+
+				if self.health <= 0 then
+					states.change_state(self, states.STATE.DEAD)
+				else
+					-- Avanzar de fase
+					self.current_phase = self.current_phase + 1
+					print("[Turtle] ═══════════════════════════")
+					print("[Turtle]      ¡FASE " .. self.current_phase .. "!")
+					print("[Turtle] ═══════════════════════════")
+
+					-- Reset cooldown para la nueva fase
+					self.special_cooldown = self.special_cooldown_max
+					states.change_state(self, states.STATE.IDLE)
+				end
+
+			elseif result == "parry" then
+				-- Reflejar proyectil
+				-- msg.post(message.other_id, "reflect", {
+				-- 	new_direction = -vmath.normalize(go.get_position() - go.get_position(message.other_id))
+				-- })
+
+				-- Calcular dirección hacia el jugador
+				local boss_pos = go.get_position()
+				local projectile_pos = go.get_position(message.other_id)
+
+				-- Dirección del proyectil hacia el jugador (a través del boss)
+				local to_player = vmath.vector3(0, -1, 0)  -- Default: abajo
+				if self.player_id and go.exists(self.player_id) then
+					local player_pos = go.get_position(self.player_id)
+					to_player = vmath.normalize(player_pos - boss_pos)
+				end
+
+				-- Agregar variación aleatoria para que no sea 100% preciso
+				local variation = (math.random() - 0.5) * 0.5
+				local angle = math.atan2(to_player.y, to_player.x) + variation
+				local reflected_dir = vmath.vector3(math.cos(angle), math.sin(angle), 0)
+
+				msg.post(message.other_id, "reflect", {
+					direction = reflected_dir
+				})
+
+				print("[Turtle] ¡PARRY! Proyectil reflejado hacia el jugador")
+
+			elseif result == true then
+				-- Volteada durante rodada (ahora vulnerable)
+				msg.post(message.other_id, "destroy")
+			end
+		end
+		return
+	end
+
+	-- Trigger con proyectil (alternativa si usas triggers)
+	if message_id == hash("trigger_response") then
+		if message.group == hash("projectile") and message.enter then
+			local result = states.on_hit_by_projectile(self)
+			-- Mismo manejo que arriba...
+		end
+		return
+	end
+end

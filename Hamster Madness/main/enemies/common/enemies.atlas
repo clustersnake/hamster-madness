@@ -8,6 +8,9 @@ images {
   image: "/main/enemies/chaser/sprites/shadow.png"
   sprite_trim_mode: SPRITE_TRIM_MODE_4
 }
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle.png"
+}
 animations {
   id: "chaser_idle"
   images {
@@ -133,5 +136,50 @@ animations {
     image: "/main/enemies/shooter/sprites/walk/shooter_anim_0025.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "shooter_projectile"
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0000.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0001.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0002.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0003.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0004.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0005.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0006.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0007.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0008.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0009.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0010.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0011.png"
+  }
+  images {
+    image: "/main/enemies/shooter/sprites/shooter_projectile/shot_anim.0012.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 12
+  flip_horizontal: 1
 }
 extrude_borders: 2
