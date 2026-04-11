@@ -1,15 +1,25 @@
 components {
-  id: "shooter"
-  component: "/main/enemies/shooter/shooter.script"
+  id: "shooter_projectile"
+  component: "/main/enemies/shooter/shooter_projectile.script"
+  properties {
+    id: "speed"
+    value: "200.0"
+    type: PROPERTY_TYPE_NUMBER
+  }
+  properties {
+    id: "damage"
+    value: "1.0"
+    type: PROPERTY_TYPE_NUMBER
+  }
 }
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"shooter_walk\"\n"
+  data: "default_animation: \"shooter_projectile\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
-  "  x: 32.0\n"
-  "  y: 32.0\n"
+  "  x: 16.0\n"
+  "  y: 16.0\n"
   "}\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
@@ -24,10 +34,9 @@ embedded_components {
   "mass: 0.0\n"
   "friction: 0.1\n"
   "restitution: 0.5\n"
-  "group: \"enemy\"\n"
-  "mask: \"default\"\n"
+  "group: \"enemy_projectile\"\n"
   "mask: \"player\"\n"
-  "mask: \"projectile\"\n"
+  "mask: \"default\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
@@ -38,26 +47,7 @@ embedded_components {
   "    index: 0\n"
   "    count: 1\n"
   "  }\n"
-  "  data: 16.0\n"
+  "  data: 4.0\n"
   "}\n"
   ""
-}
-embedded_components {
-  id: "shadow"
-  type: "sprite"
-  data: "default_animation: \"shadow\"\n"
-  "material: \"/builtins/materials/sprite.material\"\n"
-  "textures {\n"
-  "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/enemies/common/enemies.atlas\"\n"
-  "}\n"
-  ""
-  position {
-    z: -0.1
-  }
-}
-embedded_components {
-  id: "projectile_factory"
-  type: "factory"
-  data: "prototype: \"/main/enemies/shooter/shooter_projectile.go\"\n"
 }

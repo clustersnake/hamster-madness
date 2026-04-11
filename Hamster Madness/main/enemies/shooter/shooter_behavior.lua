@@ -9,8 +9,10 @@ local M = {}
 -- CONFIGURACIÓN
 -- ============================================================
 
-M.MIN_DISTANCE = 80   -- Muy cerca: retroceder
-M.MAX_DISTANCE = 150  -- Muy lejos: acercarse
+M.MIN_DISTANCE = 80
+M.MAX_DISTANCE = 150
+M.SHOOT_COOLDOWN = 2.0
+M.PROJECTILE_OFFSET = 15  -- Distancia desde el centro al spawnear bala
 
 -- ============================================================
 -- MOVIMIENTO
@@ -31,7 +33,7 @@ function M.update(self, dt)
 	local to_player = player_pos - my_pos
 	local distance = vmath.length(to_player)
 
-	-- Determinar dirección de movimiento
+	-- Determinar dirección hacia el jugador
 	if distance > 0 then
 		self.direction = vmath.normalize(to_player)
 	end
@@ -40,22 +42,15 @@ function M.update(self, dt)
 	local movement = vmath.vector3(0)
 
 	if distance < M.MIN_DISTANCE then
-		-- Muy cerca: alejarse
 		movement = -self.direction * self.speed * dt
 	elseif distance > M.MAX_DISTANCE then
-		-- Muy lejos: acercarse lentamente
 		movement = self.direction * self.speed * 0.5 * dt
 	end
-	-- Si está en rango ideal: no se mueve
 
-	-- Aplicar movimiento
 	go.set_position(my_pos + movement + self.correction)
 
-	-- Actualizar facing (voltear sprite)
 	M.update_facing(self, to_player)
-
-	-- Actualizar disparo (por ahora solo timer)
-	M.update_shooting(self, dt)
+	M.update_shooting(self, dt, distance)
 
 	common.reset_correction(self)
 end
@@ -72,10 +67,11 @@ function M.update_facing(self, to_player)
 end
 
 -- ============================================================
--- DISPARO (placeholder por ahora)
+-- DISPARO
 -- ============================================================
 
-function M.update_shooting(self, dt)
+function M.update_shooting(self, dt, distance)
+	-- Cooldown
 	if not self.can_shoot then
 		self.shoot_timer = self.shoot_timer - dt
 		if self.shoot_timer <= 0 then
@@ -83,11 +79,29 @@ function M.update_shooting(self, dt)
 		end
 	end
 
-	-- Por ahora solo imprime cuando "dispararía"
-	if self.can_shoot and common.has_valid_target(self) then
-		-- print("Shooter: ¡Dispararía ahora!")
+	-- Disparar si está en rango y puede
+	local in_range = distance <= M.MAX_DISTANCE and distance >= M.MIN_DISTANCE * 0.5
+
+	if self.can_shoot and in_range and common.has_valid_target(self) then
+		M.fire_projectile(self)
 		self.can_shoot = false
-		self.shoot_timer = self.shoot_cooldown
+		self.shoot_timer = M.SHOOT_COOLDOWN
+	end
+end
+
+function M.fire_projectile(self)
+	local my_pos = go.get_position()
+
+	-- Posición de spawn (un poco adelante del enemigo)
+	local spawn_pos = my_pos + self.direction * M.PROJECTILE_OFFSET
+
+	-- Crear proyectil
+	local projectile_id = factory.create("#projectile_factory", spawn_pos)
+
+	if projectile_id then
+		-- Enviar dirección al proyectil
+		msg.post(projectile_id, "set_direction", { direction = self.direction })
+		print("[Shooter] Disparo!")
 	end
 end
 

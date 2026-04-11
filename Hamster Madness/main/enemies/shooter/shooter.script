@@ -1,14 +1,8 @@
 -- shooter.script
--- Enemigo que dispara al jugador - Solo funciones de Defold
-
 local common = require "main.enemies.common.enemy_common"
 local behavior = require "main.enemies.shooter.shooter_behavior"
 
 go.property("speed", 40)
-
--- ============================================================
--- FUNCIONES DE DEFOLD
--- ============================================================
 
 function init(self)
 	common.init_state(self)
