@@ -20,3 +20,9 @@ embedded_components {
   data: "prototype: \"/main/projectile/dropped_shield.go\"\n"
   ""
 }
+embedded_components {
+  id: "turtle_factory"
+  type: "factory"
+  data: "prototype: \"/main/enemies/bosses/turtle/turtle.go\"\n"
+  ""
+}

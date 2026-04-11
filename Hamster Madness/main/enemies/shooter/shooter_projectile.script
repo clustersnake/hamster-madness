@@ -1,0 +1,63 @@
+-- shooter_projectile.script
+
+go.property("speed", 200)
+go.property("damage", 1)
+go.property("lifetime", 4)
+
+function init(self)
+	self.direction = vmath.vector3(1, 0, 0)
+	self.timer = 0
+	self.is_alive = true
+end
+
+function update(self, dt)
+	if not self.is_alive then
+		return
+	end
+
+	-- Movimiento
+	local pos = go.get_position()
+	pos = pos + self.direction * self.speed * dt
+	go.set_position(pos)
+
+	-- Tiempo de vida
+	self.timer = self.timer + dt
+	if self.timer >= self.lifetime then
+		go.delete()
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if not self.is_alive then
+		return
+	end
+
+	-- Configurar dirección inicial
+	if message_id == hash("set_direction") then
+		self.direction = message.direction
+
+		-- Rotar sprite hacia la dirección
+		local angle = math.atan2(self.direction.y, self.direction.x)
+		go.set_rotation(vmath.quat_rotation_z(angle))
+		return
+	end
+
+	-- Colisiones
+	if message_id == hash("contact_point_response") then
+		if message.group == hash("player") then
+			-- Dañar al jugador
+			msg.post(message.other_id, "enemy_damage", { 
+				damage = self.damage,
+				enemy_position = go.get_position()
+			})
+			self.is_alive = false
+			go.delete()
+
+		elseif message.group == hash("default") then
+			-- Chocó con pared
+			self.is_alive = false
+			go.delete()
+		end
+		return
+	end
+end

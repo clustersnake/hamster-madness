@@ -1,7 +1,0 @@
-images {
-  image: "/main/enemies/sprites/enemy.png"
-}
-images {
-  image: "/main/enemies/sprites/enemy_2.png"
-}
-extrude_borders: 2
