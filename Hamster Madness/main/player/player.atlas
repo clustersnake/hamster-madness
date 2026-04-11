@@ -4,13 +4,28 @@ images {
 animations {
   id: "walk_down"
   images {
-    image: "/main/player/sprites/walk_0.png"
+    image: "/main/player/sprites/walk/down/walk_down.0000.png"
   }
   images {
-    image: "/main/player/sprites/walk_2.png"
+    image: "/main/player/sprites/walk/down/walk_down.0001.png"
   }
   images {
-    image: "/main/player/sprites/walk_5.png"
+    image: "/main/player/sprites/walk/down/walk_down.0002.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/down/walk_down.0003.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/down/walk_down.0004.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/down/walk_down.0005.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/down/walk_down.0006.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/down/walk_down.0007.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 3
@@ -18,10 +33,28 @@ animations {
 animations {
   id: "idle_down"
   images {
-    image: "/main/player/sprites/idle_1.png"
+    image: "/main/player/sprites/idle/down/idle_down.0000.png"
   }
   images {
-    image: "/main/player/sprites/idle_2.png"
+    image: "/main/player/sprites/idle/down/idle_down.0001.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/down/idle_down.0002.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/down/idle_down.0003.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/down/idle_down.0004.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/down/idle_down.0005.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/down/idle_down.0006.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/down/idle_down.0007.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 3
@@ -38,29 +71,33 @@ animations {
     image: "/main/player/sprites/hurt_3.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 4
-}
-animations {
-  id: "walk_right"
-  images {
-    image: "/main/player/sprites/walk_right_1.png"
-  }
-  images {
-    image: "/main/player/sprites/walk_right_2.png"
-  }
-  playback: PLAYBACK_LOOP_FORWARD
-  fps: 3
+  fps: 2
 }
 animations {
   id: "idle_right"
   images {
-    image: "/main/player/sprites/idle_right_1.png"
+    image: "/main/player/sprites/idle/side/idle.0000.png"
   }
   images {
-    image: "/main/player/sprites/idle_right_2.png"
+    image: "/main/player/sprites/idle/side/idle.0001.png"
   }
   images {
-    image: "/main/player/sprites/idle_right_3.png"
+    image: "/main/player/sprites/idle/side/idle.0002.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/side/idle.0003.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/side/idle.0004.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/side/idle.0005.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/side/idle.0006.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/side/idle.0007.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 3
@@ -68,16 +105,28 @@ animations {
 animations {
   id: "idle_up"
   images {
-    image: "/main/player/sprites/idle_up_1.png"
+    image: "/main/player/sprites/idle/up/idle_up.0000.png"
   }
   images {
-    image: "/main/player/sprites/idle_up_2.png"
+    image: "/main/player/sprites/idle/up/idle_up.0001.png"
   }
   images {
-    image: "/main/player/sprites/idle_up_3.png"
+    image: "/main/player/sprites/idle/up/idle_up.0002.png"
   }
   images {
-    image: "/main/player/sprites/idle_up_4.png"
+    image: "/main/player/sprites/idle/up/idle_up.0003.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/up/idle_up.0004.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/up/idle_up.0005.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/up/idle_up.0006.png"
+  }
+  images {
+    image: "/main/player/sprites/idle/up/idle_up.0007.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 3
@@ -85,10 +134,57 @@ animations {
 animations {
   id: "walk_up"
   images {
-    image: "/main/player/sprites/walk_up_1.png"
+    image: "/main/player/sprites/walk/up/walk_up.0000.png"
   }
   images {
-    image: "/main/player/sprites/walk_up_2.png"
+    image: "/main/player/sprites/walk/up/walk_up.0001.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/up/walk_up.0002.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/up/walk_up.0003.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/up/walk_up.0004.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/up/walk_up.0005.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/up/walk_up.0006.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/up/walk_up.0007.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 3
+}
+animations {
+  id: "walk_right"
+  images {
+    image: "/main/player/sprites/walk/side/walk.0000.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/side/walk.0001.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/side/walk.0002.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/side/walk.0003.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/side/walk.0004.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/side/walk.0005.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/side/walk.0006.png"
+  }
+  images {
+    image: "/main/player/sprites/walk/side/walk.0007.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 3
