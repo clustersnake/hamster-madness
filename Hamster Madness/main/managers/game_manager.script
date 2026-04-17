@@ -30,12 +30,15 @@ function init(self)
 	self.fallen_position = nil
 	self.boss_id = nil 
 
+
+	
+	
 	-- Spawnear la bola al inicio del juego
 	local ball_pos = vmath.vector3(
-	room_data.current.ball_spawn.x,
-	room_data.current.ball_spawn.y,
-	0.5
-)
+		room_data.current.ball_spawn.x,
+		room_data.current.ball_spawn.y,
+		0.5
+	)
 	factory.create("#ball_factory", ball_pos)
 	print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
 
@@ -44,6 +47,7 @@ function init(self)
 
 	-- Actualizar HUD inicial
 	msg.post("/hud#hud", "update_lives", { lives = #self.lives })
+
 end
 
 function on_message(self, message_id, message, sender)
