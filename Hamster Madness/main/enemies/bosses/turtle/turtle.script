@@ -2,6 +2,7 @@
 -- Boss: Tortuga con 3 fases
 
 local states = require "main.enemies.bosses.turtle.turtle_states"
+local common = require "main.shared.entity_common"
 
 -- ============================================================
 -- PROPIEDADES CONFIGURABLES
@@ -34,7 +35,10 @@ go.property("vulnerable_duration", 3.0)
 -- ============================================================
 
 function init(self)
-	-- Estado
+	-- Estado común (player_id, is_alive, is_paused, etc.)
+	common.init_state(self)
+
+	-- Estado del boss
 	self.current_state = nil
 	self.state_timer = 0
 
@@ -47,10 +51,7 @@ function init(self)
 	self.is_parrying = false
 
 	-- Cooldowns
-	self.special_cooldown = 0  -- Empieza en 0 para el mega inicial
-
-	-- Target
-	self.player_id = nil
+	self.special_cooldown = 0
 
 	-- Rodada
 	self.rodada_direction = vmath.vector3(1, 0, 0)
@@ -63,7 +64,6 @@ function init(self)
 	print("[Turtle]   Fase: " .. self.current_phase)
 	print("[Turtle] ═══════════════════════════")
 
-	-- Iniciar en INTRO (mega aplastón forzado)
 	states.change_state(self, states.STATE.INTRO)
 end
 
@@ -72,9 +72,12 @@ end
 -- ============================================================
 
 function update(self, dt)
+	if not common.can_act(self) then
+		return
+	end
+
 	states.update(self, dt)
 
-	-- Actualizar cooldown del especial
 	if self.special_cooldown > 0 then
 		self.special_cooldown = self.special_cooldown - dt
 	end
@@ -85,104 +88,138 @@ end
 -- ============================================================
 
 function on_message(self, message_id, message, sender)
-	-- Recibir target
-	if message_id == hash("set_target") then
-		self.player_id = message.player_id
-		print("[Turtle] Target: " .. tostring(self.player_id))
-		return
-	end
-
-	-- Pausa (para cuando muere el jugador)
-	if message_id == hash("pause") then
-		self.is_paused = true
-		return
-	end
-
-	if message_id == hash("resume") then
-		self.is_paused = false
+	-- Mensajes comunes (pause, resume, set_target)
+	-- Nota: NO usamos take_damage de common porque el boss tiene lógica especial
+	if message_id == hash("pause") or 
+	message_id == hash("resume") or 
+	message_id == hash("set_target") then
+		common.handle_message(self, message_id, message, sender)
 		return
 	end
 
 	-- Colisiones físicas
 	if message_id == hash("contact_point_response") then
-		-- Rebote en paredes durante rodada
-		if message.group == hash("default") then
-			states.on_hit_wall(self, message.normal)
-		end
-
-		-- Impacto con proyectil del jugador
-		if message.group == hash("projectile") then
-			local result = states.on_hit_by_projectile(self)
-
-			if result == "damage" then
-				-- Recibir daño (ya está vulnerable)
-				self.health = self.health - 1
-				print("[Turtle] ¡DAÑO! Vida restante: " .. self.health)
-
-				-- ═══════════════════════════════════════
-				-- FEEDBACK DE IMPACTO (NUEVO)
-				-- ═══════════════════════════════════════
-				states.on_damage_taken(self)
-				
-				-- Destruir el proyectil
-				-- msg.post(message.other_id, "destroy")
-
-				if self.health <= 0 then
-					states.change_state(self, states.STATE.DEAD)
-				else
-					-- Avanzar de fase
-					self.current_phase = self.current_phase + 1
-					print("[Turtle] ═══════════════════════════")
-					print("[Turtle]      ¡FASE " .. self.current_phase .. "!")
-					print("[Turtle] ═══════════════════════════")
-
-					-- Reset cooldown para la nueva fase
-					self.special_cooldown = self.special_cooldown_max
-					states.change_state(self, states.STATE.IDLE)
-				end
-
-			elseif result == "parry" then
-				-- Reflejar proyectil
-				-- msg.post(message.other_id, "reflect", {
-				-- 	new_direction = -vmath.normalize(go.get_position() - go.get_position(message.other_id))
-				-- })
-
-				-- Calcular dirección hacia el jugador
-				local boss_pos = go.get_position()
-				local projectile_pos = go.get_position(message.other_id)
-
-				-- Dirección del proyectil hacia el jugador (a través del boss)
-				local to_player = vmath.vector3(0, -1, 0)  -- Default: abajo
-				if self.player_id and go.exists(self.player_id) then
-					local player_pos = go.get_position(self.player_id)
-					to_player = vmath.normalize(player_pos - boss_pos)
-				end
-
-				-- Agregar variación aleatoria para que no sea 100% preciso
-				local variation = (math.random() - 0.5) * 0.5
-				local angle = math.atan2(to_player.y, to_player.x) + variation
-				local reflected_dir = vmath.vector3(math.cos(angle), math.sin(angle), 0)
-
-				msg.post(message.other_id, "reflect", {
-					direction = reflected_dir
-				})
-
-				print("[Turtle] ¡PARRY! Proyectil reflejado hacia el jugador")
-
-			elseif result == true then
-				-- Volteada durante rodada (ahora vulnerable)
-				msg.post(message.other_id, "destroy")
-			end
-		end
+		handle_collision(self, message)
 		return
 	end
 
-	-- Trigger con proyectil (alternativa si usas triggers)
+	-- Trigger con proyectil (alternativa)
 	if message_id == hash("trigger_response") then
 		if message.group == hash("projectile") and message.enter then
-			local result = states.on_hit_by_projectile(self)
-			-- Mismo manejo que arriba...
+			handle_projectile_hit(self, message)
 		end
 		return
 	end
+end
+
+-- ============================================================
+-- COLISIONES (funciones locales)
+-- ============================================================
+
+function handle_collision(self, message)
+	-- Rebote en paredes durante rodada
+	if message.group == hash("default") then
+		handle_wall_collision(self, message)
+		return
+	end
+
+	-- Daño al jugador por contacto
+	if message.group == hash("player") then
+		common.damage_player(self, message.other_id)
+		return
+	end
+
+	-- Impacto con proyectil
+	if message.group == hash("projectile") then
+		handle_projectile_hit(self, message)
+		return
+	end
+end
+
+function handle_wall_collision(self, message)
+	if self.current_state ~= states.STATE.RODADA then
+		return
+	end
+
+	local bounced = common.handle_wall_bounce(self, message.normal, {
+		direction_field = "rodada_direction",
+		bounce_field = "rodada_bounces",
+		max_bounces = self.max_bounces,
+		on_max_bounces = function(boss)
+			states.on_rodada_complete(boss)
+		end
+	})
+
+	-- Aplicar variación al ángulo después del rebote
+	if bounced then
+		states.apply_bounce_variation(self)
+	end
+end
+
+function handle_projectile_hit(self, message)
+	local result = states.on_hit_by_projectile(self)
+
+	if result == "damage" then
+		apply_damage(self)
+
+	elseif result == "parry" then
+		reflect_projectile(self, message.other_id)
+
+	elseif result == true then
+		-- Volteada durante rodada
+		msg.post(message.other_id, "destroy")
+	end
+end
+
+-- ============================================================
+-- DAÑO AL BOSS
+-- ============================================================
+
+function apply_damage(self)
+	self.health = self.health - 1
+	print("[Turtle] ¡DAÑO! Vida restante: " .. self.health)
+
+	states.on_damage_taken(self)
+
+	if self.health <= 0 then
+		states.change_state(self, states.STATE.DEAD)
+	else
+		advance_phase(self)
+	end
+end
+
+function advance_phase(self)
+	self.current_phase = self.current_phase + 1
+
+	print("[Turtle] ═══════════════════════════")
+	print("[Turtle]      ¡FASE " .. self.current_phase .. "!")
+	print("[Turtle] ═══════════════════════════")
+
+	self.special_cooldown = self.special_cooldown_max
+	states.change_state(self, states.STATE.IDLE)
+end
+
+-- ============================================================
+-- PARRY / REFLEJO
+-- ============================================================
+
+function reflect_projectile(self, projectile_id)
+	local boss_pos = go.get_position()
+	local to_player = vmath.vector3(0, -1, 0)
+
+	if common.has_valid_target(self) then
+		local player_pos = go.get_position(self.player_id)
+		to_player = vmath.normalize(player_pos - boss_pos)
+	end
+
+	-- Variación aleatoria para que no sea 100% preciso
+	local variation = (math.random() - 0.5) * 0.5
+	local angle = math.atan2(to_player.y, to_player.x) + variation
+	local reflected_dir = vmath.vector3(math.cos(angle), math.sin(angle), 0)
+
+	msg.post(projectile_id, "reflect", {
+		direction = reflected_dir
+	})
+
+	print("[Turtle] ¡PARRY! Proyectil reflejado hacia el jugador")
 end
