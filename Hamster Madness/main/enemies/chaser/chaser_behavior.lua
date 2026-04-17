@@ -1,7 +1,7 @@
 -- chaser_behavior.lua
 -- Comportamiento específico del Chaser: perseguir al jugador constantemente
 
-local common = require "main.enemies.common.enemy_common"
+local common = require "main.shared.entity_common"
 
 local M = {}
 

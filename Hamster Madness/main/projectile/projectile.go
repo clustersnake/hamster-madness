@@ -47,6 +47,6 @@ embedded_components {
 embedded_components {
   id: "dropped_shield_factory"
   type: "factory"
-  data: "prototype: \"/main/projectile/dropped_shield.go\"\n"
+  data: "prototype: \"/main/shield/dropped_shield.go\"\n"
   ""
 }

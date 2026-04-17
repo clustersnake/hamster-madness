@@ -67,6 +67,6 @@ embedded_components {
 embedded_components {
   id: "active_shield_factory"
   type: "factory"
-  data: "prototype: \"/main/projectile/active_shield.go\"\n"
+  data: "prototype: \"/main/shield/active_shield.go\"\n"
   ""
 }
