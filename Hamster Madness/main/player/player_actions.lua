@@ -1,6 +1,8 @@
 -- player_actions.lua
 -- Acciones y lógica del jugador
 
+local animation = require "main.player.player_animation"
+
 local M = {}
 
 -- ============================================================
@@ -105,6 +107,9 @@ function M.take_damage(self, enemy_position)
 if self.is_invulnerable then
 	return
 end
+
+-- Animación de daño (MOVIDO FUERA DEL IF)
+animation.on_damage(self)
 
 if self.has_projectile then
 	print("¡Escudo destruido!")
