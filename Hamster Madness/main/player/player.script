@@ -14,7 +14,7 @@ go.property("invulnerability_time", 1.5)
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-
+	self.tutorial_active = true
 	-- Estado de movimiento
 	self.direction = vmath.vector3(0, 0, 0)
 	self.facing = vmath.vector3(0, -1, 0)
@@ -64,12 +64,18 @@ function on_input(self, action_id, action)
 	local move_dir = actions.MOVEMENT_MAP[action_id]
 	if move_dir then
 		self.direction = self.direction + move_dir
+		if self.tutorial_active then
+			msg.post("/tutorial_floor", "hide_move")
+		end
 		return true
 	end
 
 	-- Disparar
 	if action_id == hash("shoot") and action.pressed then
 		actions.fire_projectile(self)
+		if self.tutorial_active then
+			msg.post("/tutorial_floor", "hide_attack")
+		end
 		return true
 	end
 
@@ -92,6 +98,9 @@ function on_message(self, message_id, message, sender)
 	-- Recoger proyectil
 	if message_id == hash("projectile_picked_up") then
 		actions.set_shield_state(self, true)
+		if self.tutorial_active then
+			msg.post("/tutorial_floor", "show_attack")
+		end
 		print("¡Escudo recogido!")
 		return
 	end
@@ -118,7 +127,15 @@ function on_message(self, message_id, message, sender)
 	-- Rescate completado
 	if message_id == hash("rescue_completed") then
 		actions.clear_rescue_state(self)
+		if self.tutorial_active then
+			msg.post("/tutorial_floor", "hide_rescue")
+		end
 		print("[Player] Rescate completado - referencias limpiadas")
+		return
+	end
+
+	if message_id == hash("tutorial_complete") then
+		self.tutorial_active = false
 		return
 	end
 end
