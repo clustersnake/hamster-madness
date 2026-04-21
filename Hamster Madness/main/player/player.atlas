@@ -25,9 +25,6 @@ animations {
   images {
     image: "/main/player/sprites/hurt_2.png"
   }
-  images {
-    image: "/main/player/sprites/hurt_3.png"
-  }
   playback: PLAYBACK_LOOP_FORWARD
   fps: 2
 }
