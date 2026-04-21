@@ -4,21 +4,32 @@
 local camera = require "orthographic.camera"
 local room_data = require "main.data.room_data"
 
--- Forward declarations
+-- ============================================================
+-- ESTADOS DEL JUEGO
+-- ============================================================
+
+local STATE = {
+	PLAYING = "playing",
+	TRANSITIONING = "transitioning",
+	RESCUE = "rescue",
+	BOSS_FIGHT = "boss_fight",
+	VICTORY = "victory",
+	GAME_OVER = "game_over"
+}
+
+-- ============================================================
+-- FORWARD DECLARATIONS
+-- ============================================================
+
 local handle_player_death
 local handle_rescue_complete
 local find_farthest_spawn_point
 local handle_boss_fight
 local handle_boss_defeated
 
-local STATE = {
-	PLAYING = "playing",
-	TRANSITIONING = "transitioning",
-	RESCUE = "rescue",
-	BOSS_FIGHT = "boss_fight",    -- ← NUEVO
-	VICTORY = "victory",          -- ← NUEVO
-	GAME_OVER = "game_over"
-}
+-- ============================================================
+-- INIT
+-- ============================================================
 
 function init(self)
 	self.lives = {"player1", "player2"}
@@ -28,7 +39,7 @@ function init(self)
 	self.active_player_id = nil
 	self.fallen_player_id = nil
 	self.fallen_position = nil
-	self.boss_id = nil 
+	self.boss_id = nil
 
 	-- Spawnear la bola al inicio del juego
 	local ball_pos = vmath.vector3(
@@ -36,61 +47,70 @@ function init(self)
 	room_data.current.ball_spawn.y,
 	0.5
 )
-	factory.create("#ball_factory", ball_pos)
-	print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
+factory.create("#ball_factory", ball_pos)
+print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
 
-	print("[GameManager] Inicializado")
-	print("[GameManager] Vidas disponibles: " .. #self.lives)
+print("[GameManager] Inicializado")
+print("[GameManager] Vidas disponibles: " .. #self.lives)
 
-	-- Actualizar HUD inicial
-	msg.post("/hud#hud", "update_lives", { lives = #self.lives })
+-- Actualizar HUD inicial
+msg.post("/hud#hud", "update_lives", { lives = #self.lives })
 end
+
+-- ============================================================
+-- ON MESSAGE
+-- ============================================================
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("register_player") then
-		self.active_player_id = sender
-		print("[GameManager] Player registrado: " .. tostring(sender))
-		return
-	end
-
-	if message_id == hash("player_died") then
-		handle_player_death(self, message)
-		return
-	end
-
-	if message_id == hash("rescue_started") then
-		print("[GameManager] Rescate iniciado - mantén E para rescatar")
-		return
-	end
-
-	if message_id == hash("rescue_cancelled") then
-		print("[GameManager] Rescate cancelado")
-		return
-	end
-
-	if message_id == hash("rescue_available") then
-		print("[GameManager] ═══════════════════════════")
-		print("[GameManager] ¡Oleadas completadas!")
-		print("[GameManager] Acércate al caído y mantén E")
-		print("[GameManager] ═══════════════════════════")
-		msg.post("/hud#hud", "show_message", { text = "¡RESCATA A TU COMPAÑERO!", duration = 2.0 })
-		return
-	end
-
-	if message_id == hash("rescue_complete") then
-		handle_rescue_complete(self)
-		return
-	end
-	if message_id == hash("start_boss_fight") then
-		handle_boss_fight(self)
-		return
-	end
-
-	if message_id == hash("boss_defeated") then
-		handle_boss_defeated(self)
-		return
-	end
+if message_id == hash("register_player") then
+	self.active_player_id = sender
+	print("[GameManager] Player registrado: " .. tostring(sender))
+	return
 end
+
+if message_id == hash("player_died") then
+	handle_player_death(self, message)
+	return
+end
+
+if message_id == hash("rescue_started") then
+	print("[GameManager] Rescate iniciado - mantén E para rescatar")
+	return
+end
+
+if message_id == hash("rescue_cancelled") then
+	print("[GameManager] Rescate cancelado")
+	return
+end
+
+if message_id == hash("rescue_available") then
+	print("[GameManager] ═══════════════════════════")
+	print("[GameManager] ¡Oleadas completadas!")
+	print("[GameManager] Acércate al caído y mantén E")
+	print("[GameManager] ═══════════════════════════")
+	msg.post("/hud#hud", "show_message", { text = "¡RESCATA A TU COMPAÑERO!", duration = 2.0 })
+	return
+end
+
+if message_id == hash("rescue_complete") then
+	handle_rescue_complete(self)
+	return
+end
+
+if message_id == hash("start_boss_fight") then
+	handle_boss_fight(self)
+	return
+end
+
+if message_id == hash("boss_defeated") then
+	handle_boss_defeated(self)
+	return
+end
+end
+
+-- ============================================================
+-- HELPER FUNCTIONS
+-- ============================================================
 
 find_farthest_spawn_point = function(self, from_position)
 local spawn_points = room_data.current.spawn_points
@@ -109,6 +129,10 @@ end
 
 return vmath.vector3(farthest_point.x, farthest_point.y, 0)
 end
+
+-- ============================================================
+-- PLAYER DEATH & RESCUE
+-- ============================================================
 
 handle_player_death = function(self, message)
 	print("[GameManager] ¡Jugador murió!")
@@ -132,12 +156,17 @@ handle_player_death = function(self, message)
 		self.fallen_player_id = factory.create("#fallen_player_factory", death_position)
 		print("[GameManager] Fallen player creado: " .. tostring(self.fallen_player_id))
 
-		-- Pausar enemigos durante transición
-		msg.post("/wave_manager", "pause_enemies")
+		-- Pausar enemigos durante transición (solo si no es boss fight)
+		if self.game_state ~= STATE.BOSS_FIGHT then
+			msg.post("/wave_manager", "pause_enemies")
+		end
 
 		print("[GameManager] ═══════════════════════════")
 		print("[GameManager]   MODO RESCATE ACTIVADO    ")
 		print("[GameManager] ═══════════════════════════")
+
+		-- Guardar si estamos en boss fight antes de la transición
+		local is_boss_fight = (self.game_state == STATE.BOSS_FIGHT)
 
 		-- Countdown con mensajes al HUD
 		print("[GameManager] 3...")
@@ -167,43 +196,58 @@ handle_player_death = function(self, message)
 				player_id = self.active_player_id
 			})
 
-			-- -- Notificar a la cámara que siga al nuevo player
-			-- msg.post("/camera#script", "follow", {
-			-- 	target = self.active_player_id
-			-- })
+			-- Notificar al boss quién es el nuevo player (si existe)
+			if self.boss_id and go.exists(self.boss_id) then
+				msg.post(self.boss_id, "set_target", { player_id = self.active_player_id })
+				print("[GameManager] Boss actualizado con nuevo target")
+			end
+
+			-- Configurar cámara
 			local room = room_data.current
 			local camera_id = go.get_id("/camera")
 
 			if room.scrollable then
-				-- Sala grande: activar follow
 				camera.follow(camera_id, self.active_player_id)
 				print("[GameManager] Cámara: follow activado para P2")
 			else
-				-- Sala fija: resetear posición por si acaso
 				go.set_position(vmath.vector3(room.camera_center.x, room.camera_center.y, 0), camera_id)
 				print("[GameManager] Cámara: fija en centro")
 			end
 
-			-- Cambiar estado
-			self.game_state = STATE.RESCUE
+			-- Cambiar estado según contexto
+			if is_boss_fight then
+				-- Durante boss fight: rescate SIN oleadas adicionales
+				self.game_state = STATE.BOSS_FIGHT
+				print("[GameManager] Rescate durante Boss Fight - Sin oleadas adicionales")
 
-			-- Actualizar HUD
-			msg.post("/hud#hud", "update_lives", { lives = #self.lives - self.current_life_index + 1 })
-			msg.post("/hud#hud", "update_mode", { mode = "rescue" })
+				msg.post("/hud#hud", "update_lives", { lives = #self.lives - self.current_life_index + 1 })
+				-- NO enviamos start_rescue_mode al wave_manager
+			else
+				-- Modo normal: rescate CON oleadas
+				self.game_state = STATE.RESCUE
 
-			-- Iniciar oleadas de rescate y reanudar enemigos
-			msg.post("/wave_manager", "start_rescue_mode", {
-				fallen_pos = death_position
-			})
-			msg.post("/wave_manager", "resume_enemies")
+				msg.post("/hud#hud", "update_lives", { lives = #self.lives - self.current_life_index + 1 })
+				msg.post("/hud#hud", "update_mode", { mode = "rescue" })
+
+				msg.post("/wave_manager", "start_rescue_mode", {
+					fallen_pos = death_position
+				})
+				msg.post("/wave_manager", "resume_enemies")
+			end
 		end)
 	else
-		-- GAME OVER
+		-- Sin vidas restantes: GAME OVER
 		self.game_state = STATE.GAME_OVER
 
 		if self.active_player_id then
 			go.delete(self.active_player_id)
 			self.active_player_id = nil
+		end
+
+		-- Eliminar al boss si existe
+		if self.boss_id and go.exists(self.boss_id) then
+			go.delete(self.boss_id)
+			self.boss_id = nil
 		end
 
 		print("[GameManager] ═══════════════════════════")
@@ -222,77 +266,82 @@ handle_player_death = function(self, message)
 end
 
 handle_rescue_complete = function(self)
-	print("[GameManager] ═══════════════════════════")
-	print("[GameManager]    ¡RESCATE EXITOSO!       ")
-	print("[GameManager] ═══════════════════════════")
+print("[GameManager] ═══════════════════════════")
+print("[GameManager]    ¡RESCATE EXITOSO!       ")
+print("[GameManager] ═══════════════════════════")
 
-	msg.post("/hud#hud", "show_message", { text = "¡RESCATE EXITOSO!", duration = 2.0 })
+msg.post("/hud#hud", "show_message", { text = "¡RESCATE EXITOSO!", duration = 2.0 })
 
-	self.current_life_index = self.current_life_index - 1
-	print("[GameManager] Vidas: " .. (#self.lives - self.current_life_index + 1))
+self.current_life_index = self.current_life_index - 1
+print("[GameManager] Vidas: " .. (#self.lives - self.current_life_index + 1))
 
-	self.fallen_player_id = nil
-	self.fallen_position = nil
+self.fallen_player_id = nil
+self.fallen_position = nil
 
-	self.game_state = STATE.PLAYING
+self.game_state = STATE.PLAYING
 
-	-- Actualizar HUD
-	msg.post("/hud#hud", "update_lives", { lives = #self.lives - self.current_life_index + 1 })
-	msg.post("/hud#hud", "update_mode", { mode = "normal" })
+-- Actualizar HUD
+msg.post("/hud#hud", "update_lives", { lives = #self.lives - self.current_life_index + 1 })
+msg.post("/hud#hud", "update_mode", { mode = "normal" })
 
-	msg.post("/wave_manager", "end_rescue_mode")
+msg.post("/wave_manager", "end_rescue_mode")
 end
 
--- ═══════════════════════════════════════
+-- ============================================================
 -- BOSS FIGHT
--- ═══════════════════════════════════════
+-- ============================================================
 
 handle_boss_fight = function(self)
-	print("[GameManager] ═══════════════════════════")
-	print("[GameManager]       ¡BOSS FIGHT!         ")
-	print("[GameManager] ═══════════════════════════")
+print("[GameManager] ═══════════════════════════")
+print("[GameManager]       ¡BOSS FIGHT!         ")
+print("[GameManager] ═══════════════════════════")
 
-	self.game_state = STATE.BOSS_FIGHT
+self.game_state = STATE.BOSS_FIGHT
 
-	-- Notificar HUD
-	msg.post("/hud#hud", "show_message", { text = "¡JEFE FINAL!", duration = 2.0 })
-	msg.post("/hud#hud", "update_mode", { mode = "boss" })
+-- Notificar al wave_manager INMEDIATAMENTE
+msg.post("/wave_manager", "boss_fight_started")
 
-	-- Spawn del boss después de la fanfarria
-	timer.delay(2.5, false, function()
-		-- Posición del boss (centro-arriba de la sala)
-		local boss_pos = vmath.vector3(
-		room_data.current.boss_spawn and room_data.current.boss_spawn.x or 640,
-		room_data.current.boss_spawn and room_data.current.boss_spawn.y or 500,
-		0.5
-	)
+-- Notificar HUD
+msg.post("/hud#hud", "show_message", { text = "¡JEFE FINAL!", duration = 2.0 })
+msg.post("/hud#hud", "update_mode", { mode = "boss" })
 
-		self.boss_id = factory.create("#turtle_factory", boss_pos)
-		print("[GameManager] Boss spawneado: " .. tostring(self.boss_id))
+-- Spawn del boss después de la fanfarria
+timer.delay(2.5, false, function()
+	local boss_pos = vmath.vector3(
+	room_data.current.boss_spawn and room_data.current.boss_spawn.x or 640,
+	room_data.current.boss_spawn and room_data.current.boss_spawn.y or 500,
+	0.5
+)
 
-		-- Notificar al boss quién es el jugador
-		timer.delay(0.1, false, function()
-			if self.boss_id and go.exists(self.boss_id) then
-				msg.post(self.boss_id, "set_target", { player_id = self.active_player_id })
-			end
-		end)
-	end)
+self.boss_id = factory.create("#turtle_factory", boss_pos)
+print("[GameManager] Boss spawneado: " .. tostring(self.boss_id))
+
+-- Notificar al boss quién es el jugador
+timer.delay(0.1, false, function()
+	if self.boss_id and go.exists(self.boss_id) then
+		msg.post(self.boss_id, "set_target", { player_id = self.active_player_id })
+	end
+end)
+end)
 end
 
 handle_boss_defeated = function(self)
-	print("[GameManager] ═══════════════════════════")
-	print("[GameManager]       ¡¡VICTORIA!!         ")
-	print("[GameManager] ═══════════════════════════")
+print("[GameManager] ═══════════════════════════")
+print("[GameManager]       ¡¡VICTORIA!!         ")
+print("[GameManager] ═══════════════════════════")
 
-	self.game_state = STATE.VICTORY
-	self.boss_id = nil
+self.game_state = STATE.VICTORY
+self.boss_id = nil
 
-	msg.post("/hud#hud", "show_message", { text = "¡¡VICTORIA!!", duration = 4.0 })
-	msg.post("/hud#hud", "update_mode", { mode = "victory" })
+-- Notificar al wave_manager
+msg.post("/wave_manager", "boss_fight_ended")
 
-	-- Por ahora, reiniciar después de la celebración
-	timer.delay(5.0, false, function()
-		print("[GameManager] Reiniciando juego...")
-		msg.post("@system:", "reboot")
-	end)
+msg.post("/hud#hud", "show_message", { text = "¡¡VICTORIA!!", duration = 4.0 })
+msg.post("/hud#hud", "update_mode", { mode = "victory" })
+
+-- Reiniciar después de la celebración
+timer.delay(5.0, false, function()
+print("[GameManager] Reiniciando juego...")
+msg.post("@system:", "reboot")
+end)
 end

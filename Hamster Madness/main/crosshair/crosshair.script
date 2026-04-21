@@ -1,37 +1,52 @@
 -- crosshair.script
-
 local camera = require "orthographic.camera"
+
+local CAMERA_ID = nil
+local hide_cursor
+local show_cursor
 
 function init(self)
 	msg.post(".", "acquire_input_focus")
-
-	self.camera_id = go.get_id("/camera")
+	CAMERA_ID = go.get_id("/camera")
 	self.mouse_pos = vmath.vector3(0, 0, 0)
-
-	if window and window.set_cursor_visible then
-		window.set_cursor_visible(false)
-	end
+	hide_cursor()
 end
 
 function final(self)
-	if window and window.set_cursor_visible then
-		window.set_cursor_visible(true)
-	end
+	show_cursor()
 end
 
 function update(self, dt)
-	local world_pos = camera.screen_to_world(self.camera_id, self.mouse_pos)
-
+	local world_pos = camera.screen_to_world(CAMERA_ID, self.mouse_pos)
 	if world_pos then
 		go.set_position(vmath.vector3(world_pos.x, world_pos.y, 0.9))
 	end
 end
 
 function on_input(self, action_id, action)
-	-- Solo actualizar si hay coordenadas de mouse (no en eventos de teclado)
-	if action.x and action.y then
-		self.mouse_pos.x = action.x
-		self.mouse_pos.y = action.y
+	if action.screen_x and action.screen_y then
+		self.mouse_pos.x = action.screen_x
+		self.mouse_pos.y = action.screen_y
 		self.mouse_pos.z = 0
+	end
+end
+
+function hide_cursor()
+	if sys.get_sys_info().system_name == "HTML5" then
+		html5.run([[
+		document.body.style.cursor = 'none';
+		var canvas = document.getElementById('canvas');
+		if (canvas) canvas.style.cursor = 'none';
+		]])
+	end
+end
+
+function show_cursor()
+	if sys.get_sys_info().system_name == "HTML5" then
+		html5.run([[
+		document.body.style.cursor = 'auto';
+		var canvas = document.getElementById('canvas');
+		if (canvas) canvas.style.cursor = 'auto';
+		]])
 	end
 end

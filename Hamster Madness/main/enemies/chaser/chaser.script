@@ -1,7 +1,7 @@
 -- chaser.script
 -- Enemigo que persigue al jugador - Solo funciones de Defold
 
-local common = require "main.enemies.common.enemy_common"
+local common = require "main.shared.entity_common"
 local behavior = require "main.enemies.chaser.chaser_behavior"
 
 go.property("speed", 100)

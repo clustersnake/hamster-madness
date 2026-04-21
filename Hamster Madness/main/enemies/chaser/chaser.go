@@ -18,7 +18,7 @@ embedded_components {
   "}\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/enemies/common/enemies.atlas\"\n"
+  "  texture: \"/main/enemies/enemies.atlas\"\n"
   "}\n"
   ""
 }
@@ -54,7 +54,7 @@ embedded_components {
   "material: \"/builtins/materials/sprite.material\"\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/enemies/common/enemies.atlas\"\n"
+  "  texture: \"/main/enemies/enemies.atlas\"\n"
   "}\n"
   ""
   position {

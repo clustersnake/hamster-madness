@@ -1,5 +1,5 @@
 -- shooter.script
-local common = require "main.enemies.common.enemy_common"
+local common = require "main.shared.entity_common"
 local behavior = require "main.enemies.shooter.shooter_behavior"
 
 go.property("speed", 40)

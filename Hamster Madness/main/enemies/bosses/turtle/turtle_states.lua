@@ -1,10 +1,64 @@
 -- turtle_states.lua
 -- Máquina de estados para el boss tortuga
-local camera = require "orthographic.camera"
 
+local camera = require "orthographic.camera"
 local room_data = require "main.data.room_data"
 
 local M = {}
+
+local spawn_shockwave  -- NUEVO
+
+-- ============================================================
+-- CONFIGURACIÓN DE ATAQUES / VFX
+-- ============================================================
+
+local ATTACK_CONFIG = {
+	aplaston = {
+		damage_delay = 0.5,          -- Daño medio segundo después del impacto visual
+		radius_multiplier = 1.5,     -- Aumenta el radio efectivo del aplastón pequeño
+		shake_intensity = 0.003,
+		shake_duration = 0.3,
+
+		shockwave = {
+			max_scale = 4.0,        -- Más grande que antes
+			duration = 0.3,
+			delay = 0,
+			start_scale = 0.3,
+			color = vmath.vector4(1, 0.6, 0.2, 0.9)
+		}
+	},
+
+	mega_aplaston = {
+		damage_delay = 0.5,
+		shake_intensity = 0.006,
+		shake_duration = 0.5,
+
+		shockwaves = {
+			{
+				max_scale = 3.5,
+				duration = 0.2,
+				delay = 0,
+				start_scale = 0.3,
+				color = vmath.vector4(1, 0.3, 0.1, 1)
+			},
+			{
+				max_scale = 7.0,
+				duration = 0.35,
+				delay = 0.08,
+				start_scale = 0.3,
+				color = vmath.vector4(1, 0.5, 0.2, 0.8)
+			},
+			{
+				max_scale = 12.0,
+				duration = 0.5,
+				delay = 0.16,
+				start_scale = 0.3,
+				color = vmath.vector4(1, 0.7, 0.3, 0.5)
+			}
+		}
+	}
+}
+
 
 -- ============================================================
 -- ESTADOS
@@ -57,17 +111,6 @@ local function get_direction_to_player(self)
 	return vmath.vector3(0, -1, 0)
 end
 
-local function get_room_bounds(margin)
-	margin = margin or 0
-	local p = room_data.current.playable
-	return {
-		left = p.min_x + margin,
-		right = p.max_x - margin,
-		bottom = p.min_y + margin,
-		top = p.max_y - margin
-	}
-end
-
 -- ============================================================
 -- CAMBIO DE ESTADO
 -- ============================================================
@@ -90,7 +133,6 @@ function M.change_state(self, new_state)
 end
 
 function M.update(self, dt)
-	-- No actualizar si está pausado
 	if self.is_paused then
 		return
 	end
@@ -158,18 +200,16 @@ M.states[M.STATE.CHARGING] = {
 	end,
 
 	update = function(self, dt)
-		-- Parpadeo visual de advertencia
 		self.flash_timer = self.flash_timer + dt
 		if self.flash_timer >= 0.12 then
 			self.flash_timer = 0
 			self.flash_on = not self.flash_on
 			local tint = self.flash_on 
-			and vmath.vector4(1, 1, 0.3, 1)  -- Amarillo brillante
-			or vmath.vector4(1, 1, 1, 1)     -- Normal
+			and vmath.vector4(1, 1, 0.3, 1)
+			or vmath.vector4(1, 1, 1, 1)
 			sprite.set_constant("#sprite", "tint", tint)
 		end
 
-		-- Ejecutar ataque especial después de cargar
 		if self.state_timer >= self.charge_duration then
 			sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 
@@ -191,26 +231,21 @@ M.states[M.STATE.CHARGING] = {
 -- ============================================================
 
 M.states[M.STATE.CHASE] = {
-	enter = function(self)
-		-- Nada especial
-	end,
+	enter = function(self) end,
 
 	update = function(self, dt)
 		local distance = get_distance_to_player(self)
 
-		-- ¿Llegó a rango de ataque?
 		if distance <= self.aplaston_range then
 			M.change_state(self, M.STATE.APLASTON)
 			return
 		end
 
-		-- Mover hacia el jugador
 		local dir = get_direction_to_player(self)
 		local pos = go.get_position()
 		pos = pos + dir * self.walk_speed * dt
 		go.set_position(pos)
 
-		-- Timeout: evitar persecución infinita
 		if self.state_timer >= 5.0 then
 			M.change_state(self, M.STATE.IDLE)
 		end
@@ -227,7 +262,6 @@ M.states[M.STATE.APLASTON] = {
 	enter = function(self)
 		self.aplaston_phase = "telegraph"
 		print("[Turtle] ¡Preparando aplastón!")
-		-- TODO: Animación de levantar caparazón
 	end,
 
 	update = function(self, dt)
@@ -267,6 +301,68 @@ M.states[M.STATE.MEGA_APLASTON] = {
 
 -- ============================================================
 -- ESTADO: RODADA (Rebotando por la sala, Fase 2+)
+-- Los rebotes se manejan en turtle.script via common.handle_wall_bounce
+-- ============================================================
+
+-- M.states[M.STATE.RODADA] = {
+-- 	enter = function(self)
+-- 		print("[Turtle] ¡¡RODADA!!")
+-- 
+-- 		self.rodada_bounces = 0
+-- 		self.max_bounces = 5 + math.random(3)
+-- 		self.rodada_direction = get_direction_to_player(self)
+-- 
+-- 		-- Guardar límites de la sala
+-- 		local p = room_data.current.playable
+-- 		self.room_bounds = {
+-- 			left = p.min_x + 50,
+-- 			right = p.max_x - 50,
+-- 			bottom = p.min_y + 50,
+-- 			top = p.max_y - 50
+-- 		}
+-- 
+-- 		print("[Turtle] Rebotes objetivo: " .. self.max_bounces)
+-- 
+-- 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 0.4)
+-- 	end,
+-- 
+-- 	update = function(self, dt)
+-- 		local common = require "main.shared.entity_common"
+-- 
+-- 		local pos = go.get_position()
+-- 		local new_pos = pos + self.rodada_direction * self.rodada_speed * dt
+-- 
+-- 		-- Aplicar límites lógicos de la sala
+-- 		new_pos, _ = common.apply_bounds(self, new_pos, {
+-- 			bounds = self.room_bounds,
+-- 			direction_field = "rodada_direction",
+-- 			bounce_field = "rodada_bounces",
+-- 			max_bounces = self.max_bounces,
+-- 			on_bounce = function(boss)
+-- 				M.apply_bounce_variation(boss)
+-- 			end,
+-- 			on_max_bounces = function(boss)
+-- 				M.on_rodada_complete(boss)
+-- 			end
+-- 		})
+-- 
+-- 		go.set_position(new_pos)
+-- 
+-- 		-- Timeout de seguridad
+-- 		if self.state_timer >= 12.0 then
+-- 			print("[Turtle] Rodada timeout")
+-- 			M.change_state(self, M.STATE.IDLE)
+-- 		end
+-- 	end,
+-- 
+-- 	exit = function(self)
+-- 		go.cancel_animations(".", "euler.z")
+-- 		go.set_rotation(vmath.quat())
+-- 		self.special_cooldown = self.special_cooldown_max
+-- 	end
+-- }
+-- ============================================================
+-- ESTADO: RODADA (Rebotando por la sala, Fase 2+)
 -- ============================================================
 
 M.states[M.STATE.RODADA] = {
@@ -274,88 +370,48 @@ M.states[M.STATE.RODADA] = {
 		print("[Turtle] ¡¡RODADA!!")
 
 		self.rodada_bounces = 0
-		self.max_bounces = 5 + math.random(3)  -- 5-8 rebotes
-		self.last_bounce_time = 0  -- Para evitar doble conteo en esquinas
-
-		-- Dirección inicial hacia el jugador
+		self.max_bounces = 5 + math.random(3)
 		self.rodada_direction = get_direction_to_player(self)
 
-		-- Obtener límites de la sala con margen para el tamaño de la tortuga
-		self.room_bounds = get_room_bounds(50)
+		-- Guardar límites de la sala
+		local p = room_data.current.playable
+		self.room_bounds = {
+			left = p.min_x + 50,
+			right = p.max_x - 50,
+			bottom = p.min_y + 50,
+			top = p.max_y - 50
+		}
 
 		print("[Turtle] Rebotes objetivo: " .. self.max_bounces)
 
-		-- TODO: Cambiar a sprite de caparazón rodando
-		-- sprite.play_flipbook("#sprite", "turtle_shell")
-		-- ═══════════════════════════════════════
-		-- JUICE: GIRO VISUAL (NUEVO)
-		-- ═══════════════════════════════════════
-		-- Hacemos que rote 360 grados infinitamente cada 0.4 segundos
+		-- NUEVO: Asegurar que el sprite sea visible antes de rodar
+		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+
+		-- Animación de rotación
 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 0.4)
-
-		self.rodada_bounces = 0
-		self.max_bounces = 5 + math.random(3)
-		self.last_bounce_time = 0
-
-		self.rodada_direction = get_direction_to_player(self)
-		self.room_bounds = get_room_bounds(50)
 	end,
 
 	update = function(self, dt)
+		local common = require "main.shared.entity_common"
+
 		local pos = go.get_position()
 		local new_pos = pos + self.rodada_direction * self.rodada_speed * dt
 
-		-- Detectar rebotes (con protección contra doble conteo)
-		local bounced = false
-		local min_bounce_interval = 0.1  -- Mínimo tiempo entre rebotes
-
-		-- Rebote horizontal
-		if new_pos.x <= self.room_bounds.left then
-			new_pos.x = self.room_bounds.left
-			self.rodada_direction.x = math.abs(self.rodada_direction.x)
-			bounced = true
-		elseif new_pos.x >= self.room_bounds.right then
-			new_pos.x = self.room_bounds.right
-			self.rodada_direction.x = -math.abs(self.rodada_direction.x)
-			bounced = true
-		end
-
-		-- Rebote vertical
-		if new_pos.y <= self.room_bounds.bottom then
-			new_pos.y = self.room_bounds.bottom
-			self.rodada_direction.y = math.abs(self.rodada_direction.y)
-			bounced = true
-		elseif new_pos.y >= self.room_bounds.top then
-			new_pos.y = self.room_bounds.top
-			self.rodada_direction.y = -math.abs(self.rodada_direction.y)
-			bounced = true
-		end
-
-		-- Contar rebote (evitando doble conteo en esquinas)
-		if bounced and (self.state_timer - self.last_bounce_time) > min_bounce_interval then
-			self.rodada_bounces = self.rodada_bounces + 1
-			self.last_bounce_time = self.state_timer
-
-			print("[Turtle] Rebote #" .. self.rodada_bounces .. "/" .. self.max_bounces)
-
-			-- Variación aleatoria del ángulo para impredecibilidad
-			local variation = (math.random() - 0.5) * 0.4
-			local angle = math.atan2(self.rodada_direction.y, self.rodada_direction.x) + variation
-			self.rodada_direction.x = math.cos(angle)
-			self.rodada_direction.y = math.sin(angle)
-			self.rodada_direction = vmath.normalize(self.rodada_direction)
-		end
+		new_pos, _ = common.apply_bounds(self, new_pos, {
+			bounds = self.room_bounds,
+			direction_field = "rodada_direction",
+			bounce_field = "rodada_bounces",
+			max_bounces = self.max_bounces,
+			on_bounce = function(boss)
+				M.apply_bounce_variation(boss)
+			end,
+			on_max_bounces = function(boss)
+				M.on_rodada_complete(boss)
+			end
+		})
 
 		go.set_position(new_pos)
 
-		-- ¿Terminó la rodada?
-		if self.rodada_bounces >= self.max_bounces then
-			print("[Turtle] Rodada completada")
-			M.change_state(self, M.STATE.IDLE)
-			return
-		end
-
-		-- Timeout de seguridad
 		if self.state_timer >= 12.0 then
 			print("[Turtle] Rodada timeout")
 			M.change_state(self, M.STATE.IDLE)
@@ -363,17 +419,39 @@ M.states[M.STATE.RODADA] = {
 	end,
 
 	exit = function(self)
-		-- Resetear cooldown del especial
-		self.special_cooldown = self.special_cooldown_max
-
-		-- TODO: Volver a sprite normal
-		-- sprite.play_flipbook("#sprite", "turtle_idle")
+		-- NUEVO: Cancelar SOLO la animación de rotación
 		go.cancel_animations(".", "euler.z")
-		go.set_rotation(vmath.quat()) -- Vuelve a su orientación original
+		go.set_rotation(vmath.quat())
+
+		-- NUEVO: Restaurar visibilidad del sprite
+		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 
 		self.special_cooldown = self.special_cooldown_max
 	end
 }
+
+-- ============================================================
+-- CALLBACK: Cuando termina la rodada por máximo de rebotes
+-- Llamado desde turtle.script via common.handle_wall_bounce
+-- ============================================================
+
+function M.on_rodada_complete(self)
+	print("[Turtle] Rodada completada - " .. self.rodada_bounces .. " rebotes")
+	M.change_state(self, M.STATE.IDLE)
+end
+
+-- ============================================================
+-- CALLBACK: Aplicar variación al ángulo después de rebote
+-- Llamado desde turtle.script después de common.handle_wall_bounce
+-- ============================================================
+
+function M.apply_bounce_variation(self)
+	local variation = (math.random() - 0.5) * 0.4
+	local angle = math.atan2(self.rodada_direction.y, self.rodada_direction.x) + variation
+	self.rodada_direction.x = math.cos(angle)
+	self.rodada_direction.y = math.sin(angle)
+	self.rodada_direction = vmath.normalize(self.rodada_direction)
+end
 
 -- ============================================================
 -- ESTADO: PARRY (Reflejando proyectiles, Fase 3)
@@ -383,16 +461,10 @@ M.states[M.STATE.PARRY] = {
 	enter = function(self)
 		print("[Turtle] ¡PARRY ACTIVO!")
 		self.is_parrying = true
-
-		-- Feedback visual: tinte defensivo
 		sprite.set_constant("#sprite", "tint", vmath.vector4(0.7, 0.7, 1, 1))
-
-		-- TODO: Animación defensiva
-		-- sprite.play_flipbook("#sprite", "turtle_shell")
 	end,
 
 	update = function(self, dt)
-		-- Parpadeo sutil mientras está en parry
 		local pulse = 0.7 + math.sin(self.state_timer * 8) * 0.15
 		sprite.set_constant("#sprite", "tint", vmath.vector4(pulse, pulse, 1, 1))
 
@@ -418,20 +490,13 @@ M.states[M.STATE.VULNERABLE] = {
 		print("[Turtle] ═══════════════════════════")
 
 		self.can_be_damaged = true
-
-		-- Feedback visual: tinte de vulnerabilidad
 		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 0.8, 0.8, 1))
-
-		-- TODO: Animación panza arriba
-		-- sprite.play_flipbook("#sprite", "turtle_belly")
 	end,
 
 	update = function(self, dt)
-		-- Parpadeo de advertencia cuando queda poco tiempo
 		local time_left = self.vulnerable_duration - self.state_timer
 
 		if time_left <= 1.5 then
-			-- Parpadeo cada vez más rápido
 			local freq = 4 + (1.5 - time_left) * 8
 			local flash = math.floor(self.state_timer * freq) % 2 == 0
 			local alpha = flash and 1.0 or 0.4
@@ -448,9 +513,6 @@ M.states[M.STATE.VULNERABLE] = {
 		self.can_be_damaged = false
 		self.special_cooldown = self.special_cooldown_max
 		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
-
-		-- TODO: Volver a sprite normal
-		-- sprite.play_flipbook("#sprite", "turtle_idle")
 	end
 }
 
@@ -464,13 +526,8 @@ M.states[M.STATE.DEAD] = {
 		print("[Turtle]      ¡¡DERROTADA!!         ")
 		print("[Turtle] ═══════════════════════════")
 
-		-- Feedback visual
 		sprite.set_constant("#sprite", "tint", vmath.vector4(0.5, 0.5, 0.5, 1))
-
-		-- Notificar al game manager
 		msg.post("/game_manager", "boss_defeated")
-
-		-- TODO: Animación de muerte
 
 		timer.delay(2.0, false, function()
 			go.delete()
@@ -488,26 +545,25 @@ M.states[M.STATE.DEAD] = {
 function M.choose_next_action(self)
 	local phase = self.current_phase
 
-	-- ¿Cooldown del ataque especial listo?
 	if self.special_cooldown <= 0 then
 		print("[Turtle] ¡Ataque especial listo!")
 		M.change_state(self, M.STATE.CHARGING)
 		return
 	end
 
-	-- FASE 1: Solo aplastones normales (esperando mega)
+	-- FASE 1: Solo aplastones normales
 	if phase == 1 then
 		M.change_state(self, M.STATE.CHASE)
 		return
 	end
 
-	-- FASE 2: Aplastones + Rodada (cuando cooldown listo)
+	-- FASE 2: Aplastones + Rodada
 	if phase == 2 then
 		M.change_state(self, M.STATE.CHASE)
 		return
 	end
 
-	-- FASE 3: Todo + Parry aleatorio entre ataques
+	-- FASE 3: Todo + Parry aleatorio
 	if phase >= 3 then
 		local roll = math.random()
 		if roll < 0.30 then
@@ -522,124 +578,193 @@ end
 -- ============================================================
 -- ACCIONES DE ATAQUE
 -- ============================================================
+
 function M.do_aplaston(self, radius)
-	print("[Turtle] ¡APLASTÓN! Radio: " .. radius)
+	print("[Turtle] ¡APLASTÓN! Radio base: " .. radius)
 
+	local cfg = ATTACK_CONFIG.aplaston
 	local my_pos = go.get_position()
-	local player_pos = get_player_position(self)
 
-	-- ═══════════════════════════════════════
-	-- SCREEN SHAKE
-	-- ═══════════════════════════════════════
+	-- Screen shake
 	local camera_id = go.get_id("/camera")
-	camera.shake(camera_id, 0.003, 0.3, hash("both"))
+	camera.shake(camera_id, cfg.shake_intensity, cfg.shake_duration, hash("both"))
 
-	if player_pos then
-		local distance = vmath.length(player_pos - my_pos)
+	-- Shockwave visual
+	spawn_shockwave(self, cfg.shockwave)
 
-		if distance <= radius then
-			print("[Turtle] ¡Jugador en rango!")
+	-- Daño sincronizado con delay
+	timer.delay(cfg.damage_delay, false, function()
+		if not go.exists(go.get_id()) then return end
+		if not self.player_id or not go.exists(self.player_id) then return end
+
+		local current_player_pos = get_player_position(self)
+		if not current_player_pos then return end
+
+		local current_my_pos = go.get_position()
+		local distance = vmath.length(current_player_pos - current_my_pos)
+		local actual_radius = radius * cfg.radius_multiplier
+
+		if distance <= actual_radius then
+			print("[Turtle] ¡Jugador en rango! (" .. math.floor(distance) .. " <= " .. actual_radius .. ")")
 			msg.post(self.player_id, "enemy_damage", {
 				damage = 1,
-				enemy_position = my_pos
+				enemy_position = current_my_pos
 			})
 		else
-			print("[Turtle] Jugador fuera de rango (" .. math.floor(distance) .. " > " .. radius .. ")")
+			print("[Turtle] Jugador fuera de rango (" .. math.floor(distance) .. " > " .. actual_radius .. ")")
 		end
-	end
-	-- TODO: Crear efecto visual de onda expansiva
-	-- factory.create("#shockwave_factory", my_pos)
+	end)
 end
 
 function M.do_mega_aplaston(self)
 	print("[Turtle] ¡¡MEGA APLASTÓN!! (Pantalla completa)")
 
-	-- ═══════════════════════════════════════
-	-- SCREEN SHAKE GRANDE
-	-- ═══════════════════════════════════════
-	local camera_id = go.get_id("/camera")
-	camera.shake(camera_id, 0.006, 0.5, hash("both"))
+	local cfg = ATTACK_CONFIG.mega_aplaston
 
-	if self.player_id and go.exists(self.player_id) then
+	local camera_id = go.get_id("/camera")
+	camera.shake(camera_id, cfg.shake_intensity, cfg.shake_duration, hash("both"))
+
+	-- Múltiples shockwaves
+	for _, wave_cfg in ipairs(cfg.shockwaves) do
+		spawn_shockwave(self, wave_cfg)
+	end
+
+	-- Daño sincronizado con delay
+	timer.delay(cfg.damage_delay, false, function()
+		if not go.exists(go.get_id()) then return end
+		if not self.player_id or not go.exists(self.player_id) then return end
+
 		msg.post(self.player_id, "enemy_damage", {
 			damage = 1,
 			enemy_position = go.get_position()
 		})
-	end
-	-- TODO: Efecto visual de pantalla completa
+	end)
 end
 
+-- ============================================================
+-- ACCIONES DE ATAQUE
+-- ============================================================
+
+-- function M.do_aplaston(self, radius)
+-- 	print("[Turtle] ¡APLASTÓN! Radio: " .. radius)
+-- 
+-- 	local my_pos = go.get_position()
+-- 	local player_pos = get_player_position(self)
+-- 
+-- 	-- Screen shake
+-- 	local camera_id = go.get_id("/camera")
+-- 	camera.shake(camera_id, 0.003, 0.3, hash("both"))
+-- 
+-- 	if player_pos then
+-- 		local distance = vmath.length(player_pos - my_pos)
+-- 
+-- 		if distance <= radius then
+-- 			print("[Turtle] ¡Jugador en rango!")
+-- 			msg.post(self.player_id, "enemy_damage", {
+-- 				damage = 1,
+-- 				enemy_position = my_pos
+-- 			})
+-- 		else
+-- 			print("[Turtle] Jugador fuera de rango (" .. math.floor(distance) .. " > " .. radius .. ")")
+-- 		end
+-- 	end
+-- end
+-- 
+-- function M.do_mega_aplaston(self)
+-- 	print("[Turtle] ¡¡MEGA APLASTÓN!! (Pantalla completa)")
+-- 
+-- 	local camera_id = go.get_id("/camera")
+-- 	camera.shake(camera_id, 0.006, 0.5, hash("both"))
+-- 
+-- 	if self.player_id and go.exists(self.player_id) then
+-- 		msg.post(self.player_id, "enemy_damage", {
+-- 			damage = 1,
+-- 			enemy_position = go.get_position()
+-- 		})
+-- 	end
+-- end
+-- 
 -- ============================================================
 -- MANEJO DE IMPACTOS
 -- ============================================================
 
 function M.on_hit_by_projectile(self)
-	-- Durante RODADA: la voltea
 	if self.current_state == M.STATE.RODADA then
 		print("[Turtle] ¡Impacto durante rodada! → VULNERABLE")
 		M.change_state(self, M.STATE.VULNERABLE)
 		return "flipped"
 	end
 
-	-- Durante PARRY: refleja el proyectil
 	if self.current_state == M.STATE.PARRY or self.is_parrying then
 		print("[Turtle] ¡PARRY! Reflejando proyectil...")
 		return "parry"
 	end
 
-	-- Durante VULNERABLE: recibe daño
 	if self.can_be_damaged then
 		return "damage"
 	end
 
-	-- Cualquier otro estado: inmune
 	print("[Turtle] Inmune al daño en estado: " .. tostring(self.current_state))
 	return "immune"
 end
 
--- Función legacy para compatibilidad (ya no se usa activamente)
-function M.on_hit_wall(self, normal)
-	-- Los rebotes ahora se manejan manualmente en RODADA.update
-	-- Esta función queda por si se necesita para algo más
-end
 -- ============================================================
 -- FEEDBACK DE DAÑO
 -- ============================================================
 
 function M.on_damage_taken(self)
 	local camera_id = go.get_id("/camera")
-
-	-- Screen shake de impacto
 	camera.shake(camera_id, 0.004, 0.25, hash("both"))
 
-	-- Flash blanco → rojo → normal
 	go.cancel_animations("#sprite", "tint")
 
-	-- Blanco instantáneo
+	-- Flash blanco → rojo → normal
 	sprite.set_constant("#sprite", "tint", vmath.vector4(10, 10, 10, 1))
 
-	-- Rojo después de un frame
 	timer.delay(0.05, false, function()
 		if not go.exists(go.get_id()) then return end
 		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 0.2, 0.2, 1))
 	end)
 
-	-- Volver a normal
 	timer.delay(0.15, false, function()
 		if not go.exists(go.get_id()) then return end
 		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 	end)
 
-	-- Squash & stretch (aplastamiento)
-	local sprite_url = msg.url(nil, go.get_id(), "sprite")
-
-	-- Squash
+	-- Squash & stretch
 	go.set_scale(vmath.vector3(1.3, 0.7, 1))
-
-	-- Volver a normal con bounce
 	go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 1), go.EASING_OUTBOUNCE, 0.3)
 
 	print("[Turtle] ¡OUCH!")
+end
+
+-- ============================================================
+-- EFECTOS VISUALES
+-- ============================================================
+
+-- ============================================================
+-- EFECTOS VISUALES
+-- ============================================================
+
+spawn_shockwave = function(self, config)
+	timer.delay(config.delay or 0, false, function()
+		if not go.exists(go.get_id()) then return end
+
+		local pos = go.get_position()
+		pos.z = 0.1
+
+		local props = {
+			max_scale = config.max_scale or 3.0,
+			duration = config.duration or 0.4,
+			start_scale = config.start_scale or 0.3
+		}
+
+		local id = factory.create("#shockwave_factory", pos, nil, props)
+
+		if id and config.color then
+			msg.post(id, "set_color", { color = config.color })
+		end
+	end)
 end
 
 return M

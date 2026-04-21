@@ -1,6 +1,8 @@
 -- player_actions.lua
 -- Acciones y lógica del jugador
 
+local animation = require "main.player.player_animation"
+
 local M = {}
 
 -- ============================================================
@@ -102,35 +104,39 @@ end)
 end
 
 function M.take_damage(self, enemy_position)
-if self.is_invulnerable then
-	return
-end
-
-if self.has_projectile then
-	print("¡Escudo destruido!")
-
-	local player_pos = go.get_position()
-	local knockback_dir = player_pos - enemy_position
-
-	if vmath.length(knockback_dir) > 0 then
-		knockback_dir = vmath.normalize(knockback_dir)
-	else
-		knockback_dir = vmath.vector3(0, 1, 0)
+	if self.is_invulnerable then
+		return
 	end
 
-	local spawn_pos = player_pos + knockback_dir * 40
-	spawn_pos.z = 0.5
-	local shield_id = factory.create("#active_shield_factory", spawn_pos)
-	msg.post(shield_id, "fire", { direction = knockback_dir })
+	-- Animación de daño (MOVIDO FUERA DEL IF)
+	animation.on_damage(self)
 
-	M.set_shield_state(self, false)
-	M.start_invulnerability(self)
-else
-	print("¡Jugador eliminado!")
-	self.is_alive = false
-	msg.post(".", "release_input_focus")
-	msg.post("/game_manager", "player_died", { position = go.get_position() })
-end
+	if self.has_projectile then
+		print("¡Escudo destruido!")
+
+		local player_pos = go.get_position()
+		local knockback_dir = player_pos - enemy_position
+
+		if vmath.length(knockback_dir) > 0 then
+			knockback_dir = vmath.normalize(knockback_dir)
+		else
+			knockback_dir = vmath.vector3(0, 1, 0)
+		end
+
+		local spawn_pos = player_pos + knockback_dir * 40
+		spawn_pos.z = 0.5
+		local shield_id = factory.create("#active_shield_factory", spawn_pos)
+		msg.post(shield_id, "fire", { direction = knockback_dir })
+
+		M.set_shield_state(self, false)
+		M.start_invulnerability(self)
+	else
+		print("¡Jugador eliminado!")
+		self.is_alive = false
+		msg.post(".", "release_input_focus")
+		msg.post("/game_manager", "player_died", { position = go.get_position() })
+		msg.post("/tutorial_floor", "show_rescue")
+	end
 end
 
 -- ============================================================

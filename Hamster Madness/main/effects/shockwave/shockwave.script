@@ -1,0 +1,27 @@
+-- shockwave.script
+-- Onda expansiva visual que se expande y desvanece
+
+go.property("max_scale", 3.0)
+go.property("duration", 0.4)
+go.property("start_scale", 0.3)
+
+function init(self)
+	-- Escala inicial
+	local start = vmath.vector3(self.start_scale, self.start_scale, 1)
+	go.set_scale(start)
+
+	-- Expandir
+	local target = vmath.vector3(self.max_scale, self.max_scale, 1)
+	go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, target, go.EASING_OUTQUAD, self.duration)
+
+	-- Desvanecer
+	go.animate("#sprite", "tint.w", go.PLAYBACK_ONCE_FORWARD, 0, go.EASING_OUTQUAD, self.duration, 0, function()
+		go.delete()
+	end)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("set_color") then
+		sprite.set_constant("#sprite", "tint", message.color)
+	end
+end
