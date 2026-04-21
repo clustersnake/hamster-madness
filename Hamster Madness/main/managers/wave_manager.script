@@ -2,7 +2,7 @@
 -- Controla el spawn de enemigos y las oleadas
 
 local room_data = require "main.data.room_data"
-local BOSS_TRIGGER_WAVE = 1  -- El boss aparece después de esta oleada
+local BOSS_TRIGGER_WAVE = 5  -- El boss aparece después de esta oleada
 
 -- ============================================================
 -- FACTORIES DE ENEMIGOS
@@ -23,6 +23,7 @@ local start_rescue_mode
 local end_rescue_mode
 local get_valid_spawn_points
 local get_player_position
+local clear_all_enemies  -- NUEVO: Forward declaration
 
 -- Configuración de oleadas BALANCEADA
 local WAVE_CONFIG = {
@@ -71,6 +72,9 @@ function init(self)
 	self.is_rescue_mode = false
 	self.rescue_wave = 0
 
+	-- NUEVO: Estado de boss fight
+	self.is_boss_fight = false
+
 	-- Cargar datos de la room actual
 	self.room = room_data.current
 	self.min_distance = room_data.config.min_distance_from_player
@@ -86,6 +90,11 @@ function init(self)
 end
 
 function update(self, dt)
+	-- No spawnear durante boss fight
+	if self.is_boss_fight then
+		return
+	end
+
 	-- Spawn escalonado desde la cola
 	if #self.spawn_queue > 0 then
 		self.spawn_timer = self.spawn_timer - dt
@@ -111,6 +120,11 @@ function on_message(self, message_id, message, sender)
 		end
 
 		print("[WaveManager] Enemigo eliminado. Restantes: " .. self.enemies_alive)
+
+		-- No verificar wave complete durante boss fight
+		if self.is_boss_fight then
+			return
+		end
 
 		if self.enemies_alive <= 0 and #self.spawn_queue <= 0 then
 			on_wave_complete(self)
@@ -158,12 +172,35 @@ function on_message(self, message_id, message, sender)
 	end
 
 	if message_id == hash("start_rescue_mode") then
+		-- NUEVO: Ignorar rescate durante boss fight
+		if self.is_boss_fight then
+			print("[WaveManager] Rescate ignorado - Boss fight activo")
+			return
+		end
 		start_rescue_mode(self, message.fallen_pos)
 		return
 	end
 
 	if message_id == hash("end_rescue_mode") then
 		end_rescue_mode(self)
+		return
+	end
+
+	-- NUEVO: Mensaje para iniciar boss fight
+	if message_id == hash("boss_fight_started") then
+		self.is_boss_fight = true
+		print("[WaveManager] Boss fight iniciado - Desactivando spawns y rescate")
+		-- Limpiar enemigos existentes para que el jugador se concentre en el boss
+		clear_all_enemies(self)
+		return
+	end
+
+	-- NUEVO: Mensaje para terminar boss fight
+	if message_id == hash("boss_fight_ended") then
+		self.is_boss_fight = false
+		self.spawn_queue = {}  -- Limpiar cola por si acaso
+		print("[WaveManager] Boss fight terminado - Sistema detenido")
+		-- NO iniciamos nueva oleada, el juego terminó
 		return
 	end
 
@@ -178,6 +215,31 @@ end
 -- ============================================================
 -- HELPERS
 -- ============================================================
+
+-- NUEVO: Función para eliminar todos los enemigos activos
+clear_all_enemies = function(self)
+	print("[WaveManager] Limpiando " .. #self.spawned_enemies .. " enemigos...")
+
+	-- Limpiar la cola de spawn
+	self.spawn_queue = {}
+
+	-- Eliminar todos los enemigos existentes
+	for _, enemy_id in ipairs(self.spawned_enemies) do
+		if go.exists(enemy_id) then
+			-- Opción 1: Eliminar inmediatamente
+			go.delete(enemy_id)
+
+			-- Opción 2 (alternativa): Si quieres una muerte con animación
+			-- msg.post(enemy_id, "force_die")
+		end
+	end
+
+	-- Resetear contadores
+	self.spawned_enemies = {}
+	self.enemies_alive = 0
+
+	print("[WaveManager] Todos los enemigos eliminados")
+end
 
 -- Obtiene la posición actual del jugador
 get_player_position = function()
@@ -236,6 +298,12 @@ end
 -- ============================================================
 
 start_next_wave = function(self)
+	-- NUEVO: No iniciar oleadas durante boss fight
+	if self.is_boss_fight then
+		print("[WaveManager] Oleada cancelada - Boss fight activo")
+		return
+	end
+
 	local config
 	local wave_name
 
@@ -315,6 +383,11 @@ end
 -- ============================================================
 
 spawn_enemy = function(self, point, enemy_type)
+	-- NUEVO: No spawnear durante boss fight
+	if self.is_boss_fight then
+		return
+	end
+
 	local factory_url = ENEMY_FACTORIES[enemy_type]
 
 	if not factory_url then
@@ -337,15 +410,6 @@ end
 -- ============================================================
 -- COMPLETAR OLEADAS
 -- ============================================================
-
--- on_wave_complete = function(self)
--- 	print("[WaveManager] ¡Oleada completada!")
--- 	msg.post("/hud#hud", "show_message", { text = "¡OLEADA COMPLETADA!", duration = 1.5 })
--- 
--- 	timer.delay(3.0, false, function()
--- 		start_next_wave(self)
--- 	end)
--- end
 
 on_wave_complete = function(self)
 	print("[WaveManager] ¡Oleada completada!")
@@ -371,21 +435,45 @@ end
 
 
 start_rescue_mode = function(self, fallen_pos)
+	-- NUEVO: Verificación adicional de seguridad
+	if self.is_boss_fight then
+		print("[WaveManager] Rescate bloqueado durante boss fight")
+		return
+	end
+
 	print("[WaveManager] ═══════════════════════════")
 	print("[WaveManager]   INICIANDO OLEADAS RESCATE")
 	print("[WaveManager] ═══════════════════════════")
+
+	-- NUEVO: Limpiar enemigos de la oleada anterior
+	print("[WaveManager] Limpiando enemigos anteriores antes del rescate...")
+	clear_all_enemies(self)
 
 	self.is_rescue_mode = true
 	self.rescue_wave = 0
 	self.spawn_queue = {}
 
-	start_next_wave(self)
+	-- Pequeño delay para que el jugador se oriente
+	timer.delay(1.0, false, function()
+		start_next_wave(self)
+	end)
 end
 
 end_rescue_mode = function(self)
 	print("[WaveManager] Modo rescate terminado")
+
+	-- NUEVO: Limpiar enemigos de rescate antes de continuar
+	print("[WaveManager] Limpiando enemigos de rescate...")
+	clear_all_enemies(self)
+
 	self.is_rescue_mode = false
 	self.rescue_wave = 0
+
+	-- NUEVO: Verificar si debemos continuar con oleadas o si hay boss pendiente
+	if self.is_boss_fight then
+		print("[WaveManager] No se reanudan oleadas - Boss fight activo")
+		return
+	end
 
 	timer.delay(2.0, false, function()
 		start_next_wave(self)

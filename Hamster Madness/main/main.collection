@@ -23,6 +23,15 @@ instances {
   id: "crosshair"
   prototype: "/main/crosshair/crosshair.go"
 }
+instances {
+  id: "tutorial_floor"
+  prototype: "/main/ui/tutorial/tutorial_floor.go"
+  position {
+    x: 360.0
+    y: 257.0
+    z: -0.5
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "room"
