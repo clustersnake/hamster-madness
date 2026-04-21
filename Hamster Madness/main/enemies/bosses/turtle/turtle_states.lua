@@ -6,6 +6,60 @@ local room_data = require "main.data.room_data"
 
 local M = {}
 
+local spawn_shockwave  -- NUEVO
+
+-- ============================================================
+-- CONFIGURACIÓN DE ATAQUES / VFX
+-- ============================================================
+
+local ATTACK_CONFIG = {
+	aplaston = {
+		damage_delay = 0.5,          -- Daño medio segundo después del impacto visual
+		radius_multiplier = 1.5,     -- Aumenta el radio efectivo del aplastón pequeño
+		shake_intensity = 0.003,
+		shake_duration = 0.3,
+
+		shockwave = {
+			max_scale = 4.0,        -- Más grande que antes
+			duration = 0.3,
+			delay = 0,
+			start_scale = 0.3,
+			color = vmath.vector4(1, 0.6, 0.2, 0.9)
+		}
+	},
+
+	mega_aplaston = {
+		damage_delay = 0.5,
+		shake_intensity = 0.006,
+		shake_duration = 0.5,
+
+		shockwaves = {
+			{
+				max_scale = 3.5,
+				duration = 0.2,
+				delay = 0,
+				start_scale = 0.3,
+				color = vmath.vector4(1, 0.3, 0.1, 1)
+			},
+			{
+				max_scale = 7.0,
+				duration = 0.35,
+				delay = 0.08,
+				start_scale = 0.3,
+				color = vmath.vector4(1, 0.5, 0.2, 0.8)
+			},
+			{
+				max_scale = 12.0,
+				duration = 0.5,
+				delay = 0.16,
+				start_scale = 0.3,
+				color = vmath.vector4(1, 0.7, 0.3, 0.5)
+			}
+		}
+	}
+}
+
+
 -- ============================================================
 -- ESTADOS
 -- ============================================================
@@ -250,6 +304,67 @@ M.states[M.STATE.MEGA_APLASTON] = {
 -- Los rebotes se manejan en turtle.script via common.handle_wall_bounce
 -- ============================================================
 
+-- M.states[M.STATE.RODADA] = {
+-- 	enter = function(self)
+-- 		print("[Turtle] ¡¡RODADA!!")
+-- 
+-- 		self.rodada_bounces = 0
+-- 		self.max_bounces = 5 + math.random(3)
+-- 		self.rodada_direction = get_direction_to_player(self)
+-- 
+-- 		-- Guardar límites de la sala
+-- 		local p = room_data.current.playable
+-- 		self.room_bounds = {
+-- 			left = p.min_x + 50,
+-- 			right = p.max_x - 50,
+-- 			bottom = p.min_y + 50,
+-- 			top = p.max_y - 50
+-- 		}
+-- 
+-- 		print("[Turtle] Rebotes objetivo: " .. self.max_bounces)
+-- 
+-- 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 0.4)
+-- 	end,
+-- 
+-- 	update = function(self, dt)
+-- 		local common = require "main.shared.entity_common"
+-- 
+-- 		local pos = go.get_position()
+-- 		local new_pos = pos + self.rodada_direction * self.rodada_speed * dt
+-- 
+-- 		-- Aplicar límites lógicos de la sala
+-- 		new_pos, _ = common.apply_bounds(self, new_pos, {
+-- 			bounds = self.room_bounds,
+-- 			direction_field = "rodada_direction",
+-- 			bounce_field = "rodada_bounces",
+-- 			max_bounces = self.max_bounces,
+-- 			on_bounce = function(boss)
+-- 				M.apply_bounce_variation(boss)
+-- 			end,
+-- 			on_max_bounces = function(boss)
+-- 				M.on_rodada_complete(boss)
+-- 			end
+-- 		})
+-- 
+-- 		go.set_position(new_pos)
+-- 
+-- 		-- Timeout de seguridad
+-- 		if self.state_timer >= 12.0 then
+-- 			print("[Turtle] Rodada timeout")
+-- 			M.change_state(self, M.STATE.IDLE)
+-- 		end
+-- 	end,
+-- 
+-- 	exit = function(self)
+-- 		go.cancel_animations(".", "euler.z")
+-- 		go.set_rotation(vmath.quat())
+-- 		self.special_cooldown = self.special_cooldown_max
+-- 	end
+-- }
+-- ============================================================
+-- ESTADO: RODADA (Rebotando por la sala, Fase 2+)
+-- ============================================================
+
 M.states[M.STATE.RODADA] = {
 	enter = function(self)
 		print("[Turtle] ¡¡RODADA!!")
@@ -269,6 +384,10 @@ M.states[M.STATE.RODADA] = {
 
 		print("[Turtle] Rebotes objetivo: " .. self.max_bounces)
 
+		-- NUEVO: Asegurar que el sprite sea visible antes de rodar
+		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+
+		-- Animación de rotación
 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 0.4)
 	end,
 
@@ -278,7 +397,6 @@ M.states[M.STATE.RODADA] = {
 		local pos = go.get_position()
 		local new_pos = pos + self.rodada_direction * self.rodada_speed * dt
 
-		-- Aplicar límites lógicos de la sala
 		new_pos, _ = common.apply_bounds(self, new_pos, {
 			bounds = self.room_bounds,
 			direction_field = "rodada_direction",
@@ -294,7 +412,6 @@ M.states[M.STATE.RODADA] = {
 
 		go.set_position(new_pos)
 
-		-- Timeout de seguridad
 		if self.state_timer >= 12.0 then
 			print("[Turtle] Rodada timeout")
 			M.change_state(self, M.STATE.IDLE)
@@ -302,8 +419,13 @@ M.states[M.STATE.RODADA] = {
 	end,
 
 	exit = function(self)
+		-- NUEVO: Cancelar SOLO la animación de rotación
 		go.cancel_animations(".", "euler.z")
 		go.set_rotation(vmath.quat())
+
+		-- NUEVO: Restaurar visibilidad del sprite
+		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+
 		self.special_cooldown = self.special_cooldown_max
 	end
 }
@@ -458,44 +580,110 @@ end
 -- ============================================================
 
 function M.do_aplaston(self, radius)
-	print("[Turtle] ¡APLASTÓN! Radio: " .. radius)
+	print("[Turtle] ¡APLASTÓN! Radio base: " .. radius)
 
+	local cfg = ATTACK_CONFIG.aplaston
 	local my_pos = go.get_position()
-	local player_pos = get_player_position(self)
 
 	-- Screen shake
 	local camera_id = go.get_id("/camera")
-	camera.shake(camera_id, 0.003, 0.3, hash("both"))
+	camera.shake(camera_id, cfg.shake_intensity, cfg.shake_duration, hash("both"))
 
-	if player_pos then
-		local distance = vmath.length(player_pos - my_pos)
+	-- Shockwave visual
+	spawn_shockwave(self, cfg.shockwave)
 
-		if distance <= radius then
-			print("[Turtle] ¡Jugador en rango!")
+	-- Daño sincronizado con delay
+	timer.delay(cfg.damage_delay, false, function()
+		if not go.exists(go.get_id()) then return end
+		if not self.player_id or not go.exists(self.player_id) then return end
+
+		local current_player_pos = get_player_position(self)
+		if not current_player_pos then return end
+
+		local current_my_pos = go.get_position()
+		local distance = vmath.length(current_player_pos - current_my_pos)
+		local actual_radius = radius * cfg.radius_multiplier
+
+		if distance <= actual_radius then
+			print("[Turtle] ¡Jugador en rango! (" .. math.floor(distance) .. " <= " .. actual_radius .. ")")
 			msg.post(self.player_id, "enemy_damage", {
 				damage = 1,
-				enemy_position = my_pos
+				enemy_position = current_my_pos
 			})
 		else
-			print("[Turtle] Jugador fuera de rango (" .. math.floor(distance) .. " > " .. radius .. ")")
+			print("[Turtle] Jugador fuera de rango (" .. math.floor(distance) .. " > " .. actual_radius .. ")")
 		end
-	end
+	end)
 end
 
 function M.do_mega_aplaston(self)
 	print("[Turtle] ¡¡MEGA APLASTÓN!! (Pantalla completa)")
 
-	local camera_id = go.get_id("/camera")
-	camera.shake(camera_id, 0.006, 0.5, hash("both"))
+	local cfg = ATTACK_CONFIG.mega_aplaston
 
-	if self.player_id and go.exists(self.player_id) then
+	local camera_id = go.get_id("/camera")
+	camera.shake(camera_id, cfg.shake_intensity, cfg.shake_duration, hash("both"))
+
+	-- Múltiples shockwaves
+	for _, wave_cfg in ipairs(cfg.shockwaves) do
+		spawn_shockwave(self, wave_cfg)
+	end
+
+	-- Daño sincronizado con delay
+	timer.delay(cfg.damage_delay, false, function()
+		if not go.exists(go.get_id()) then return end
+		if not self.player_id or not go.exists(self.player_id) then return end
+
 		msg.post(self.player_id, "enemy_damage", {
 			damage = 1,
 			enemy_position = go.get_position()
 		})
-	end
+	end)
 end
 
+-- ============================================================
+-- ACCIONES DE ATAQUE
+-- ============================================================
+
+-- function M.do_aplaston(self, radius)
+-- 	print("[Turtle] ¡APLASTÓN! Radio: " .. radius)
+-- 
+-- 	local my_pos = go.get_position()
+-- 	local player_pos = get_player_position(self)
+-- 
+-- 	-- Screen shake
+-- 	local camera_id = go.get_id("/camera")
+-- 	camera.shake(camera_id, 0.003, 0.3, hash("both"))
+-- 
+-- 	if player_pos then
+-- 		local distance = vmath.length(player_pos - my_pos)
+-- 
+-- 		if distance <= radius then
+-- 			print("[Turtle] ¡Jugador en rango!")
+-- 			msg.post(self.player_id, "enemy_damage", {
+-- 				damage = 1,
+-- 				enemy_position = my_pos
+-- 			})
+-- 		else
+-- 			print("[Turtle] Jugador fuera de rango (" .. math.floor(distance) .. " > " .. radius .. ")")
+-- 		end
+-- 	end
+-- end
+-- 
+-- function M.do_mega_aplaston(self)
+-- 	print("[Turtle] ¡¡MEGA APLASTÓN!! (Pantalla completa)")
+-- 
+-- 	local camera_id = go.get_id("/camera")
+-- 	camera.shake(camera_id, 0.006, 0.5, hash("both"))
+-- 
+-- 	if self.player_id and go.exists(self.player_id) then
+-- 		msg.post(self.player_id, "enemy_damage", {
+-- 			damage = 1,
+-- 			enemy_position = go.get_position()
+-- 		})
+-- 	end
+-- end
+-- 
 -- ============================================================
 -- MANEJO DE IMPACTOS
 -- ============================================================
@@ -548,6 +736,35 @@ function M.on_damage_taken(self)
 	go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(1, 1, 1), go.EASING_OUTBOUNCE, 0.3)
 
 	print("[Turtle] ¡OUCH!")
+end
+
+-- ============================================================
+-- EFECTOS VISUALES
+-- ============================================================
+
+-- ============================================================
+-- EFECTOS VISUALES
+-- ============================================================
+
+spawn_shockwave = function(self, config)
+	timer.delay(config.delay or 0, false, function()
+		if not go.exists(go.get_id()) then return end
+
+		local pos = go.get_position()
+		pos.z = 0.1
+
+		local props = {
+			max_scale = config.max_scale or 3.0,
+			duration = config.duration or 0.4,
+			start_scale = config.start_scale or 0.3
+		}
+
+		local id = factory.create("#shockwave_factory", pos, nil, props)
+
+		if id and config.color then
+			msg.post(id, "set_color", { color = config.color })
+		end
+	end)
 end
 
 return M
