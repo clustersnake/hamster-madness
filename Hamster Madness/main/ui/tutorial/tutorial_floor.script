@@ -1,0 +1,94 @@
+-- tutorial_floor.script
+-- Controlador del tutorial visual en el suelo
+
+-- ============================================================
+-- DECLARACIÓN DE FUNCIONES LOCALES
+-- ============================================================
+
+local hide_sprite
+local show_sprite
+local check_all_complete
+
+-- ============================================================
+-- IMPLEMENTACIÓN DE FUNCIONES LOCALES
+-- ============================================================
+
+hide_sprite = function(sprite_id)
+	msg.post(sprite_id, "disable")
+end
+
+show_sprite = function(sprite_id)
+	msg.post(sprite_id, "enable")
+end
+
+check_all_complete = function(self)
+	if self.move_hidden and self.attack_hidden and self.rescue_hidden then
+		msg.post("/player", "tutorial_complete")
+	end
+end
+-- ============================================================
+-- FUNCIONES DE DEFOLD
+-- ============================================================
+
+function init(self)
+	-- Variables de control
+	self.move_hidden = false
+	self.attack_shown = false
+	self.attack_hidden = false
+	self.rescue_shown = false
+	self.rescue_hidden = false
+
+	-- Estado inicial: solo move visible
+	hide_sprite("#sprite_attack")
+	hide_sprite("#sprite_rescue")
+end
+
+function on_message(self, message_id, message, sender)
+	-- Ocultar move (jugador presionó WASD)
+	if message_id == hash("hide_move") then
+		if not self.move_hidden then
+			hide_sprite("#sprite_move")
+			self.move_hidden = true
+			check_all_complete(self)
+		end
+		return
+	end
+
+	-- Mostrar attack (jugador recogió proyectil)
+	if message_id == hash("show_attack") then
+		if not self.attack_shown then
+			show_sprite("#sprite_attack")
+			self.attack_shown = true
+		end
+		return
+	end
+
+	-- Ocultar attack (jugador disparó)
+	if message_id == hash("hide_attack") then
+		if not self.attack_hidden then
+			hide_sprite("#sprite_attack")
+			self.attack_hidden = true
+			check_all_complete(self)
+		end
+		return
+	end
+
+	-- Mostrar rescue (jugador cayó)
+	if message_id == hash("show_rescue") then
+		if not self.rescue_shown then
+			show_sprite("#sprite_rescue")
+			self.rescue_shown = true
+		end
+		return
+	end
+
+	-- Ocultar rescue (rescate completado)
+	if message_id == hash("hide_rescue") then
+		if not self.rescue_hidden then
+			hide_sprite("#sprite_rescue")
+			self.rescue_hidden = true
+			check_all_complete(self)
+		end
+		return
+	end
+end
