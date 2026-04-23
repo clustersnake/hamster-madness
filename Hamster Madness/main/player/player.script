@@ -15,6 +15,7 @@ go.property("invulnerability_time", 1.5)
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	self.tutorial_active = true
+
 	-- Estado de movimiento
 	self.direction = vmath.vector3(0, 0, 0)
 	self.facing = vmath.vector3(0, -1, 0)
@@ -30,25 +31,35 @@ function init(self)
 	self.fallen_id = nil
 	self.is_rescuing = false
 
+	-- Datos del personaje (se llenan cuando recibe "set_character")
+	self.character_id = nil
+	self.character_data = nil
+	self.character_state = nil
+	self.character_ready = false  -- NUEVO: Flag para saber si ya está configurado
+
 	-- Inicializar subsistemas
 	animation.init_state(self)
 	player_camera.setup(go.get_id())
 	actions.set_shield_state(self, false)
 
 	msg.post("/game_manager", "register_player")
-	animation.update(self, true)
 
-	-- Invulnerabilidad inicial para P2
-	if string.find(tostring(msg.url()), "instance") then
-		print("[Player] Soy P2 - activando invulnerabilidad inicial")
-		actions.start_invulnerability(self, 2.0)
-	end
+	-- MODIFICADO: No llamar animation.update() aquí
+	-- Se llamará cuando recibamos set_character
 end
 
 function update(self, dt)
 	if not self.is_alive then
 		return
 	end
+
+	-- NUEVO: No actualizar animación hasta que el personaje esté configurado
+	if not self.character_ready then
+		return
+	end
+
+	-- Actualizar estado del personaje (cooldowns, etc.)
+	actions.update_character(self, dt)
 
 	actions.apply_movement(self, dt)
 	animation.update(self, false)
@@ -87,6 +98,17 @@ function on_input(self, action_id, action)
 end
 
 function on_message(self, message_id, message, sender)
+	-- NUEVO: Recibir datos del personaje desde game_manager
+	-- Recibir datos del personaje desde game_manager
+	if message_id == hash("set_character") then
+		actions.init_character(self, message.character_id, message.character_data)
+		self.character_ready = true  -- NUEVO: Marcar como listo
+
+		-- NUEVO: Ahora sí actualizar la animación inicial
+		animation.update(self, true)
+		return
+	end
+
 	-- Colisiones físicas
 	if message_id == hash("contact_point_response") then
 		if message.group == hash("default") and message.distance > 0 then
@@ -134,8 +156,20 @@ function on_message(self, message_id, message, sender)
 		return
 	end
 
+	-- NUEVO: Recibir experiencia
+	if message_id == hash("grant_exp") then
+		actions.add_exp(self, message.amount)
+		return
+	end
+
 	if message_id == hash("tutorial_complete") then
 		self.tutorial_active = false
+		return
+	end
+
+	-- NUEVO: Invulnerabilidad controlada desde game_manager
+	if message_id == hash("start_invulnerability") then
+		actions.start_invulnerability(self, message.duration or self.invulnerability_time)
 		return
 	end
 end
