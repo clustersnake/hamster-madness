@@ -31,7 +31,7 @@ nodes {
 }
 nodes {
   position {
-    x: 150.0
+    x: 100.0
     y: 55.0
   }
   size {
@@ -39,14 +39,14 @@ nodes {
     y: 100.0
   }
   type: TYPE_TEXT
-  text: "VIDAS"
+  text: "NEXT"
   font: "hud"
-  id: "label_lives"
+  id: "label_next"
   inherit_alpha: true
 }
 nodes {
   position {
-    x: 150.0
+    x: 100.0
     y: 25.0
   }
   size {
@@ -58,14 +58,14 @@ nodes {
     z: 0.41960785
   }
   type: TYPE_TEXT
-  text: "***"
+  text: "+1"
   font: "hud"
-  id: "lives_count"
+  id: "next_count"
   inherit_alpha: true
 }
 nodes {
   position {
-    x: 350.0
+    x: 390.0
     y: 55.0
   }
   size {
@@ -80,7 +80,7 @@ nodes {
 }
 nodes {
   position {
-    x: 350.0
+    x: 390.0
     y: 25.0
   }
   size {
@@ -95,7 +95,7 @@ nodes {
 }
 nodes {
   position {
-    x: 850.0
+    x: 980.0
     y: 40.0
   }
   size {
@@ -136,13 +136,13 @@ nodes {
     y: 64.0
   }
   type: TYPE_BOX
-  texture: "hud/face_normal"
+  texture: "hud/portrait_default"
   id: "face_area"
   inherit_alpha: true
 }
 nodes {
   position {
-    x: 1050.0
+    x: 1180.0
     y: 55.0
   }
   size {
@@ -157,7 +157,7 @@ nodes {
 }
 nodes {
   position {
-    x: 1050.0
+    x: 1180.0
     y: 25.0
   }
   size {
@@ -168,6 +168,38 @@ nodes {
   text: "READY"
   font: "hud"
   id: "shield_status"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 240.0
+    y: 40.0
+  }
+  size {
+    x: 80.0
+    y: 70.0
+  }
+  color {
+    x: 0.101960786
+    y: 0.1254902
+    z: 0.17254902
+  }
+  type: TYPE_BOX
+  id: "next_frame"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 240.0
+    y: 40.0
+  }
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  texture: "hud/portrait_default"
+  id: "next_area"
   inherit_alpha: true
 }
 material: "/builtins/materials/gui.material"
