@@ -45,6 +45,64 @@ La energía no es solo para comprar; es el flujo vital que determina qué proces
 | **05 Acrobat** | **Dash** | Esquiva rodando. Los slots reducen el costo de Estabilidad Sináptica. |
 | **06 Trapper** | **Mina** | Deja la bola como trampa masiva. Los slots aumentan el radio/fragmentos. |
 
+
+
+Sistema de Progresión de Habilidades (Inspirado en Life Force)
+Cada personaje activa estas capacidades únicas a medida que derrota enemigos y sube de nivel durante la partida.
+
+Speedy (Velocidad - Rojo)
+Nivel 1: Turbo Inicial – Aumento de velocidad base en un 10%.
+
+Nivel 2: Derrape de Energía – Al realizar giros cerrados, deja un rastro de chispas que daña o ralentiza a los enemigos.
+
+Nivel 3: Recogida Magnética – El rango de atracción para recuperar el proyectil/escudo aumenta significativamente.
+
+Nivel 4: Tiempo Bala – Habilidad activa que ralentiza el tiempo para todo el entorno excepto para Speedy.
+
+Dasher (Agilidad - Cian)
+Nivel 1: Dash Básico – Desplazamiento rápido con marcos de invencibilidad (i-frames).
+
+Nivel 2: Corte Fugaz – El hámster inflige daño por contacto si realiza un dash a través de un enemigo mientras tiene el escudo.
+
+Nivel 3: Salto de Sombra – El dash permite atravesar paredes delgadas o ciertos obstáculos sólidos.
+
+Nivel 4: Multi-Dash – Capacidad de encadenar hasta 3 dashes seguidos sin tiempo de recarga.
+
+Tank (Fuerza - Verde)
+Nivel 1: Blindaje Pesado – Permite resistir un golpe adicional sin soltar el proyectil (reseteable tras cooldown).
+
+Nivel 2: Onda de Choque – Genera una explosión radial que empuja a los enemigos cercanos al recuperar el proyectil.
+
+Nivel 3: Escudo Ampliado – El tamaño físico de la bola/escudo aumenta un 30%, facilitando la defensa activa.
+
+Nivel 4: Fortaleza Móvil – Invulnerabilidad total temporal; permite arrollar a cualquier enemigo, a costa de reducir la velocidad.
+
+Lucky (Suerte - Amarillo)
+Nivel 1: Instinto – 10% de probabilidad de que cualquier impacto recibido sea ignorado automáticamente.
+
+Nivel 2: Rebote Fortuito – Al ser lanzado, el proyectil tiene una probabilidad de buscar y rebotar hacia un segundo enemigo cercano.
+
+Nivel 3: Botín Extra – Aumenta la probabilidad de que los enemigos derrotados suelten ítems de mejora.
+
+Nivel 4: Siete de la Suerte – Durante un breve periodo, todos los golpes son críticos y la recuperación del proyectil es instantánea.
+
+Trapper (Inteligencia - Púrpura)
+Nivel 1: Mina de Proyectil – Al quedar clavado, el proyectil detecta enemigos y detona en área antes de volver al jugador.
+
+Nivel 2: Red de Contención – La mina genera un campo de ralentización del 40% antes de la explosión.
+
+Nivel 3: Carga Dual – Permite la detonación manual a distancia del proyectil clavado, aturdiendo a los enemigos en pantalla.
+
+Nivel 4: Agujero Negro – La mina succiona a los enemigos hacia su centro durante 3 segundos antes de la explosión masiva.
+
+Trickshot (Destreza - Naranja)
+Nivel 1: Rebote Predictivo – Muestra una línea de trayectoria; el proyectil no se detiene al primer choque con un muro.
+
+Nivel 2: Impacto en Cadena – Tras golpear a un enemigo, el proyectil rebota automáticamente hacia el siguiente objetivo más cercano.
+
+Nivel 3: Proyectil Perforante – Atraviesa enemigos menores (sin detenerse) y recoge automáticamente los power-ups a su paso.
+
+Nivel 4: División de Fragmentos – Al impactar, libera 3 fragmentos rebotantes temporales mientras el proyectil principal regresa.
 ---
 
 ## 4. Módulos Maestros (Habilidades de Jefes)
