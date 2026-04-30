@@ -51,6 +51,8 @@ function M.die(self)
 	self.is_alive = false
 	print("¡Enemigo eliminado!")
 	msg.post("/wave_manager", "enemy_died")
+
+	msg.post("/game_manager", "enemy_defeated")
 	go.delete()
 end
 
@@ -152,9 +154,6 @@ end
 -- Retorna true si el mensaje fue manejado
 function M.handle_message(self, message_id, message, sender)
 	if message_id == hash("take_damage") then
-
-		-- Cuando el enemigo muere, enviar EXP al player
-		msg.post("/game_manager", "enemy_killed", { enemy_type = "common" })
 		M.die(self)
 		return true
 	end
