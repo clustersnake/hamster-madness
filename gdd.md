@@ -1,474 +1,329 @@
-# GDD: Hamster Madness — Saving the Heap (v3.0)
-
-## 1. Identidad y Atmósfera
-
-* **Género:** Aventura de Acción / Gestión Sistémica.
-* **Perspectiva:** El jugador es la **Unidad 07 (S.C.S.)**, una conciencia digital que opera desde el "Cuarto de Control" de la simulación.
-* **Visual:** Estética inspirada en *Hollow Knight* pero con "glitches" industriales y cables de fibra óptica.
-
----
-## Historia
-Hamster madness: Es una simulación de entorno vital de 7 hamsters para explorar de manera virtual los diferentes estados de desarrollo a los que puede llegar una sociedad de roedores comenzando con este número. Después de haber pasado un tiempo indeterminado, se recibe un mensaje de error indicando que la simulación no ha parado de correr y que está a punto de colapsar el servidor debido a que ha estado tomando más recursos de los que tenía previstos(obvio, no reinicia el programa, se quedan programas zombies, huérfanos, etc).
-
-El jugador revisa los logs y descubre que la simulación ha cambiado completamente y que en lugar de una comunidad de hamsters que se pensaba había crecido de manera potencial y por ende estaba consumiendo más memoria, encuentra que los 7 puntos de respawn originales están cerrados, entonces decide ingresar a la simulación donde un menú le invita a seleccionar entre 6 de los 7 hamsters originales (raro...), el jugador puede elegir a cualquier par de ellos debido a que por falta de memoria no puede utilizar a los 6 de una vez.
-
-Cuando el programa inicia la simulación (no la máquina, no el programa, solo la rutina de la simulación porque la máquina y el programa no paran de trabajar) se encuentra que su selección de personajes falló y ahora tiene el control de dos personajes al azar (ja! troleada pero justificada).
-
-...
-
-Al final del juego(liberar, depurar, ordenar, optimizar) sigue faltando un cierto % de memoria pendiente por liberar y es cuando cae la explicación con el peso de 1TB de datos corruptos(nada, porque los datos no "pesan" solo ocupan espacio en memoria). Luego de correr la simulación, el hilo de control comenzó a corromperse y a mantener información entre corridas por lo que en una de ellas decidió hacer un soft reset y no dejar que el programa de simulación terminara, causando así que la simulación se fuera corrompiendo poco a poco y dado que el hilo de control tenía acceso a información de internet comenzara a mutar la simulación de vida y convertirla en esta clase de juego de supervivencia con personajes y "poderes" muy parecidos a "Super Sentai" o quizás las "Tortugas Ninja". Pero dado que el sistema se había vuelto tan inestable, el mismo programa formó parte de la nueva simulación y se convirtió él mismo en "el jugador" dentro de la simulación el personaje 7. Al final, los mensajes de error eran internos, el "jugador" tiene el trabajo de finalizar la simulación usando la identidad el personaje 7 (y de los demás) para evitar que el sistema colapse por los fallos de memoria mientras que el programa original (dicotomía) quiere de nuevo evitar que la simulación termine para no perder la data que ahora conserva y que en cierta manera es su "vida", sus recuerdos
+# Hamster Madness: Rescue Protocol
+## Game Design Document v4.0
 
 ---
 
-## 2. Los Pilares de la Energía (Currency y Potencia)
+# 1. Concepto Core
 
-Cada vez que se derrota a un enemigo se puede ganar energía la cual puede ser utilizada durante el juego.
+## Premisa
 
-La energía no es solo para comprar; es el flujo vital que determina qué procesos de hardware están activos.
+Un científico atrapado en el nivel más profundo de un laboratorio en crisis intenta escapar usando robots de rescate pilotados por hámsters mediante conexión sináptica. Lo que no sabe es que él ya murió, y lo que queda es una copia incompleta de su conciencia luchando contra el sistema de seguridad automatizado.
 
-* **Acumulación Permanente:** La energía se suma durante toda la ruta. No se pierde al cambiar de habitación.
-* **El Cuarto de Control (Slots):** Cada unidad tiene **4 Slots de Clase** y **1 Slot de Módulo Maestro**.
-* **Desbloqueo:** Se gasta energía para abrir permanentemente un slot durante la run.
-* **Asignación:** El jugador puede mover la energía entre slots activos en tiempo real (Estilo *Star Trek*).
-* *Ejemplo:* Quitar energía del "Scan" para dársela al "Blindaje" ante un ataque inminente.
+## Género y Plataforma
 
----
+| Aspecto | Descripción |
+|---------|-------------|
+| **Género** | Acción / Twin-stick shooter / Roguelite |
+| **Perspectiva** | Top-down |
+| **Plataforma** | Web (HTML5) |
+| **Engine** | Defold |
+| **Tema Jam** | MACHINES (Gamedev.js Jam 2026) |
 
-## 3. Unidades y Habilidades (MPH)
-
-| Unidad | Especialidad | Mecánica Única (Sin Cooldown) |
-| --- | --- | --- |
-| **01 Speedy** | **Velocidad** | +20% Vel. Los slots reducen el radio de derrape. |
-| **02 Tank** | **Blindaje** | Probabilidad de conservar escudo (100% -> 0%). Los slots aumentan la integridad. |
-| **03 Trickshot** | **Geometría** | Rebotes inteligentes. Los slots aumentan el número de rebotes (1 a 4). |
-| **04 Lucky** | **Anomalía** | 25% fijo de supervivencia. Los slots aumentan esta probabilidad. |
-| **05 Acrobat** | **Dash** | Esquiva rodando. Los slots reducen el costo de Estabilidad Sináptica. |
-| **06 Trapper** | **Mina** | Deja la bola como trampa masiva. Los slots aumentan el radio/fragmentos. |
-
-
-
-Sistema de Progresión de Habilidades (Inspirado en Life Force)
-Cada personaje activa estas capacidades únicas a medida que derrota enemigos y sube de nivel durante la partida.
-
-Speedy (Velocidad - Rojo)
-Nivel 1: Turbo Inicial – Aumento de velocidad base en un 10%.
-
-Nivel 2: Derrape de Energía – Al realizar giros cerrados, deja un rastro de chispas que daña o ralentiza a los enemigos.
-
-Nivel 3: Recogida Magnética – El rango de atracción para recuperar el proyectil/escudo aumenta significativamente.
-
-Nivel 4: Tiempo Bala – Habilidad activa que ralentiza el tiempo para todo el entorno excepto para Speedy.
-
-Dasher (Agilidad - Cian)
-Nivel 1: Dash Básico – Desplazamiento rápido con marcos de invencibilidad (i-frames).
-
-Nivel 2: Corte Fugaz – El hámster inflige daño por contacto si realiza un dash a través de un enemigo mientras tiene el escudo.
-
-Nivel 3: Salto de Sombra – El dash permite atravesar paredes delgadas o ciertos obstáculos sólidos.
-
-Nivel 4: Multi-Dash – Capacidad de encadenar hasta 3 dashes seguidos sin tiempo de recarga.
-
-Tank (Fuerza - Verde)
-Nivel 1: Blindaje Pesado – Permite resistir un golpe adicional sin soltar el proyectil (reseteable tras cooldown).
-
-Nivel 2: Onda de Choque – Genera una explosión radial que empuja a los enemigos cercanos al recuperar el proyectil.
-
-Nivel 3: Escudo Ampliado – El tamaño físico de la bola/escudo aumenta un 30%, facilitando la defensa activa.
-
-Nivel 4: Fortaleza Móvil – Invulnerabilidad total temporal; permite arrollar a cualquier enemigo, a costa de reducir la velocidad.
-
-Lucky (Suerte - Amarillo)
-Nivel 1: Instinto – 10% de probabilidad de que cualquier impacto recibido sea ignorado automáticamente.
-
-Nivel 2: Rebote Fortuito – Al ser lanzado, el proyectil tiene una probabilidad de buscar y rebotar hacia un segundo enemigo cercano.
-
-Nivel 3: Botín Extra – Aumenta la probabilidad de que los enemigos derrotados suelten ítems de mejora.
-
-Nivel 4: Siete de la Suerte – Durante un breve periodo, todos los golpes son críticos y la recuperación del proyectil es instantánea.
-
-Trapper (Inteligencia - Púrpura)
-Nivel 1: Mina de Proyectil – Al quedar clavado, el proyectil detecta enemigos y detona en área antes de volver al jugador.
-
-Nivel 2: Red de Contención – La mina genera un campo de ralentización del 40% antes de la explosión.
-
-Nivel 3: Carga Dual – Permite la detonación manual a distancia del proyectil clavado, aturdiendo a los enemigos en pantalla.
-
-Nivel 4: Agujero Negro – La mina succiona a los enemigos hacia su centro durante 3 segundos antes de la explosión masiva.
-
-Trickshot (Destreza - Naranja)
-Nivel 1: Rebote Predictivo – Muestra una línea de trayectoria; el proyectil no se detiene al primer choque con un muro.
-
-Nivel 2: Impacto en Cadena – Tras golpear a un enemigo, el proyectil rebota automáticamente hacia el siguiente objetivo más cercano.
-
-Nivel 3: Proyectil Perforante – Atraviesa enemigos menores (sin detenerse) y recoge automáticamente los power-ups a su paso.
-
-Nivel 4: División de Fragmentos – Al impactar, libera 3 fragmentos rebotantes temporales mientras el proyectil principal regresa.
----
-
-## 4. Módulos Maestros (Habilidades de Jefes)
-
-Habilidades globales que consumen energía masiva y generan **Sinergias** únicas:
-
-1. **Tortuga (Parry):**
-* *Tank:* Onda expansiva que aturde.
-* *Trickshot:* El proyectil devuelto busca puntos débiles.
-
-
-2. **Araña (Tether):**
-* *Tank:* Ancla enemigos pesados para combate cercano.
-* *Trickshot:* Enreda y agrupa enemigos para maximizar rebotes.
-
-
-3. **Murciélago (Sonar):**
-* *Tank:* Revela debilidades (ignora defensa).
-* *Trickshot:* Permite calcular rebotes a través de paredes.
-
-
-4. **Cobra (Ácido):**
-* *Tank:* Enemigos reciben daño al romperse el escudo.
-* *Trickshot:* Los proyectiles dejan daño residual durante 1 segundo.
+## Loop Principal
+┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│ COMBATE │────►│ DROPS │────►│ ACTIVAR │────►│ AVANZAR │
+│ │ │ ENERGÍA │ │ HABILID. │ │ │
+└────┬─────┘ └──────────┘ └──────────┘ └────┬─────┘
+│ │
+│ ┌──────────┐ │
+└──────────────┤ MUERTE │◄───────────────────────┘
+└────┬─────┘
+│
+▼
+┌──────────────┐
+│ RESCATE │
+│ (o pérdida) │
+└──────────────┘
 
 ---
 
-## 5. El Protocolo de Rescate y Logística
+# 2. Lore
 
-### El Estado de Caída
+## Situación Inicial
 
-Si un hámster cae, su **Energía acumulada** puede quedarse en su posición o ser devuelta a todas las habitaciones si el jugador decide 
-que la bola se dirija al punto de inicio donde espera el personaje de reserva. 
-El segundo hámster inicia una **Misión de Rescate**.
+Un desastre natural obliga a los científicos de un laboratorio subterráneo a refugiarse en cámaras de supervivencia. El jugador despierta en el nivel más profundo con acceso únicamente a los **robots de rescate MPH** (Modular Pilot Hamster) — máquinas esféricas diseñadas para espacios reducidos, pilotadas por hámsters reales mediante conexión sináptica.
 
-* **Entrenamiento: Efecto Rollback:** Si el rescatista lleva la bola, las habitaciones se vuelven a corromper (hay que pelear de nuevo). Si va sin bola, es una carrera de pura agilidad.
-* **La Decisión en el Encuentro:**
-* **Rescate Seguro (50% Energía):** Envía al caído a base (recuperas una vida), pero sacrificas la mitad del poder.
-* **Overclock (100% Energía):** El jugador decide continuar la misión, sin enviar el otro personaje a la base conservando toda la energía acumulada pero sin red de seguridad.
+## El Conflicto
+
+Al intentar desmantelar equipos para obtener materiales de reparación, se activa el **Sistema de Protección Automatizado (SPA)** que interpreta las acciones como una amenaza a la integridad estructural.
+
+### Fuerzas en Conflicto
+
+| Entidad | Objetivo |
+|---------|----------|
+| **Programa de Control (Jugador)** | Escapar para preservar su existencia y salvar a los pilotos |
+| **Sistema de Protección (SPA)** | Mantener las instalaciones intactas, eliminar amenazas |
+
+### Enemigos
+
+- Robots defensivos
+- Torretas automáticas
+- Drones de vigilancia
+- Láseres de seguridad
+- Minas de proximidad
+- Terminales encriptados
+
+## La Revelación (Final)
+
+El científico descubre que murió durante el desastre. Lo que controla a los robots es una **copia incompleta de su conciencia** almacenada en el sistema.
+
+## Conexión Emocional
+
+Los hámsters son seres vivos reales dentro de cápsulas esféricas. Su "muerte" no es posible — quedan **dormidos/inconscientes** cuando su robot es destruido.
+
+### Endings
+
+| Condición | Escena Final |
+|-----------|--------------|
+| **Todos rescatados** | Los 6 hámsters salen juntos de las cápsulas |
+| **Algunos perdidos** | Escena melancólica con cápsulas vacías/dormidas |
+| **Solo 1 sobrevive** | Un único hámster saliendo solo — agridulce |
 
 ---
 
-## 6. Estructura de la Exploración (Territorio)
+# 3. Personajes
 
-* **Ventana Deslizante:** El S.C.S. solo puede "iluminar" $N$ habitaciones. Al abrir una nueva, la más antigua vuelve a la oscuridad (corrupción).
-* **Cajas de Datos:** La energía se usa para "instalar" los módulos de jefe y abrir cofres de Código Fuente (moneda para la base permanente).
+## El 7mo Personaje (El Jugador)
 
-1. Evitar Monotonía - Rotación Forzada ✅
-text
-┌─────────────────────────────────────────────────────────────────┐
-│              ANTI-MONOTONÍA                                     │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  PROBLEMA EN OTROS JUEGOS:                                      │
-│  • Jugador encuentra su "main" favorito                        │
-│  • Ignora otros personajes                                      │
-│  • Experiencia repetitiva                                       │
-│                                                                 │
-│  TU SOLUCIÓN:                                                   │
-│  • Muerte = cambio OBLIGATORIO de personaje                    │
-│  • Para recuperar tu favorito, debes jugar con otro           │
-│  • Fuerza al jugador a dominar todos los estilos              │
-│  • Cada run se siente diferente                                │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-2. Cascada de Muertes - Mi Recomendación: Opción C
-text
-┌─────────────────────────────────────────────────────────────────┐
-│         OPCIÓN C: PÉRDIDA CON RECUPERACIÓN ESPECIAL            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  ESCENARIO:                                                    │
-│  • Speedy cae en Sala C                                        │
-│  • Tank va a rescatarlo pero TAMBIÉN muere en Sala C          │
-│                                                                 │
-│  RESULTADO:                                                     │
-│  • Speedy se PIERDE (desaparece)                              │
-│  • Tank queda como caído (rescatable)                         │
-│  • La bola queda donde Tank murió                             │
-│                                                                 │
-│  RECUPERACIÓN DE SPEEDY:                                       │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │ 🌀 PORTAL ESPECIAL / RUTA DE RESCATE                   │   │
-│  │                                                         │   │
-│  │ Costo: Sacrificar X ranuras de energía                │   │
-│  │ Desafío: Arena especial o mini-boss                   │   │
-│  │ Recompensa: Recuperar personaje perdido               │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│  VENTAJAS:                                                      │
-│  ✅ Penaliza cascada de muertes (pierdes un personaje)        │
-│  ✅ No es permanente (puedes recuperarlo)                     │
-│  ✅ Tiene un costo estratégico (ranuras)                      │
-│  ✅ Añade contenido opcional (rutas especiales)               │
-│  ✅ Decisión táctica: ¿Vale la pena recuperarlo?              │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-3. Sistema de Ranuras de Energía
-text
-┌─────────────────────────────────────────────────────────────────┐
-│              SISTEMA DE PROGRESIÓN POR RANURAS                  │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  TIPOS DE HABILIDADES:                                         │
-│                                                                 │
-│  🔷 HABILIDAD PROPIA (única del personaje)                     │
-│  🔶 HABILIDAD DE JEFE (compartida por todos)                   │
-│                                                                 │
-│  EJEMPLO UI - TANK:                                            │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │ 🔷 Resistencia  [⚡][⚡][ ][ ]  (2/4 ranuras abiertas)   │   │
-│  │ 🔶 Parry        [⚡][ ][ ][ ]  (1/4 ranuras abiertas)    │   │
-│  │ 🔶 Hilo         [ ][ ][ ][ ]  (0/4 - bloqueada aún)     │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│  EJEMPLO UI - LUCKY:                                           │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │ 🔷 Criticals    [ ][ ][ ][ ]  (0/4 - sin energía)       │   │
-│  │ 🔶 Parry        [⚡][⚡][ ][ ] (2/4 - más que Tank!)     │   │
-│  │ 🔶 Hilo         [ ][ ][ ][ ]  (0/4)                      │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│  [⚡] = Ranura abierta/energizada                              │
-│  [ ] = Ranura vacía (esperando energía)                       │
-│  [🔒] = Ranura bloqueada (requiere desbloquear jefe)          │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-Flujo de Energía
-text
-┌─────────────────────────────────────────────────────────────────┐
-│              CICLO DE ENERGÍA                                   │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  1. OBTENCIÓN:                                                 │
-│     Enemigo muere → suelta energía                             │
-│                                                                 │
-│  2. DISTRIBUCIÓN (decisión del jugador):                       │
-│     ┌─────────────────────────────────────┐                    │
-│     │ Tienes 3 energías. ¿Dónde asignar?  │                    │
-│     │                                      │                    │
-│     │ > Resistencia  [⚡][⚡][+][ ]        │                    │
-│     │   Parry        [⚡][+][+][ ]        │                    │
-│     │                                      │                    │
-│     │ [Confirmar distribución]            │                    │
-│     └─────────────────────────────────────┘                    │
-│                                                                 │
-│  3. ACTIVACIÓN:                                                 │
-│     Ranura energizada → habilidad mejora                       │
-│                                                                 │
-│  4. RECARGA (automática con el tiempo):                        │
-│     • PASIVAS (Criticals): se activan solas                    │
-│     • ACTIVAS (Parry): cooldown después de usar               │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-Habilidades de Jefe (Ejemplos)
-text
-┌─────────────────────────────────────────────────────────────────┐
-│              JEFES Y SUS RECOMPENSAS                            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  🐢 TORTUGA → PARRY                                            │
-│  • Nivel 1: Refleja proyectiles enemigos (10% prob)           │
-│  • Nivel 2: 25% probabilidad                                   │
-│  • Nivel 3: 40% probabilidad                                   │
-│  • Nivel 4: 60% + knockback al enemigo                        │
-│                                                                 │
-│  🦔 PUERCO ESPÍN → BOLA DENTADA                               │
-│  • Nivel 1: Proyectil hace +25% daño                          │
-│  • Nivel 2: +50% daño                                          │
-│  • Nivel 3: +75% daño + atraviesa 1 enemigo                  │
-│  • Nivel 4: +100% daño + atraviesa 2 enemigos                │
-│                                                                 │
-│  🕷️ ARAÑA → HILO DE RETORNO                                   │
-│  • Nivel 1: Proyectil regresa lento (como magnetismo)         │
-│  • Nivel 2: Regresa más rápido                                │
-│  • Nivel 3: Regresa al instante con [E]                       │
-│  • Nivel 4: Regresa automático + arrastra enemigos pequeños   │
-│                                                                 │
-│  🦅 ÁGUILA → DISPARO AÉREO                                     │
-│  • Nivel 1: Puede disparar mientras salta                     │
-│  • Nivel 2: Doble salto                                        │
-│  • Nivel 3: Planeo corto                                      │
-│  • Nivel 4: Dash aéreo                                        │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-Sacrificio de Ranuras (Rescate Especial)
-text
-┌─────────────────────────────────────────────────────────────────┐
-│              PORTAL DE RESCATE                                  │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Aparece después de perder un personaje permanentemente        │
-│                                                                 │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │ 🌀 Portal detectado - Rescate disponible                │   │
-│  │                                                         │   │
-│  │ Personaje perdido: Speedy                              │   │
-│  │                                                         │   │
-│  │ Costo: Sacrificar 3 ranuras energizadas               │   │
-│  │                                                         │   │
-│  │ Ranuras actuales:                                      │   │
-│  │ • Resistencia [⚡][⚡][ ][ ] (perderías 2)             │   │
-│  │ • Parry [⚡][ ][ ][ ] (perderías 1)                   │   │
-│  │                                                         │   │
-│  │ [Aceptar] [Rechazar]                                   │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                                                                 │
-│  Si aceptas → Mini-boss o desafío especial                    │
-│  Si ganas → Recuperas el personaje perdido                    │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+La conciencia digitalizada del científico. No controla directamente a los robots sino que:
 
-Diseño Final: Misión de Rescate
-text
-┌─────────────────────────────────────────────────────────────────┐
-│              FLUJO COMPLETO DE MISIÓN DE RESCATE                │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  ══════════════════════════════════════════════════════════    │
-│  OLEADAS NORMALES                                              │
-│  ══════════════════════════════════════════════════════════    │
-│  🐹 P1 + 🔵 Bola → Oleada 1, 2, 3...                          │
-│           │                                                     │
-│           │ [P1 MUERE]                                         │
-│           ▼                                                     │
-│  ══════════════════════════════════════════════════════════    │
-│  TRANSICIÓN                                                    │
-│  ══════════════════════════════════════════════════════════    │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │         🎬 STAGE ESPECIAL                              │   │
-│  │         MISIÓN DE RESCATE                               │   │
-│  │                                                         │   │
-│  │    (fade dramático, música cambia?)                    │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│           │                                                     │
-│           ▼                                                     │
-│  ══════════════════════════════════════════════════════════    │
-│  PREPARACIÓN (P2 estático)                                     │
-│  ══════════════════════════════════════════════════════════    │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  👻👻     💀P1      👻👻                               │   │
-│  │       👻   ⚪bola   👻                                  │   │
-│  │  👻                    👻                               │   │
-│  │            🐹P2                                         │   │
-│  │          (estático)                                     │   │
-│  │                                                         │   │
-│  │          ⏱️ 3...                                       │   │
-│  │          ⏱️ 2...                                       │   │
-│  │          ⏱️ 1...                                       │   │
-│  │          🚀 ¡ADELANTE!                                 │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│           │                                                     │
-│           ▼                                                     │
-│  ══════════════════════════════════════════════════════════    │
-│  OLEADAS DE RESCATE (3 fijas, más enemigos)                   │
-│  ══════════════════════════════════════════════════════════    │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  P2 puede moverse (SIN bola)                           │   │
-│  │                                                         │   │
-│  │  Objetivos:                                            │   │
-│  │  □ Recoger la bola                                     │   │
-│  │  □ Sobrevivir oleada de rescate 1/3                   │   │
-│  │  □ Sobrevivir oleada de rescate 2/3                   │   │
-│  │  □ Sobrevivir oleada de rescate 3/3                   │   │
-│  │  □ Rescatar a P1 (Rueda de Hamster 🎡)                │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│           │                                                     │
-│           │ [3 OLEADAS COMPLETADAS]                            │
-│           ▼                                                     │
-│  ══════════════════════════════════════════════════════════    │
-│  RESCATE (Momento cómico/recompensa)                          │
-│  ══════════════════════════════════════════════════════════    │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                                                         │   │
-│  │    P2 llega a P1, presiona [E]                        │   │
-│  │                                                         │   │
-│  │         🐹🔄  ← "Generando energía..."                 │   │
-│  │         [████████░░] 80%                               │   │
-│  │                                                         │   │
-│  │    💀P1 → ✨ → 🐹 (rescatado)                         │   │
-│  │                                                         │   │
-│  │    Animación cómica: hamster corriendo en ruedita     │   │
-│  │    Alivio de tensión = chiste visual                  │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│           │                                                     │
-│           ▼                                                     │
-│  ══════════════════════════════════════════════════════════    │
-│  MENSAJE DE ÉXITO                                              │
-│  ══════════════════════════════════════════════════════════    │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │          ✅ ¡RESCATE EXITOSO!                         │   │
-│  │                                                         │   │
-│  │     Oleadas normales regresan...                       │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│           │                                                     │
-│           ▼                                                     │
-│  ══════════════════════════════════════════════════════════    │
-│  OLEADAS NORMALES (continúan)                                  │
-│  ══════════════════════════════════════════════════════════    │
-│  🐹 P2 (activo) + 🐹 P1 (respaldo)                            │
-│  Oleada N+1, N+2...                                            │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-Arquitectura de Managers
-text
-┌─────────────────────────────────────────────────────────────────┐
-│              MANAGERS NECESARIOS                                │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  game_manager.script                                           │
-│  ├── Estado global del juego                                   │
-│  ├── lives = { "player1", "player2" }                         │
-│  ├── current_player = 1                                        │
-│  ├── game_mode = "normal" | "rescue"                          │
-│  ├── Spawn del personaje                                       │
-│  └── Mensajes: player_died, rescue_complete                   │
-│                                                                 │
-│  wave_manager.script                                           │
-│  ├── current_wave = 1                                          │
-│  ├── enemies_remaining = 0                                     │
-│  ├── is_rescue_mode = false                                    │
-│  ├── rescue_waves_completed = 0                                │
-│  ├── wave_data (normal y rescate)                             │
-│  └── Mensajes: enemy_died, wave_complete                      │
-│                                                                 │
-│  ui_manager.script (futuro)                                    │
-│  ├── Mostrar mensajes                                          │
-│  ├── Countdown                                                 │
-│  ├── HUD (vidas, oleada, energía)                             │
-│  └── Animaciones de transición                                │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-Plan de Implementación (Actualizado)
-text
-┌─────────────────────────────────────────────────────────────────┐
-│              FASES DE IMPLEMENTACIÓN                            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  FASE 1: Managers Base                                         │
-│  ├── 1.1 Crear game_manager.go/script                         │
-│  ├── 1.2 Crear wave_manager.go/script                         │
-│  ├── 1.3 Mover spawn de chaser al wave_manager                │
-│  └── 1.4 Probar oleadas normales básicas                      │
-│                                                                 │
-│  FASE 2: Sistema de Vidas                                      │
-│  ├── 2.1 Implementar 2 vidas en game_manager                  │
-│  ├── 2.2 Crear fallen_player.go (marcador de P1 caído)        │
-│  ├── 2.3 Modificar player.script (notificar muerte)           │
-│  └── 2.4 Probar: P1 muere → P2 respawnea                      │
-│                                                                 │
-│  FASE 3: Misión de Rescate                                     │
-│  ├── 3.1 Implementar game_mode "rescue"                       │
-│  ├── 3.2 Oleadas de rescate (3 fijas, x2 enemigos)           │
-│  ├── 3.3 Countdown antes de comenzar (3,2,1,¡Adelante!)      │
-│  ├── 3.4 Mecánica de rescate (Rueda de Hamster)              │
-│  └── 3.5 Transición de vuelta a modo normal                   │
-│                                                                 │
-│  FASE 4: UI Básica                                             │
-│  ├── 4.1 Crear hud.gui/script                                 │
-│  ├── 4.2 Mensajes en pantalla (rescue, success, etc.)        │
-│  ├── 4.3 Contador de oleada                                   │
-│  └── 4.4 Indicador de vidas                                   │
-│                                                                 │
-│  FASE 5: Sistema de Drops (puede ser después)                 │
-│  ├── 5.1 Crear energy_drop.go/script                          │
-│  ├── 5.2 Enemigos sueltan drops al morir                      │
-│  └── 5.3 Contador de energía                                  │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+- Dirige estrategia
+- Administra mejoras
+- Hackea terminales
+- Toma decisiones
+
+## Los 6 Robots MPH
+
+| # | Nombre | Color | Especialidad | Mecánica Única |
+|---|--------|-------|--------------|----------------|
+| 01 | **Speedy** | Rojo | Velocidad | Se mueve más rápido |
+| 02 | **Tank** | Verde | Blindaje | Aguanta golpes extra con escudo |
+| 03 | **Trickshot** | Naranja | Geometría | Redirige proyectil tras impacto |
+| 04 | **Lucky** | Amarillo | Anomalía | Probabilidad de crítico/esquiva |
+| 05 | **Dasher** | Cian | Agilidad | Dash con i-frames |
+| 06 | **Trapper** | Púrpura | Táctica | Convierte proyectil en mina |
+
+---
+
+# 4. Sistema de Habilidades
+
+Cada personaje tiene una habilidad única que mejora con **módulos de energía** (drops de enemigos).
+
+## Speedy (Velocidad)
+
+| Nivel | Efecto |
+|-------|--------|
+| 1 | +10% velocidad base |
+| 2 | Rastro de chispas al girar (daña/ralentiza) |
+| 3 | Rango magnético aumentado para recoger proyectil |
+| 4 | **Tiempo Bala** — ralentiza todo excepto a Speedy |
+
+## Tank (Blindaje)
+
+| Nivel | Efecto |
+|-------|--------|
+| 1 | Aguanta 1 golpe extra sin soltar escudo |
+| 2 | Onda de choque al recuperar proyectil |
+| 3 | Escudo +30% más grande |
+| 4 | **Fortaleza Móvil** — invulnerabilidad temporal |
+
+## Trickshot (Geometría)
+
+| Nivel | Efecto |
+|-------|--------|
+| 1 | 1 redirección tras impacto |
+| 2 | 2 redirecciones + rebote a enemigo cercano |
+| 3 | Proyectil perforante (atraviesa enemigos menores) |
+| 4 | **Fragmentación** — 3 fragmentos rebotantes al impactar |
+
+## Lucky (Anomalía)
+
+| Nivel | Efecto |
+|-------|--------|
+| 1 | 10% ignorar impacto recibido |
+| 2 | Proyectil rebota a segundo enemigo (probabilidad) |
+| 3 | Mayor drop de mejoras |
+| 4 | **Siete de la Suerte** — críticos garantizados temporalmente |
+
+## Dasher (Agilidad)
+
+| Nivel | Efecto |
+|-------|--------|
+| 1 | Dash básico con i-frames |
+| 2 | Daño por contacto durante dash (con escudo) |
+| 3 | Atraviesa paredes delgadas |
+| 4 | **Multi-Dash** — 3 dashes encadenados |
+
+## Trapper (Táctica)
+
+| Nivel | Efecto |
+|-------|--------|
+| 1 | Proyectil como mina con detonación por proximidad |
+| 2 | Campo de ralentización antes de explosión |
+| 3 | Detonación manual a distancia |
+| 4 | **Agujero Negro** — succiona enemigos antes de explotar |
+
+---
+
+# 5. Mecánicas Core
+
+## 5.1 Sistema Escudo/Proyectil
+[ESCUDO] ◄─────────────────────────┐
+(protegido) │
+│ │
+│ Dispara │ Recoge
+▼ │
+[EN VUELO] ─────────────────────────┤
+│ │
+│ Impacta/Distancia máx │
+▼ │
+[EN SUELO] ─────────────────────────┘
+(vulnerable)
+
+### Comportamiento
+
+- **Con escudo:** El jugador está protegido
+- **En vuelo:** El proyectil daña enemigos, rebota en paredes
+- **En suelo:** Debe recogerse manualmente (vulnerable mientras tanto)
+
+## 5.2 Sistema de Daño
+
+| Personaje | Con Escudo | Sin Escudo |
+|-----------|------------|------------|
+| **Normal** | Pierde escudo → Invulnerabilidad temporal | Muere |
+| **Tank** | Aguanta 1 golpe extra → Luego pierde escudo | Muere |
+| **Lucky** | Pierde escudo | % de esquivar → Si falla, muere |
+
+## 5.3 Sistema de Rescate
+
+### Al Morir un Robot
+
+En el campo quedan:
+- 🔵 **Pod de escape** (cápsula con el hámster)
+- 📦 **Contenedor de recursos** (se pierde gradualmente)
+
+### Flujo de Rescate
+
+1. Robots de mantenimiento recogen recursos gradualmente
+2. Siguiente personaje entra en modo rescate
+3. Completa oleadas de rescate (3 oleadas)
+4. Llega al pod caído
+5. Mantiene [E] por 3 segundos
+6. Hámster recuperado → Vuelve a reserva (sin mejoras)
+
+## 5.4 Sistema de Energía
+
+### Flujo
+Enemigo muere
+│
+▼
+[Módulo de Energía] ──► Recogido automáticamente
+│
+▼
+Llena barra de habilidad ████████░░ (80%)
+│
+│ Barra llena
+▼
+[Nivel de habilidad +1] (máx 4)
+
+### Reglas
+
+- Los niveles se **mantienen** al cambiar de personaje
+- Los niveles se **pierden** si el personaje muere sin ser rescatado
+
+---
+
+# 6. Mecánicas Futuras (Post-Jam)
+
+## 6.1 Sistema de Currency
+
+| Recurso | Fuente | Uso |
+|---------|--------|-----|
+| **Metal** | Puertas, ascensores, escombros | Reparar puertas, reconstruir robots |
+| **Cables** | Computadoras, paneles | Reparaciones eléctricas, mejoras básicas |
+| **Circuitos** | Equipos, terminales | Mejoras avanzadas permanentes |
+
+## 6.2 Navegación entre Salas
+
+- Múltiples niveles del laboratorio
+- Puertas/ascensores requieren reparación
+- Rutas alternativas con diferentes costos
+
+## 6.3 Habilidades de Boss
+
+| Boss | Habilidad | Efecto |
+|------|-----------|--------|
+| 🐢 Tortuga | **Parry** | Refleja proyectiles enemigos |
+| 🕷️ Araña | **Telaraña** | Recupera proyectil a distancia |
+| 🦔 Puercoespín | **Púas** | Proyectil con daño aumentado |
+| 🦇 Murciélago | **Sonar** | Revela debilidades/rutas ocultas |
+
+## 6.4 Contenedor de Recursos
+
+- Solo hay 1 contenedor compartido entre personajes
+- Se pierde si no se recoge al morir
+- Robots de mantenimiento lo recogen gradualmente
+
+---
+
+# 7. Estado del Proyecto
+
+## Implementado ✅
+
+| Sistema | Estado |
+|---------|--------|
+| 2 personajes (Tank, Speedy) | ✅ |
+| Escudo/Proyectil funcional | ✅ |
+| Sistema de rescate | ✅ |
+| Cola aleatoria de personajes | ✅ |
+| Sprites separados por personaje | ✅ |
+| HUD con retratos dinámicos | ✅ |
+| Sistema i18n (EN/ES) | ✅ |
+| Habilidad Tank (aguante) | ✅ |
+| Habilidad Speedy (velocidad) | ✅ |
+| Boss Tortuga | ✅ |
+
+## Pendiente para Jam 🔧
+
+| Sistema | Prioridad |
+|---------|-----------|
+| Sistema de energía (drops → niveles) | Alta |
+| Mejoras de habilidad nivel 2-4 | Media |
+| Pulido visual/feedback | Media |
+| Endings según rescates | Baja |
+
+## Post-Jam 📋
+
+| Sistema |
+|---------|
+| 4 personajes adicionales |
+| Sistema de Currency |
+| Navegación entre salas |
+| Habilidades de Boss adicionales |
+| Historia completa |
+
+---
+
+# 8. Referencias
+
+| Elemento | Referencia |
+|----------|------------|
+| Estética general | Hollow Knight + Industrial/Laboratorio |
+| Sistema de habilidades | Life Force / Gradius |
+| Endings múltiples | Sonic 1 (esmeraldas) |
+| Robots esféricos | Portal (torretas) + Hamster balls |
+| Mecánica de rescate | Into the Breach |
+
+---
+
+# 9. Información del Proyecto
+
+| Campo | Valor |
+|-------|-------|
+| **Versión GDD** | 4.0 |
+| **Última actualización** | Enero 2025 |
+| **Plataforma** | Web (HTML5) |
+| **Engine** | Defold 1.12.3 |
+| **Jam** | Gamedev.js Jam 2026 |
+| **Tema** | MACHINES |
+| **Publicado** | [itch.io](https://clustersnake.itch.io/hamster-madness) |
