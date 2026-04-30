@@ -2,22 +2,6 @@ images {
   image: "/main/projectile/sprites/ball_large.png"
 }
 animations {
-  id: "walk_down"
-  images {
-    image: "/main/player/sprites/walk/down/wheely_down_red.png"
-  }
-  playback: PLAYBACK_LOOP_FORWARD
-  fps: 3
-}
-animations {
-  id: "idle_down"
-  images {
-    image: "/main/player/sprites/idle/down/wheely_down_red.png"
-  }
-  playback: PLAYBACK_LOOP_FORWARD
-  fps: 3
-}
-animations {
   id: "fallen_hamster"
   images {
     image: "/main/player/sprites/hurt_1.png"
@@ -29,35 +13,109 @@ animations {
   fps: 2
 }
 animations {
-  id: "idle_right"
+  id: "tank_idle_down"
   images {
-    image: "/main/player/sprites/idle/side/wheely_right_red.png"
+    image: "/main/characters/tank/sprites/tank_idle_down.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 3
 }
 animations {
-  id: "idle_up"
+  id: "tank_idle_up"
   images {
-    image: "/main/player/sprites/idle/up/wheely_top_red.png"
+    image: "/main/characters/tank/sprites/tank_idle_up.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 3
 }
 animations {
-  id: "walk_up"
+  id: "tank_idle_right"
   images {
-    image: "/main/player/sprites/walk/up/wheely_top_red.png"
+    image: "/main/characters/tank/sprites/tank_idle_right.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 3
 }
 animations {
-  id: "walk_right"
+  id: "tank_walk_down"
   images {
-    image: "/main/player/sprites/walk/side/wheely_right_red.png"
+    image: "/main/characters/tank/sprites/tank_walk_down.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
-  fps: 3
+}
+animations {
+  id: "tank_walk_up"
+  images {
+    image: "/main/characters/tank/sprites/tank_walk_up .png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "tank_walk_right"
+  images {
+    image: "/main/characters/tank/sprites/tank_walk_right.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "tank_fallen"
+  images {
+    image: "/main/characters/tank/sprites/tank_hurt_1.png"
+  }
+  images {
+    image: "/main/characters/tank/sprites/tank_hurt_2.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 2
+}
+animations {
+  id: "speedy_idle_down"
+  images {
+    image: "/main/characters/speedy/sprites/speedy_idle_down.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "speedy_idle_up"
+  images {
+    image: "/main/characters/speedy/sprites/speedy_idle_up.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "speedy_idle_right"
+  images {
+    image: "/main/characters/speedy/sprites/speedy_idle_right.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "speedy_walk_up"
+  images {
+    image: "/main/characters/speedy/sprites/speedy_walk_up.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "speedy_walk_down"
+  images {
+    image: "/main/characters/speedy/sprites/speedy_walk_down.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "speedy_walk_right"
+  images {
+    image: "/main/characters/speedy/sprites/speedy_walk_right.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+animations {
+  id: "speedy_hurt"
+  images {
+    image: "/main/characters/speedy/sprites/speedy_hurt_1.png"
+  }
+  images {
+    image: "/main/characters/speedy/sprites/speedy_hurt_2.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 2
 }
 extrude_borders: 2

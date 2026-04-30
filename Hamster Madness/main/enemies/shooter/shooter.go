@@ -16,6 +16,10 @@ embedded_components {
   "  texture: \"/main/enemies/enemies.atlas\"\n"
   "}\n"
   ""
+  scale {
+    x: 0.5
+    y: 0.5
+  }
 }
 embedded_components {
   id: "collisionobject"

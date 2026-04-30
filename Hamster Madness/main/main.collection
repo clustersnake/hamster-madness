@@ -1,13 +1,5 @@
 name: "main"
 instances {
-  id: "player"
-  prototype: "/main/player/player.go"
-  position {
-    x: 320.0
-    y: 240.0
-  }
-}
-instances {
   id: "camera"
   prototype: "/orthographic/camera.go"
 }

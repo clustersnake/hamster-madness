@@ -4,6 +4,12 @@
 local states = require "main.enemies.bosses.turtle.turtle_states"
 local common = require "main.shared.entity_common"
 
+local LAYER_COUNT = 39 -- De 00 a 38
+local SCALE = 1.5           -- Tu factor de escala (de 192 a 96)
+local Y_STEP = 1.2 * SCALE         -- Ajusta esto para dar más o menos "altura" visual
+local Z_STEP = 0.005 * SCALE       -- Separación mínima para evitar parpadeo
+local ROTATION_SPEED = 5.0
+
 -- ============================================================
 -- PROPIEDADES CONFIGURABLES
 -- ============================================================
@@ -65,6 +71,34 @@ function init(self)
 	print("[Turtle] ═══════════════════════════")
 
 	states.change_state(self, states.STATE.INTRO)
+	-- ESTA ES LA LÍNEA QUE FALTA:
+	self.layers = {}
+	self.current_angle = 0 -- <--- CRUCIAL
+	self.player_pos = nil
+	
+	local boss_id = go.get_id()
+
+	for i = 0, LAYER_COUNT - 1 do
+		-- 1. Creamos la capa desde la fábrica
+		-- Usamos una Z incremental para que no parpadeen (Z-fighting)
+		local pos = vmath.vector3(0, 0, i * 0.01)
+		-- local layer_id = factory.create("#layer_factory", pos)
+		local layer_id = factory.create("#layer_factory", pos, nil, {}, vmath.vector3(SCALE, SCALE, 1))
+
+		-- 2. La emparentamos al jefe para que se muevan juntos
+		msg.post(layer_id, "set_parent", { parent_id = boss_id })
+
+		-- 3. Le asignamos su imagen correspondiente (stack-00, stack-01...)
+		-- Formateamos el número para que siempre tenga dos dígitos
+		local anim_name = "tank-" .. string.format("%02d", i)
+		-- print(anim_name)
+		msg.post(msg.url(nil, layer_id, "sprite"), "play_animation", { id = hash(anim_name) })
+
+		-- 4. Guardamos el ID para el efecto de inclinación en el update
+		table.insert(self.layers, layer_id)
+	end
+
+	msg.post("/game_manager", "register_boss")
 end
 
 -- ============================================================
@@ -81,6 +115,34 @@ function update(self, dt)
 	if self.special_cooldown > 0 then
 		self.special_cooldown = self.special_cooldown - dt
 	end
+
+	if not self.player_pos or not self.current_angle or not self.layers then return end
+
+	-- Cálculo de ángulo (con compensación para mirar de frente)
+	local boss_pos = go.get_position()
+	local target_angle = math.atan2(self.player_pos.y - boss_pos.y, self.player_pos.x - boss_pos.x)
+
+	local diff = target_angle - self.current_angle
+	while diff > math.pi do diff = diff - 2 * math.pi end
+	while diff < -math.pi do diff = diff + 2 * math.pi end
+
+	self.current_angle = self.current_angle + diff * dt * ROTATION_SPEED
+
+	-- Ajuste final: Mirar al jugador de frente
+	local corrected_angle = self.current_angle - (math.pi / 2)
+	local rotation_quat = vmath.quat_rotation_z(corrected_angle)
+
+	for i, layer_id in ipairs(self.layers) do
+		-- Posicionamiento: Y crece para altura, Z crece para prioridad visual
+		local y_offset = (i - 1) * Y_STEP
+		local z_offset = (i - 1) * Z_STEP
+
+		go.set_position(vmath.vector3(0, y_offset, z_offset), layer_id)
+
+		-- Aplicamos rotación a TODAS las capas por igual
+		go.set_rotation(rotation_quat, layer_id)
+	end
+	
 end
 
 -- ============================================================
@@ -109,6 +171,10 @@ function on_message(self, message_id, message, sender)
 			handle_projectile_hit(self, message)
 		end
 		return
+	end
+
+	if message_id == hash("player_pos") then
+		self.player_pos = message.pos
 	end
 end
 

@@ -31,7 +31,7 @@ nodes {
 }
 nodes {
   position {
-    x: 150.0
+    x: 100.0
     y: 55.0
   }
   size {
@@ -39,14 +39,14 @@ nodes {
     y: 100.0
   }
   type: TYPE_TEXT
-  text: "VIDAS"
+  text: "NEXT"
   font: "hud"
-  id: "label_lives"
+  id: "label_next"
   inherit_alpha: true
 }
 nodes {
   position {
-    x: 150.0
+    x: 100.0
     y: 25.0
   }
   size {
@@ -58,14 +58,14 @@ nodes {
     z: 0.41960785
   }
   type: TYPE_TEXT
-  text: "***"
+  text: "+1"
   font: "hud"
-  id: "lives_count"
+  id: "next_count"
   inherit_alpha: true
 }
 nodes {
   position {
-    x: 350.0
+    x: 390.0
     y: 55.0
   }
   size {
@@ -80,7 +80,7 @@ nodes {
 }
 nodes {
   position {
-    x: 350.0
+    x: 390.0
     y: 25.0
   }
   size {
@@ -95,7 +95,7 @@ nodes {
 }
 nodes {
   position {
-    x: 850.0
+    x: 980.0
     y: 40.0
   }
   size {
@@ -136,13 +136,13 @@ nodes {
     y: 64.0
   }
   type: TYPE_BOX
-  texture: "hud/face_normal"
+  texture: "hud/portrait_default"
   id: "face_area"
   inherit_alpha: true
 }
 nodes {
   position {
-    x: 1050.0
+    x: 1180.0
     y: 55.0
   }
   size {
@@ -157,7 +157,7 @@ nodes {
 }
 nodes {
   position {
-    x: 1050.0
+    x: 1180.0
     y: 25.0
   }
   size {
@@ -168,6 +168,336 @@ nodes {
   text: "READY"
   font: "hud"
   id: "shield_status"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 240.0
+    y: 40.0
+  }
+  size {
+    x: 80.0
+    y: 70.0
+  }
+  color {
+    x: 0.101960786
+    y: 0.1254902
+    z: 0.17254902
+  }
+  type: TYPE_BOX
+  id: "next_frame"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 240.0
+    y: 40.0
+  }
+  size {
+    x: 64.0
+    y: 64.0
+  }
+  type: TYPE_BOX
+  texture: "hud/portrait_default"
+  id: "next_area"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 640.0
+    y: 360.0
+  }
+  size {
+    x: 1280.0
+    y: 720.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "victory_panel"
+  inherit_alpha: true
+  alpha: 0.7
+  size_mode: SIZE_MODE_AUTO
+  enabled: false
+}
+nodes {
+  size {
+    x: 400.0
+    y: 300.0
+  }
+  color {
+    x: 0.4
+    y: 0.4
+    z: 0.4
+  }
+  type: TYPE_BOX
+  id: "victory_bg"
+  parent: "victory_panel"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 100.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.9019608
+    y: 0.9019608
+    z: 0.3019608
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "default"
+  id: "victory_title"
+  parent: "victory_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 60.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "hud"
+  id: "victory_subtitle"
+  parent: "victory_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -60.0
+  }
+  size {
+    x: 200.0
+    y: 50.0
+  }
+  color {
+    x: 0.2
+    y: 0.4
+    z: 0.2
+  }
+  type: TYPE_BOX
+  id: "btn_restart"
+  parent: "victory_bg"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "hud"
+  id: "btn_restart_text"
+  parent: "btn_restart"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -120.0
+  }
+  size {
+    x: 200.0
+    y: 50.0
+  }
+  color {
+    x: 0.3019608
+    y: 0.3019608
+    z: 0.3019608
+  }
+  type: TYPE_BOX
+  id: "btn_menu"
+  parent: "victory_bg"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "hud"
+  id: "btn_menu_text"
+  parent: "btn_menu"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 20.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "hud"
+  id: "victory_stats"
+  parent: "victory_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    x: 640.0
+    y: 360.0
+  }
+  size {
+    x: 1280.0
+    y: 720.0
+  }
+  color {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  type: TYPE_BOX
+  id: "game_over_panel"
+  inherit_alpha: true
+  alpha: 0.7
+  size_mode: SIZE_MODE_AUTO
+  enabled: false
+}
+nodes {
+  size {
+    x: 400.0
+    y: 300.0
+  }
+  color {
+    x: 0.4
+    y: 0.4
+    z: 0.4
+  }
+  type: TYPE_BOX
+  id: "game_over_bg"
+  parent: "game_over_panel"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    y: 100.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  color {
+    x: 0.9019608
+    y: 0.9019608
+    z: 0.3019608
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "default"
+  id: "game_over_title"
+  parent: "game_over_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 60.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "hud"
+  id: "game_over_subtitle"
+  parent: "game_over_bg"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -60.0
+  }
+  size {
+    x: 200.0
+    y: 50.0
+  }
+  color {
+    x: 0.2
+    y: 0.4
+    z: 0.2
+  }
+  type: TYPE_BOX
+  id: "btn_retry"
+  parent: "game_over_bg"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "hud"
+  id: "btn_retry_text"
+  parent: "btn_retry"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: -120.0
+  }
+  size {
+    x: 200.0
+    y: 50.0
+  }
+  color {
+    x: 0.3019608
+    y: 0.3019608
+    z: 0.3019608
+  }
+  type: TYPE_BOX
+  id: "btn_menu_go"
+  parent: "game_over_bg"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "hud"
+  id: "btn_menu_go_text"
+  parent: "btn_menu_go"
+  inherit_alpha: true
+}
+nodes {
+  position {
+    y: 20.0
+  }
+  size {
+    x: 200.0
+    y: 100.0
+  }
+  type: TYPE_TEXT
+  text: "<text>"
+  font: "hud"
+  id: "game_over_stats"
+  parent: "game_over_bg"
   inherit_alpha: true
 }
 material: "/builtins/materials/gui.material"

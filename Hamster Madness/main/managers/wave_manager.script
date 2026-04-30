@@ -2,7 +2,9 @@
 -- Controla el spawn de enemigos y las oleadas
 
 local room_data = require "main.data.room_data"
-local BOSS_TRIGGER_WAVE = 5  -- El boss aparece después de esta oleada
+local i18n = require "main.data.localization"
+
+local BOSS_TRIGGER_WAVE = 2  -- El boss aparece después de esta oleada
 
 -- ============================================================
 -- FACTORIES DE ENEMIGOS
@@ -316,7 +318,7 @@ start_next_wave = function(self)
 		end
 
 		config = WAVE_CONFIG.rescue[self.rescue_wave]
-		wave_name = "RESCATE " .. self.rescue_wave .. "/3"
+		wave_name = i18n.t("rescue_wave") .. " " .. self.rescue_wave .. "/3"
 	else
 		self.current_wave = self.current_wave + 1
 
@@ -337,7 +339,7 @@ start_next_wave = function(self)
 			}
 		end
 
-		wave_name = "OLEADA " .. self.current_wave
+		wave_name = i18n.t("wave") .. " " .. self.current_wave
 	end
 
 	-- Guardar chance actual para usar en get_enemy_type_for_wave
@@ -413,7 +415,7 @@ end
 
 on_wave_complete = function(self)
 	print("[WaveManager] ¡Oleada completada!")
-	msg.post("/hud#hud", "show_message", { text = "¡OLEADA COMPLETADA!", duration = 1.5 })
+	msg.post("/hud#hud", "show_message", { text = i18n.t("wave_complete"), duration = 1.5 })
 
 	-- ¿Es hora del boss? (solo en modo normal, no en rescate)
 	if not self.is_rescue_mode and self.current_wave >= BOSS_TRIGGER_WAVE then

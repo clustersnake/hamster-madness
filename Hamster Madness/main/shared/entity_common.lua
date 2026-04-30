@@ -51,6 +51,8 @@ function M.die(self)
 	self.is_alive = false
 	print("¡Enemigo eliminado!")
 	msg.post("/wave_manager", "enemy_died")
+
+	msg.post("/game_manager", "enemy_defeated")
 	go.delete()
 end
 

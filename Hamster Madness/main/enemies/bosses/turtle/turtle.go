@@ -3,17 +3,6 @@ components {
   component: "/main/enemies/bosses/turtle/turtle.script"
 }
 embedded_components {
-  id: "sprite"
-  type: "sprite"
-  data: "default_animation: \"turtle\"\n"
-  "material: \"/builtins/materials/sprite.material\"\n"
-  "textures {\n"
-  "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/enemies/enemies.atlas\"\n"
-  "}\n"
-  ""
-}
-embedded_components {
   id: "collisionobject"
   type: "collisionobject"
   data: "type: COLLISION_OBJECT_TYPE_KINEMATIC\n"
@@ -28,13 +17,14 @@ embedded_components {
   "  shapes {\n"
   "    shape_type: TYPE_BOX\n"
   "    position {\n"
+  "      y: 20.0\n"
   "    }\n"
   "    rotation {\n"
   "    }\n"
   "    index: 0\n"
   "    count: 3\n"
   "  }\n"
-  "  data: 85.0\n"
+  "  data: 50.0\n"
   "  data: 45.0\n"
   "  data: 10.0\n"
   "}\n"
@@ -44,5 +34,27 @@ embedded_components {
   id: "shockwave_factory"
   type: "factory"
   data: "prototype: \"/main/effects/shockwave/shockwave.go\"\n"
+  ""
+}
+embedded_components {
+  id: "layer_factory"
+  type: "factory"
+  data: "prototype: \"/main/enemies/bosses/turtle/layer.go\"\n"
+  ""
+}
+embedded_components {
+  id: "sprite"
+  type: "sprite"
+  data: "default_animation: \"shadow\"\n"
+  "material: \"/builtins/materials/sprite.material\"\n"
+  "size {\n"
+  "  x: 96.0\n"
+  "  y: 96.0\n"
+  "}\n"
+  "size_mode: SIZE_MODE_MANUAL\n"
+  "textures {\n"
+  "  sampler: \"texture_sampler\"\n"
+  "  texture: \"/main/enemies/enemies.atlas\"\n"
+  "}\n"
   ""
 }

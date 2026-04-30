@@ -23,7 +23,8 @@ end
 
 check_all_complete = function(self)
 	if self.move_hidden and self.attack_hidden and self.rescue_hidden then
-		msg.post("/player", "tutorial_complete")
+		-- MODIFICADO: Enviar al game_manager en lugar de /player
+		msg.post("/game_manager", "tutorial_complete")
 	end
 end
 -- ============================================================
