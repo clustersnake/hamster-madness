@@ -44,6 +44,18 @@ M.strings = {
 		-- Oleadas
 		wave_complete = "WAVE COMPLETE!",
 		rescue_wave = "RESCUE",
+
+		-- Victoria
+		victory_title = "VICTORY!",
+		victory_subtitle = "You defeated the Tank Boss!",
+		btn_restart = "Play Again",
+		btn_menu = "Main Menu",
+
+		-- Game Over
+		game_over_title = "GAME OVER",
+		game_over_subtitle = "All hamsters have fallen!",
+		enemies_defeated = "Enemies Defeated",
+		btn_retry = "Try Again",
 	},
 
 	es = {
@@ -82,6 +94,18 @@ M.strings = {
 		-- Oleadas
 		wave_complete = "¡OLEADA COMPLETADA!",
 		rescue_wave = "RESCATE",
+
+		-- Victoria
+		victory_title = "¡VICTORIA!",
+		victory_subtitle = "¡Derrotaste al Jefe Tanque!",
+		btn_restart = "Jugar de Nuevo",
+		btn_menu = "Menú Principal",
+
+		-- Game Over
+		game_over_title = "FIN DEL JUEGO",
+		game_over_subtitle = "¡Todos los hámsters han caído!",
+		enemies_defeated = "Enemigos Derrotados",
+		btn_retry = "Reintentar",
 	},
 }
 

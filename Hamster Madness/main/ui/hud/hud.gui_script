@@ -14,6 +14,11 @@ local update_wave_display
 local show_message
 local update_character_display
 local update_portraits
+local show_victory_screen
+local hide_victory_screen
+
+local show_game_over_screen
+local hide_game_over_screen
 
 -- Mapeo de character_id a nombre de imagen en el atlas
 local PORTRAITS = {
@@ -42,6 +47,12 @@ function init(self)
 
 	self.current_character_id = nil
 	self.next_character_id = nil
+	self.victory_screen_active = false
+
+	self.game_over_screen_active = false  -- Agregar esta línea
+
+	-- Adquirir input focus para recibir clicks
+	msg.post(".", "acquire_input_focus")
 
 	-- Inicializar textos en el idioma correcto
 	gui.set_text(gui.get_node("label_next"), i18n.t("next"))
@@ -211,6 +222,14 @@ function on_message(self, message_id, message, sender)
 		show_message(self, text, 1.5)
 		return
 	end
+
+	if message_id == hash("show_victory_screen") then
+		show_victory_screen(self, message)
+	end
+
+	if message_id == hash("show_game_over_screen") then
+		show_game_over_screen(self, message)
+	end
 end
 
 update_portraits = function(self)
@@ -233,4 +252,131 @@ update_portraits = function(self)
 		gui.play_flipbook(next_node, PORTRAITS.default)
 		gui.set_enabled(next_node, false)
 	end
+end
+
+-- ============================================================
+-- PANTALLA DE VICTORIA
+-- ============================================================
+
+show_victory_screen = function(self, data)  -- Asegúrate que recibe "data"
+	local panel = gui.get_node("victory_panel")
+	local bg = gui.get_node("victory_bg")
+	local title = gui.get_node("victory_title")
+	local subtitle = gui.get_node("victory_subtitle")
+	local btn_restart_text = gui.get_node("btn_restart_text")
+	local btn_menu_text = gui.get_node("btn_menu_text")
+
+	-- Usar sistema de localización
+	gui.set_text(title, i18n.t("victory_title"))
+	gui.set_text(subtitle, i18n.t("victory_subtitle"))
+	gui.set_text(btn_restart_text, i18n.t("btn_restart"))
+	gui.set_text(btn_menu_text, i18n.t("btn_menu"))
+
+	-- NUEVO: Mostrar estadísticas (necesitas agregar un nodo victory_stats)
+	local stats_node = gui.get_node("victory_stats")
+	local enemies = data and data.enemies_defeated or 0
+	gui.set_text(stats_node, i18n.t("enemies_defeated") .. ": " .. enemies)
+
+	-- Preparar animación de entrada
+	gui.set_enabled(panel, true)
+	gui.set_color(panel, vmath.vector4(0, 0, 0, 0))
+	gui.set_scale(bg, vmath.vector3(0.5, 0.5, 1))
+
+	gui.animate(panel, "color.w", 0.7, gui.EASING_LINEAR, 0.3)
+	gui.animate(bg, "scale", vmath.vector3(1, 1, 1), gui.EASING_OUTBACK, 0.4, 0.1)
+
+	self.victory_screen_active = true
+end
+
+hide_victory_screen = function(self)
+	local panel = gui.get_node("victory_panel")
+	gui.set_enabled(panel, false)
+	self.victory_screen_active = false
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("shoot") and action.pressed then
+
+		-- Pantalla de Victoria
+		if self.victory_screen_active then
+			local btn_restart = gui.get_node("btn_restart")
+			local btn_menu = gui.get_node("btn_menu")
+
+			if gui.pick_node(btn_restart, action.x, action.y) then
+				hide_victory_screen(self)
+				msg.post("@system:", "reboot")
+				return true
+			end
+
+			if gui.pick_node(btn_menu, action.x, action.y) then
+				hide_victory_screen(self)
+				msg.post("@system:", "reboot")
+				return true
+			end
+		end
+
+		-- Pantalla de Game Over
+		if self.game_over_screen_active then
+			local btn_retry = gui.get_node("btn_retry")
+			local btn_menu_go = gui.get_node("btn_menu_go")
+
+			if gui.pick_node(btn_retry, action.x, action.y) then
+				hide_game_over_screen(self)
+				msg.post("@system:", "reboot")
+				return true
+			end
+
+			if gui.pick_node(btn_menu_go, action.x, action.y) then
+				hide_game_over_screen(self)
+				msg.post("@system:", "reboot")
+				return true
+			end
+		end
+	end
+
+	return false
+end
+
+-- ============================================================
+-- PANTALLA DE GAME OVER
+-- ============================================================
+
+show_game_over_screen = function(self, data)
+	local panel = gui.get_node("game_over_panel")
+	local bg = gui.get_node("game_over_bg")
+	local title = gui.get_node("game_over_title")
+	local subtitle = gui.get_node("game_over_subtitle")
+	local stats = gui.get_node("game_over_stats")
+	local btn_retry_text = gui.get_node("btn_retry_text")
+	local btn_menu_go_text = gui.get_node("btn_menu_go_text")
+
+	-- Usar sistema de localización
+	gui.set_text(title, i18n.t("game_over_title"))
+	gui.set_text(subtitle, i18n.t("game_over_subtitle"))
+	gui.set_text(btn_retry_text, i18n.t("btn_retry"))
+	gui.set_text(btn_menu_go_text, i18n.t("btn_menu"))
+
+	-- Mostrar estadísticas
+	local enemies = data and data.enemies_defeated or 0
+	gui.set_text(stats, i18n.t("enemies_defeated") .. ": " .. enemies)
+
+	-- Preparar animación de entrada
+	gui.set_enabled(panel, true)
+	gui.set_color(panel, vmath.vector4(0, 0, 0, 0))
+	gui.set_scale(bg, vmath.vector3(0.5, 0.5, 1))
+
+	-- Animar fade in del fondo oscuro
+	gui.animate(panel, "color.w", 0.7, gui.EASING_LINEAR, 0.3)
+
+	-- Animar scale del panel central
+	gui.animate(bg, "scale", vmath.vector3(1, 1, 1), gui.EASING_OUTBACK, 0.4, 0.1)
+
+	-- Marcar que estamos en pantalla de game over
+	self.game_over_screen_active = true
+end
+
+hide_game_over_screen = function(self)
+	local panel = gui.get_node("game_over_panel")
+	gui.set_enabled(panel, false)
+	self.game_over_screen_active = false
 end
