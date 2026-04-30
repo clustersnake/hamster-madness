@@ -4,7 +4,7 @@
 local room_data = require "main.data.room_data"
 local i18n = require "main.data.localization"
 
-local BOSS_TRIGGER_WAVE = 5  -- El boss aparece después de esta oleada
+local BOSS_TRIGGER_WAVE = 2  -- El boss aparece después de esta oleada
 
 -- ============================================================
 -- FACTORIES DE ENEMIGOS

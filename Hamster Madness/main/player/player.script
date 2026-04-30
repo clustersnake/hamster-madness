@@ -15,6 +15,7 @@ go.property("invulnerability_time", 1.5)
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	self.tutorial_active = true
+	self.game_victory = false
 
 	-- Estado de movimiento
 	self.direction = vmath.vector3(0, 0, 0)
@@ -64,11 +65,19 @@ function update(self, dt)
 	actions.apply_movement(self, dt)
 	animation.update(self, false)
 	actions.reset_frame_state(self)
+
+	-- Envía la posición cada frame o cada X tiempo
+	msg.post("/game_manager", "player_pos", { pos = go.get_position() })
 end
 
 function on_input(self, action_id, action)
 	if not self.is_alive then
-		return
+		return false  -- Cambiar de return sin valor a return false
+	end
+
+	-- NUEVO: No procesar input si el juego está en victoria
+	if self.game_victory then
+		return false
 	end
 
 	-- Movimiento
@@ -95,6 +104,8 @@ function on_input(self, action_id, action)
 		actions.handle_rescue_input(self, action)
 		return true
 	end
+
+	return false  -- IMPORTANTE: Si no matchea nada, no consumir
 end
 
 function on_message(self, message_id, message, sender)
@@ -170,6 +181,13 @@ function on_message(self, message_id, message, sender)
 	-- NUEVO: Invulnerabilidad controlada desde game_manager
 	if message_id == hash("start_invulnerability") then
 		actions.start_invulnerability(self, message.duration or self.invulnerability_time)
+		return
+	end
+
+	if message_id == hash("game_victory") then
+		self.game_victory = true
+		self.direction = vmath.vector3(0, 0, 0)  -- Detener movimiento
+		print("[Player] Victoria recibida - Input deshabilitado")
 		return
 	end
 end
