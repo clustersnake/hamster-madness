@@ -1,0 +1,33 @@
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle-e.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle-n.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_5
+}
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle-s.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_5
+}
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle-w.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle-ne.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_6
+}
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle-nw.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_6
+}
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle-se.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_6
+}
+images {
+  image: "/main/enemies/bosses/turtle/sprites/turtle-sw.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_6
+}
+extrude_borders: 2
