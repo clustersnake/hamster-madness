@@ -11,10 +11,10 @@ M.max_level = 4
 
 -- EXP requerida para cada nivel
 M.exp_requirements = {
-	[1] = 0,      -- Nivel inicial
+	[1] = 0, -- Nivel inicial
 	[2] = 100,
 	[3] = 250,
-	[4] = 500,    -- MAX
+	[4] = 500, -- MAX
 }
 
 -- EXP que da cada tipo de enemigo
@@ -33,18 +33,18 @@ M.character_abilities = {
 
 	-- SPEEDY: Multiplicador de velocidad adicional
 	speed_boost = {
-		[1] = { speed_multiplier = 1.0 },   -- Base (ya es rápido)
-		[2] = { speed_multiplier = 1.15 },  -- +15%
-		[3] = { speed_multiplier = 1.30 },  -- +30%
-		[4] = { speed_multiplier = 1.50 },  -- +50% MAX
+		[1] = { speed_multiplier = 1.0 }, -- Base (ya es rápido)
+		[2] = { speed_multiplier = 1.15 }, -- +15%
+		[3] = { speed_multiplier = 1.30 }, -- +30%
+		[4] = { speed_multiplier = 1.50 }, -- +50% MAX
 	},
 
 	-- TANK: Aguante del escudo
 	shield_endurance = {
-		[1] = { extra_hits = 1, cooldown = 3.0 },   -- 1 golpe extra, 3s cooldown
-		[2] = { extra_hits = 1, cooldown = 2.5 },   -- Cooldown reducido
-		[3] = { extra_hits = 2, cooldown = 2.5 },   -- 2 golpes extra
-		[4] = { extra_hits = 2, cooldown = 2.0 },   -- MAX
+		[1] = { extra_hits = 1, cooldown = 3.0 }, -- 1 golpe extra, 3s cooldown
+		[2] = { extra_hits = 1, cooldown = 2.5 }, -- Cooldown reducido
+		[3] = { extra_hits = 2, cooldown = 2.5 }, -- 2 golpes extra
+		[4] = { extra_hits = 2, cooldown = 2.0 }, -- MAX
 	},
 
 	-- LUCKY: Probabilidades
@@ -52,7 +52,7 @@ M.character_abilities = {
 		[1] = { crit_chance = 0.10, crit_multiplier = 2.0, dodge_chance = 0.05 },
 		[2] = { crit_chance = 0.15, crit_multiplier = 2.0, dodge_chance = 0.10 },
 		[3] = { crit_chance = 0.20, crit_multiplier = 2.5, dodge_chance = 0.15 },
-		[4] = { crit_chance = 0.30, crit_multiplier = 3.0, dodge_chance = 0.20 },  -- MAX
+		[4] = { crit_chance = 0.30, crit_multiplier = 3.0, dodge_chance = 0.20 }, -- MAX
 	},
 
 	-- DASHER: Dash con i-frames
@@ -60,15 +60,15 @@ M.character_abilities = {
 		[1] = { charges = 1, cooldown = 2.0, distance = 100, i_frames = 0.2 },
 		[2] = { charges = 2, cooldown = 2.0, distance = 100, i_frames = 0.25 },
 		[3] = { charges = 2, cooldown = 1.5, distance = 120, i_frames = 0.25 },
-		[4] = { charges = 3, cooldown = 1.5, distance = 150, i_frames = 0.3 },  -- MAX
+		[4] = { charges = 3, cooldown = 1.5, distance = 150, i_frames = 0.3 }, -- MAX
 	},
 
 	-- TRAPPER: Mina
 	mine = {
-		[1] = { damage_multiplier = 1.0, radius = 50,  duration = 5.0 },
+		[1] = { damage_multiplier = 1.0, radius = 50, duration = 5.0 },
 		[2] = { damage_multiplier = 1.25, radius = 60, duration = 6.0 },
-		[3] = { damage_multiplier = 1.5, radius = 75,  duration = 7.0 },
-		[4] = { damage_multiplier = 2.0, radius = 100, duration = 10.0 },  -- MAX
+		[3] = { damage_multiplier = 1.5, radius = 75, duration = 7.0 },
+		[4] = { damage_multiplier = 2.0, radius = 100, duration = 10.0 }, -- MAX
 	},
 
 	-- TRICKSHOT: Redirecciones
@@ -76,7 +76,7 @@ M.character_abilities = {
 		[1] = { redirects = 1, aim_assist = 0.0 },
 		[2] = { redirects = 2, aim_assist = 0.1 },
 		[3] = { redirects = 3, aim_assist = 0.2 },
-		[4] = { redirects = 4, aim_assist = 0.3 },  -- MAX
+		[4] = { redirects = 4, aim_assist = 0.3 }, -- MAX
 	},
 }
 
@@ -93,7 +93,7 @@ M.boss_abilities = {
 		[1] = { window = 0.2, cooldown = 1.0 },
 		[2] = { window = 0.3, cooldown = 0.8 },
 		[3] = { window = 0.4, cooldown = 0.6 },
-		[4] = { window = 0.5, cooldown = 0.4, counter_damage = true },  -- MAX
+		[4] = { window = 0.5, cooldown = 0.4, counter_damage = true }, -- MAX
 	},
 
 	-- PÚAS: Escudo/proyectil con daño de contacto
@@ -103,7 +103,7 @@ M.boss_abilities = {
 		[1] = { contact_damage = 1, duration = 2.0 },
 		[2] = { contact_damage = 1, duration = 3.0 },
 		[3] = { contact_damage = 2, duration = 3.0 },
-		[4] = { contact_damage = 2, duration = 5.0, reflects_projectiles = true },  -- MAX
+		[4] = { contact_damage = 2, duration = 5.0, reflects_projectiles = true }, -- MAX
 	},
 
 	-- TELARAÑA: Recuperar proyectil a distancia
@@ -113,7 +113,7 @@ M.boss_abilities = {
 		[1] = { recall_speed = 200, cooldown = 5.0 },
 		[2] = { recall_speed = 300, cooldown = 4.0 },
 		[3] = { recall_speed = 400, cooldown = 3.0 },
-		[4] = { recall_speed = 500, cooldown = 2.0, damages_enemies = true },  -- MAX
+		[4] = { recall_speed = 500, cooldown = 2.0, damages_enemies = true }, -- MAX
 	},
 }
 
@@ -146,7 +146,7 @@ end
 --- Calcula la EXP necesaria para el siguiente nivel
 function M.get_exp_for_next_level(current_level)
 	if current_level >= M.max_level then
-		return nil  -- Ya está al máximo
+		return nil -- Ya está al máximo
 	end
 	return M.exp_requirements[current_level + 1]
 end

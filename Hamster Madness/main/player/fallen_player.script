@@ -1,7 +1,7 @@
 -- fallen_player.script
 -- Representa al jugador caído esperando ser rescatado
 
-go.property("rescue_time", 2.0)  -- Tiempo para completar rescate
+go.property("rescue_time", 2.0) -- Tiempo para completar rescate
 
 function init(self)
 	self.is_being_rescued = false
@@ -20,7 +20,6 @@ function on_message(self, message_id, message, sender)
 
 			-- Notificar que puede iniciar rescate
 			msg.post("/game_manager", "rescue_started")
-
 		elseif not message.enter and message.group == hash("player") then
 			print("[FallenPlayer] Rescatador se alejó")
 			self.rescuer_id = nil

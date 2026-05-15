@@ -6,7 +6,7 @@ local room_data = require "main.data.room_data"
 
 local M = {}
 
-local spawn_shockwave  -- NUEVO
+local spawn_shockwave -- NUEVO
 
 -- ============================================================
 -- CONFIGURACIÓN DE ATAQUES / VFX
@@ -14,13 +14,13 @@ local spawn_shockwave  -- NUEVO
 
 local ATTACK_CONFIG = {
 	aplaston = {
-		damage_delay = 0.5,          -- Daño medio segundo después del impacto visual
-		radius_multiplier = 1.5,     -- Aumenta el radio efectivo del aplastón pequeño
+		damage_delay = 0.5, -- Daño medio segundo después del impacto visual
+		radius_multiplier = 1.5, -- Aumenta el radio efectivo del aplastón pequeño
 		shake_intensity = 0.003,
 		shake_duration = 0.3,
 
 		shockwave = {
-			max_scale = 4.0,        -- Más grande que antes
+			max_scale = 4.0, -- Más grande que antes
 			duration = 0.3,
 			delay = 0,
 			start_scale = 0.3,
@@ -204,14 +204,14 @@ M.states[M.STATE.CHARGING] = {
 		if self.flash_timer >= 0.12 then
 			self.flash_timer = 0
 			self.flash_on = not self.flash_on
-			local tint = self.flash_on 
-			and vmath.vector4(1, 1, 0.3, 1)
-			or vmath.vector4(1, 1, 1, 1)
-			sprite.set_constant("#sprite", "tint", tint)
+			local tint = self.flash_on
+				and vmath.vector4(1, 1, 0.3, 1)
+				or vmath.vector4(1, 1, 1, 1)
+			go.set("#sprite", "tint", tint)
 		end
 
 		if self.state_timer >= self.charge_duration then
-			sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+			go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 
 			if self.current_phase == 1 then
 				M.change_state(self, M.STATE.MEGA_APLASTON)
@@ -222,7 +222,7 @@ M.states[M.STATE.CHARGING] = {
 	end,
 
 	exit = function(self)
-		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+		go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 	end
 }
 
@@ -307,11 +307,11 @@ M.states[M.STATE.MEGA_APLASTON] = {
 -- M.states[M.STATE.RODADA] = {
 -- 	enter = function(self)
 -- 		print("[Turtle] ¡¡RODADA!!")
--- 
+--
 -- 		self.rodada_bounces = 0
 -- 		self.max_bounces = 5 + math.random(3)
 -- 		self.rodada_direction = get_direction_to_player(self)
--- 
+--
 -- 		-- Guardar límites de la sala
 -- 		local p = room_data.current.playable
 -- 		self.room_bounds = {
@@ -320,18 +320,18 @@ M.states[M.STATE.MEGA_APLASTON] = {
 -- 			bottom = p.min_y + 50,
 -- 			top = p.max_y - 50
 -- 		}
--- 
+--
 -- 		print("[Turtle] Rebotes objetivo: " .. self.max_bounces)
--- 
+--
 -- 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 0.4)
 -- 	end,
--- 
+--
 -- 	update = function(self, dt)
 -- 		local common = require "main.shared.entity_common"
--- 
+--
 -- 		local pos = go.get_position()
 -- 		local new_pos = pos + self.rodada_direction * self.rodada_speed * dt
--- 
+--
 -- 		-- Aplicar límites lógicos de la sala
 -- 		new_pos, _ = common.apply_bounds(self, new_pos, {
 -- 			bounds = self.room_bounds,
@@ -345,16 +345,16 @@ M.states[M.STATE.MEGA_APLASTON] = {
 -- 				M.on_rodada_complete(boss)
 -- 			end
 -- 		})
--- 
+--
 -- 		go.set_position(new_pos)
--- 
+--
 -- 		-- Timeout de seguridad
 -- 		if self.state_timer >= 12.0 then
 -- 			print("[Turtle] Rodada timeout")
 -- 			M.change_state(self, M.STATE.IDLE)
 -- 		end
 -- 	end,
--- 
+--
 -- 	exit = function(self)
 -- 		go.cancel_animations(".", "euler.z")
 -- 		go.set_rotation(vmath.quat())
@@ -385,7 +385,7 @@ M.states[M.STATE.RODADA] = {
 		print("[Turtle] Rebotes objetivo: " .. self.max_bounces)
 
 		-- NUEVO: Asegurar que el sprite sea visible antes de rodar
-		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+		go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 
 		-- Animación de rotación
 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 0.4)
@@ -424,7 +424,7 @@ M.states[M.STATE.RODADA] = {
 		go.set_rotation(vmath.quat())
 
 		-- NUEVO: Restaurar visibilidad del sprite
-		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+		go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 
 		self.special_cooldown = self.special_cooldown_max
 	end
@@ -461,12 +461,12 @@ M.states[M.STATE.PARRY] = {
 	enter = function(self)
 		print("[Turtle] ¡PARRY ACTIVO!")
 		self.is_parrying = true
-		sprite.set_constant("#sprite", "tint", vmath.vector4(0.7, 0.7, 1, 1))
+		go.set("#sprite", "tint", vmath.vector4(0.7, 0.7, 1, 1))
 	end,
 
 	update = function(self, dt)
 		local pulse = 0.7 + math.sin(self.state_timer * 8) * 0.15
-		sprite.set_constant("#sprite", "tint", vmath.vector4(pulse, pulse, 1, 1))
+		go.set("#sprite", "tint", vmath.vector4(pulse, pulse, 1, 1))
 
 		if self.state_timer >= self.parry_duration then
 			M.change_state(self, M.STATE.IDLE)
@@ -475,7 +475,7 @@ M.states[M.STATE.PARRY] = {
 
 	exit = function(self)
 		self.is_parrying = false
-		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+		go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 	end
 }
 
@@ -490,7 +490,7 @@ M.states[M.STATE.VULNERABLE] = {
 		print("[Turtle] ═══════════════════════════")
 
 		self.can_be_damaged = true
-		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 0.8, 0.8, 1))
+		go.set("#sprite", "tint", vmath.vector4(1, 0.8, 0.8, 1))
 	end,
 
 	update = function(self, dt)
@@ -500,7 +500,7 @@ M.states[M.STATE.VULNERABLE] = {
 			local freq = 4 + (1.5 - time_left) * 8
 			local flash = math.floor(self.state_timer * freq) % 2 == 0
 			local alpha = flash and 1.0 or 0.4
-			sprite.set_constant("#sprite", "tint", vmath.vector4(1, 0.8, 0.8, alpha))
+			go.set("#sprite", "tint", vmath.vector4(1, 0.8, 0.8, alpha))
 		end
 
 		if self.state_timer >= self.vulnerable_duration then
@@ -512,7 +512,7 @@ M.states[M.STATE.VULNERABLE] = {
 	exit = function(self)
 		self.can_be_damaged = false
 		self.special_cooldown = self.special_cooldown_max
-		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+		go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 	end
 }
 
@@ -526,7 +526,7 @@ M.states[M.STATE.DEAD] = {
 		print("[Turtle]      ¡¡DERROTADA!!         ")
 		print("[Turtle] ═══════════════════════════")
 
-		sprite.set_constant("#sprite", "tint", vmath.vector4(0.5, 0.5, 0.5, 1))
+		go.set("#sprite", "tint", vmath.vector4(0.5, 0.5, 0.5, 1))
 		msg.post("/game_manager", "boss_defeated")
 
 		timer.delay(2.0, false, function()
@@ -647,17 +647,17 @@ end
 
 -- function M.do_aplaston(self, radius)
 -- 	print("[Turtle] ¡APLASTÓN! Radio: " .. radius)
--- 
+--
 -- 	local my_pos = go.get_position()
 -- 	local player_pos = get_player_position(self)
--- 
+--
 -- 	-- Screen shake
 -- 	local camera_id = go.get_id("/camera")
 -- 	camera.shake(camera_id, 0.003, 0.3, hash("both"))
--- 
+--
 -- 	if player_pos then
 -- 		local distance = vmath.length(player_pos - my_pos)
--- 
+--
 -- 		if distance <= radius then
 -- 			print("[Turtle] ¡Jugador en rango!")
 -- 			msg.post(self.player_id, "enemy_damage", {
@@ -669,13 +669,13 @@ end
 -- 		end
 -- 	end
 -- end
--- 
+--
 -- function M.do_mega_aplaston(self)
 -- 	print("[Turtle] ¡¡MEGA APLASTÓN!! (Pantalla completa)")
--- 
+--
 -- 	local camera_id = go.get_id("/camera")
 -- 	camera.shake(camera_id, 0.006, 0.5, hash("both"))
--- 
+--
 -- 	if self.player_id and go.exists(self.player_id) then
 -- 		msg.post(self.player_id, "enemy_damage", {
 -- 			damage = 1,
@@ -683,7 +683,7 @@ end
 -- 		})
 -- 	end
 -- end
--- 
+--
 -- ============================================================
 -- MANEJO DE IMPACTOS
 -- ============================================================
@@ -719,16 +719,16 @@ function M.on_damage_taken(self)
 	go.cancel_animations("#sprite", "tint")
 
 	-- Flash blanco → rojo → normal
-	sprite.set_constant("#sprite", "tint", vmath.vector4(10, 10, 10, 1))
+	go.set("#sprite", "tint", vmath.vector4(10, 10, 10, 1))
 
 	timer.delay(0.05, false, function()
 		if not go.exists(go.get_id()) then return end
-		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 0.2, 0.2, 1))
+		go.set("#sprite", "tint", vmath.vector4(1, 0.2, 0.2, 1))
 	end)
 
 	timer.delay(0.15, false, function()
 		if not go.exists(go.get_id()) then return end
-		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+		go.set("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 	end)
 
 	-- Squash & stretch

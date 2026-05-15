@@ -7,7 +7,7 @@ local M = {}
 -- MODO DE JUEGO
 -- ═══════════════════════════════════════════════════════════════
 
-M.is_demo = true  -- Cambiar a false para versión completa
+M.is_demo = true -- Cambiar a false para versión completa
 
 -- ═══════════════════════════════════════════════════════════════
 -- CONFIGURACIÓN DE PERSONAJES
@@ -19,10 +19,10 @@ M.max_characters = M.is_demo and 2 or 6
 -- TIEMPOS Y DURACIONES
 -- ═══════════════════════════════════════════════════════════════
 
-M.rescue_time = 3.0               -- Segundos para completar rescate
-M.invulnerability_time = 1.5      -- I-frames después de perder escudo
-M.death_transition_time = 3.0     -- Countdown antes de spawn del siguiente personaje
-M.tank_endurance_cooldown = 3.0   -- Cooldown del aguante de Tank
+M.rescue_time = 3.0             -- Segundos para completar rescate
+M.invulnerability_time = 1.5    -- I-frames después de perder escudo
+M.death_transition_time = 3.0   -- Countdown antes de spawn del siguiente personaje
+M.tank_endurance_cooldown = 3.0 -- Cooldown del aguante de Tank
 
 -- ═══════════════════════════════════════════════════════════════
 -- PROYECTIL/ESCUDO
@@ -31,7 +31,7 @@ M.tank_endurance_cooldown = 3.0   -- Cooldown del aguante de Tank
 M.projectile = {
 	base_speed = 400,
 	max_distance = 500,
-	knockback_distance = 200,  -- Distancia cuando sale por daño
+	knockback_distance = 200, -- Distancia cuando sale por daño
 	base_damage = 1,
 	critical_multiplier = 2.0,
 }
@@ -51,7 +51,7 @@ M.actions = {
 	dash = "dash",
 	parry = "parry",
 	recall = "recall",      -- Telaraña
-	plant_mine = "plant_mine",  -- Trapper
+	plant_mine = "plant_mine", -- Trapper
 }
 
 return M

@@ -40,7 +40,7 @@ M.strings = {
 		-- Habilidades
 		endurance = "ENDURE!",
 		dodge = "DODGE!",
-		
+
 		-- Oleadas
 		wave_complete = "WAVE COMPLETE!",
 		rescue_wave = "RESCUE",
@@ -90,7 +90,7 @@ M.strings = {
 		-- Habilidades
 		endurance = "¡AGUANTE!",
 		dodge = "¡ESQUIVA!",
-		
+
 		-- Oleadas
 		wave_complete = "¡OLEADA COMPLETADA!",
 		rescue_wave = "RESCATE",

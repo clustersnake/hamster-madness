@@ -9,7 +9,7 @@ local M = {}
 -- CONFIGURACIÓN
 -- ============================================================
 
-M.MIN_DISTANCE = 10  -- Distancia mínima para moverse
+M.MIN_DISTANCE = 10 -- Distancia mínima para moverse
 
 -- ============================================================
 -- MOVIMIENTO

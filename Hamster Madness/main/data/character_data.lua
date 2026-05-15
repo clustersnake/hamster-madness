@@ -70,10 +70,10 @@ M.characters = {
 		ability_type = "luck",
 		damage_config = {
 			type = "luck",
-			dodge_chance = 0.05,  -- 5% base de esquivar
+			dodge_chance = 0.05, -- 5% base de esquivar
 		},
 		animations = {},
-		tint = vmath.vector4(1, 1, 0.6, 1),  -- Amarillento
+		tint = vmath.vector4(1, 1, 0.6, 1), -- Amarillento
 	},
 
 	dasher = {
@@ -84,7 +84,7 @@ M.characters = {
 		ability_type = "dash",
 		damage_config = { type = "normal" },
 		animations = {},
-		tint = vmath.vector4(0.6, 0.8, 1, 1),  -- Azulado
+		tint = vmath.vector4(0.6, 0.8, 1, 1), -- Azulado
 	},
 
 	trapper = {
@@ -95,7 +95,7 @@ M.characters = {
 		ability_type = "mine",
 		damage_config = { type = "normal" },
 		animations = {},
-		tint = vmath.vector4(0.8, 0.6, 1, 1),  -- Morado
+		tint = vmath.vector4(0.8, 0.6, 1, 1), -- Morado
 	},
 
 	trickshot = {
@@ -106,7 +106,7 @@ M.characters = {
 		ability_type = "redirect",
 		damage_config = { type = "normal" },
 		animations = {},
-		tint = vmath.vector4(1, 0.8, 0.6, 1),  -- Naranja
+		tint = vmath.vector4(1, 0.8, 0.6, 1), -- Naranja
 	},
 }
 
@@ -115,10 +115,10 @@ M.characters = {
 -- ═══════════════════════════════════════════════════════════════
 
 -- Demo: solo 2 personajes
-M.demo_roster = {"tank", "speedy"}
+M.demo_roster = { "tank", "speedy" }
 
 -- Juego completo: todos
-M.full_roster = {"tank", "speedy", "lucky", "dasher", "trapper", "trickshot"}
+M.full_roster = { "tank", "speedy", "lucky", "dasher", "trapper", "trickshot" }
 
 -- ═══════════════════════════════════════════════════════════════
 -- FUNCIONES HELPER

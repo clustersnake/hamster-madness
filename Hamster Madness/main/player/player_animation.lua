@@ -70,10 +70,10 @@ function M.set_character_anims(self, character_data)
 	self.character_anims = {
 		idle_down = anims.idle_down,
 		idle_up = anims.idle_up,
-		idle_side = anims.idle_right,  -- "side" usa el sprite "right" con flip
+		idle_side = anims.idle_right, -- "side" usa el sprite "right" con flip
 		walk_down = anims.walk_down,
 		walk_up = anims.walk_up,
-		walk_side = anims.walk_right,  -- "side" usa el sprite "right" con flip
+		walk_side = anims.walk_right, -- "side" usa el sprite "right" con flip
 		fallen = anims.fallen,
 	}
 
@@ -219,11 +219,11 @@ end
 function M.on_direction_change(self)
 	go.cancel_animations(".", "scale")
 	go.set_scale(vmath.vector3(1 + CONFIG.squash_amount, 1 - CONFIG.squash_amount, 1))
-	go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, 
-	vmath.vector3(1, 1, 1), 
-	go.EASING_OUTBOUNCE, 
-	0.25
-)
+	go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD,
+		vmath.vector3(1, 1, 1),
+		go.EASING_OUTBOUNCE,
+		0.25
+	)
 end
 
 -- ============================================================
@@ -231,33 +231,33 @@ end
 -- ============================================================
 
 function M.on_damage(self)
-self.is_animating_damage = true
+	self.is_animating_damage = true
 
-go.cancel_animations(".", "scale")
+	go.cancel_animations(".", "scale")
 
--- Flash blanco
-sprite.set_constant("#sprite", "tint", vmath.vector4(10, 10, 10, 1))
+	-- Flash blanco
+	sprite.set_constant("#sprite", "tint", vmath.vector4(10, 10, 10, 1))
 
-timer.delay(0.05, false, function()
-	if not go.exists(go.get_id()) then return end
-	sprite.set_constant("#sprite", "tint", vmath.vector4(1, 0.3, 0.3, 1))
-end)
+	timer.delay(0.05, false, function()
+		if not go.exists(go.get_id()) then return end
+		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 0.3, 0.3, 1))
+	end)
 
-timer.delay(0.15, false, function()
-	if not go.exists(go.get_id()) then return end
-	sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
-end)
+	timer.delay(0.15, false, function()
+		if not go.exists(go.get_id()) then return end
+		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+	end)
 
-go.set_scale(vmath.vector3(CONFIG.damage_squash_x, CONFIG.damage_squash_y, 1))
-go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD,
-vmath.vector3(1, 1, 1),
-go.EASING_OUTBOUNCE,
-0.3,
-0,
-function()
-	self.is_animating_damage = false
-end
-)
+	go.set_scale(vmath.vector3(CONFIG.damage_squash_x, CONFIG.damage_squash_y, 1))
+	go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD,
+		vmath.vector3(1, 1, 1),
+		go.EASING_OUTBOUNCE,
+		0.3,
+		0,
+		function()
+			self.is_animating_damage = false
+		end
+	)
 end
 
 -- ============================================================
@@ -265,12 +265,12 @@ end
 -- ============================================================
 
 function M.play_fallen(self)
-local anim_name = get_anim_name(self, "fallen")
-sprite.play_flipbook("#sprite", hash(anim_name))
+	local anim_name = get_anim_name(self, "fallen")
+	sprite.play_flipbook("#sprite", hash(anim_name))
 
--- Resetear transformaciones
-go.set_scale(vmath.vector3(1, 1, 1))
-go.set_rotation(vmath.quat())
+	-- Resetear transformaciones
+	go.set_scale(vmath.vector3(1, 1, 1))
+	go.set_rotation(vmath.quat())
 end
 
 -- ============================================================
@@ -278,13 +278,13 @@ end
 -- ============================================================
 
 function M.reset(self)
-go.cancel_animations(".", "scale")
-go.set_scale(vmath.vector3(1, 1, 1))
-go.set_rotation(vmath.quat())
-sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
-sprite.set_hflip("#sprite", false)
-self.anim_timer = 0
-self.is_animating_damage = false
+	go.cancel_animations(".", "scale")
+	go.set_scale(vmath.vector3(1, 1, 1))
+	go.set_rotation(vmath.quat())
+	sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
+	sprite.set_hflip("#sprite", false)
+	self.anim_timer = 0
+	self.is_animating_damage = false
 end
 
 return M

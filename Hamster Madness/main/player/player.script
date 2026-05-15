@@ -36,7 +36,7 @@ function init(self)
 	self.character_id = nil
 	self.character_data = nil
 	self.character_state = nil
-	self.character_ready = false  -- NUEVO: Flag para saber si ya está configurado
+	self.character_ready = false -- NUEVO: Flag para saber si ya está configurado
 
 	-- Inicializar subsistemas
 	animation.init_state(self)
@@ -72,7 +72,7 @@ end
 
 function on_input(self, action_id, action)
 	if not self.is_alive then
-		return false  -- Cambiar de return sin valor a return false
+		return false -- Cambiar de return sin valor a return false
 	end
 
 	-- NUEVO: No procesar input si el juego está en victoria
@@ -105,7 +105,7 @@ function on_input(self, action_id, action)
 		return true
 	end
 
-	return false  -- IMPORTANTE: Si no matchea nada, no consumir
+	return false -- IMPORTANTE: Si no matchea nada, no consumir
 end
 
 function on_message(self, message_id, message, sender)
@@ -113,7 +113,7 @@ function on_message(self, message_id, message, sender)
 	-- Recibir datos del personaje desde game_manager
 	if message_id == hash("set_character") then
 		actions.init_character(self, message.character_id, message.character_data)
-		self.character_ready = true  -- NUEVO: Marcar como listo
+		self.character_ready = true -- NUEVO: Marcar como listo
 
 		-- NUEVO: Ahora sí actualizar la animación inicial
 		animation.update(self, true)
@@ -186,7 +186,7 @@ function on_message(self, message_id, message, sender)
 
 	if message_id == hash("game_victory") then
 		self.game_victory = true
-		self.direction = vmath.vector3(0, 0, 0)  -- Detener movimiento
+		self.direction = vmath.vector3(0, 0, 0) -- Detener movimiento
 		print("[Player] Victoria recibida - Input deshabilitado")
 		return
 	end

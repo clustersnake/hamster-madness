@@ -49,16 +49,14 @@ function M.init_ability_state(state, character_data)
 			endurance_hits_remaining = stats.extra_hits,
 			endurance_cooldown = stats.cooldown,
 			cooldown_timer = 0,
-			is_endurance_active = false,  -- true cuando recibió golpe y está en cooldown
+			is_endurance_active = false, -- true cuando recibió golpe y está en cooldown
 		}
-
 	elseif ability_type == "speed_boost" then
 		-- SPEEDY: Multiplicador de velocidad
 		local stats = ability_data.get_ability_stats("speed_boost", state.ability_level)
 		state.ability_state = {
 			speed_multiplier = stats.speed_multiplier,
 		}
-
 	elseif ability_type == "luck" then
 		-- LUCKY: Probabilidades
 		local stats = ability_data.get_ability_stats("luck", state.ability_level)
@@ -67,7 +65,6 @@ function M.init_ability_state(state, character_data)
 			crit_multiplier = stats.crit_multiplier,
 			dodge_chance = stats.dodge_chance,
 		}
-
 	elseif ability_type == "dash" then
 		-- DASHER: Cargas de dash
 		local stats = ability_data.get_ability_stats("dash", state.ability_level)
@@ -80,7 +77,6 @@ function M.init_ability_state(state, character_data)
 			i_frames = stats.i_frames,
 			is_dashing = false,
 		}
-
 	elseif ability_type == "mine" then
 		-- TRAPPER: Configuración de mina
 		local stats = ability_data.get_ability_stats("mine", state.ability_level)
@@ -90,7 +86,6 @@ function M.init_ability_state(state, character_data)
 			duration = stats.duration,
 			mine_active = false,
 		}
-
 	elseif ability_type == "redirect" then
 		-- TRICKSHOT: Redirecciones
 		local stats = ability_data.get_ability_stats("redirect", state.ability_level)
@@ -177,7 +172,8 @@ function M.process_damage(state, has_shield)
 	if ability_type == "luck" and not has_shield then
 		local roll = math.random()
 		if roll < state.ability_state.dodge_chance then
-			print("[Lucky] ¡Esquivó! (roll: " .. string.format("%.2f", roll) .. " < " .. state.ability_state.dodge_chance .. ")")
+			print("[Lucky] ¡Esquivó! (roll: " ..
+			string.format("%.2f", roll) .. " < " .. state.ability_state.dodge_chance .. ")")
 			return "dodged", "Lucky esquivó el golpe"
 		end
 	end
@@ -215,7 +211,7 @@ end
 -- @return true si subió de nivel
 function M.add_exp(state, amount)
 	if state.ability_level >= ability_data.max_level then
-		return false  -- Ya está al máximo
+		return false -- Ya está al máximo
 	end
 
 	state.current_exp = state.current_exp + amount

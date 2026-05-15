@@ -115,7 +115,6 @@ function on_message(self, message_id, message, sender)
 	-- COLISIONES
 	-- ═══════════════════════════════════════
 	if message_id == hash("contact_point_response") then
-
 		-- Rebote en paredes
 		if message.group == hash("default") then
 			if self.is_moving and self.bounce_cooldown <= 0 then
@@ -135,16 +134,16 @@ function on_message(self, message_id, message, sender)
 		end
 
 		-- Impacto con enemigo (solo si NO está reflejado)
--- 		if message.group == hash("enemy") and not self.is_reflected then
--- 			print("Projectile impactó enemigo!")
--- 			msg.post(message.other_id, "take_damage")
--- 
--- 			-- Rebote suave hacia atrás
--- 			-- self.direction = -self.direction
--- 			-- self.speed = self.speed * 0.25
--- 			-- self.max_distance = self.distance_traveled + 100
--- 			return
--- 		end
+		-- 		if message.group == hash("enemy") and not self.is_reflected then
+		-- 			print("Projectile impactó enemigo!")
+		-- 			msg.post(message.other_id, "take_damage")
+		--
+		-- 			-- Rebote suave hacia atrás
+		-- 			-- self.direction = -self.direction
+		-- 			-- self.speed = self.speed * 0.25
+		-- 			-- self.max_distance = self.distance_traveled + 100
+		-- 			return
+		-- 		end
 
 		-- Impacto con enemigo (solo si NO está reflejado)
 		if message.group == hash("enemy") and not self.is_reflected then

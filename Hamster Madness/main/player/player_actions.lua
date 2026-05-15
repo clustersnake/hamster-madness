@@ -89,15 +89,15 @@ function M.get_aim_direction(self)
 	local player_pos = go.get_position()
 	local crosshair_pos = go.get_position("/crosshair")
 	local aim_vector = vmath.vector3(
-	crosshair_pos.x - player_pos.x,
-	crosshair_pos.y - player_pos.y,
-	0
-)
+		crosshair_pos.x - player_pos.x,
+		crosshair_pos.y - player_pos.y,
+		0
+	)
 
-if vmath.length(aim_vector) > 10 then
-	return vmath.normalize(aim_vector)
-end
-return self.facing
+	if vmath.length(aim_vector) > 10 then
+		return vmath.normalize(aim_vector)
+	end
+	return self.facing
 end
 
 -- ============================================================
@@ -105,23 +105,23 @@ end
 -- ============================================================
 
 function M.fire_projectile(self)
-if not self.has_projectile then
-	print("No tienes proyectil - ¡recógelo primero!")
-	return false
-end
+	if not self.has_projectile then
+		print("No tienes proyectil - ¡recógelo primero!")
+		return false
+	end
 
-local player_pos = go.get_position()
-local aim_direction = M.get_aim_direction(self)
+	local player_pos = go.get_position()
+	local aim_direction = M.get_aim_direction(self)
 
-local spawn_pos = player_pos + aim_direction * 50
-spawn_pos.z = 0.5
+	local spawn_pos = player_pos + aim_direction * 50
+	spawn_pos.z = 0.5
 
-local projectile_id = factory.create("#projectile_factory", spawn_pos)
-msg.post(projectile_id, "fire", { direction = aim_direction })
+	local projectile_id = factory.create("#projectile_factory", spawn_pos)
+	msg.post(projectile_id, "fire", { direction = aim_direction })
 
-M.set_shield_state(self, false)
-print("¡Disparo!")
-return true
+	M.set_shield_state(self, false)
+	print("¡Disparo!")
+	return true
 end
 
 -- ============================================================
@@ -169,83 +169,79 @@ function M.start_invulnerability(self, duration)
 end
 
 function M.take_damage(self, enemy_position)
-if self.is_invulnerable then
-	return
-end
-
--- NUEVO: Usar el sistema de personaje para procesar daño
-local result = "shield_lost"
-local message = ""
-
-if self.character_state then
-	result, message = base_character.process_damage(self.character_state, self.has_projectile)
-	print("[Damage] Resultado: " .. result .. " - " .. message)
-else
-	-- Fallback si no hay character_state (no debería pasar)
-	if self.has_projectile then
-		result = "shield_lost"
-	else
-		result = "died"
-	end
-end
-
--- Procesar resultado
-if result == "blocked" then
-	-- Invulnerable, no hacer nada
-	return
-
-elseif result == "shield_hit" then
-	-- TANK: Aguantó el golpe, no pierde escudo
-	animation.on_damage(self)
-
-	-- Feedback visual especial para Tank
-	M.tank_endurance_feedback(self)
-
-	-- Pequeña invulnerabilidad para evitar spam
-	M.start_invulnerability(self, 0.5)
-
-elseif result == "dodged" then
-	-- LUCKY: Esquivó el golpe
-	print("¡Esquivó!")
-
-	-- Feedback visual de esquiva
-	M.dodge_feedback(self)
-
-elseif result == "shield_lost" then
-	-- Comportamiento normal: pierde escudo
-	print("¡Escudo destruido!")
-	animation.on_damage(self)
-
-	local player_pos = go.get_position()
-	local knockback_dir = player_pos - enemy_position
-
-	if vmath.length(knockback_dir) > 0 then
-		knockback_dir = vmath.normalize(knockback_dir)
-	else
-		knockback_dir = vmath.vector3(0, 1, 0)
+	if self.is_invulnerable then
+		return
 	end
 
-	local spawn_pos = player_pos + knockback_dir * 40
-	spawn_pos.z = 0.5
-	local shield_id = factory.create("#active_shield_factory", spawn_pos)
-	msg.post(shield_id, "fire", { direction = knockback_dir })
+	-- NUEVO: Usar el sistema de personaje para procesar daño
+	local result = "shield_lost"
+	local message = ""
 
-	M.set_shield_state(self, false)
-	M.start_invulnerability(self)
+	if self.character_state then
+		result, message = base_character.process_damage(self.character_state, self.has_projectile)
+		print("[Damage] Resultado: " .. result .. " - " .. message)
+	else
+		-- Fallback si no hay character_state (no debería pasar)
+		if self.has_projectile then
+			result = "shield_lost"
+		else
+			result = "died"
+		end
+	end
 
-elseif result == "died" then
-	-- Muerte
-	print("¡Jugador eliminado!")
-	animation.on_damage(self)
+	-- Procesar resultado
+	if result == "blocked" then
+		-- Invulnerable, no hacer nada
+		return
+	elseif result == "shield_hit" then
+		-- TANK: Aguantó el golpe, no pierde escudo
+		animation.on_damage(self)
 
-	self.is_alive = false
-	msg.post(".", "release_input_focus")
-	msg.post("/game_manager", "player_died", { 
-		position = go.get_position(),
-		character_id = self.character_id
-	})
-	msg.post("/tutorial_floor", "show_rescue")
-end
+		-- Feedback visual especial para Tank
+		M.tank_endurance_feedback(self)
+
+		-- Pequeña invulnerabilidad para evitar spam
+		M.start_invulnerability(self, 0.5)
+	elseif result == "dodged" then
+		-- LUCKY: Esquivó el golpe
+		print("¡Esquivó!")
+
+		-- Feedback visual de esquiva
+		M.dodge_feedback(self)
+	elseif result == "shield_lost" then
+		-- Comportamiento normal: pierde escudo
+		print("¡Escudo destruido!")
+		animation.on_damage(self)
+
+		local player_pos = go.get_position()
+		local knockback_dir = player_pos - enemy_position
+
+		if vmath.length(knockback_dir) > 0 then
+			knockback_dir = vmath.normalize(knockback_dir)
+		else
+			knockback_dir = vmath.vector3(0, 1, 0)
+		end
+
+		local spawn_pos = player_pos + knockback_dir * 40
+		spawn_pos.z = 0.5
+		local shield_id = factory.create("#active_shield_factory", spawn_pos)
+		msg.post(shield_id, "fire", { direction = knockback_dir })
+
+		M.set_shield_state(self, false)
+		M.start_invulnerability(self)
+	elseif result == "died" then
+		-- Muerte
+		print("¡Jugador eliminado!")
+		animation.on_damage(self)
+
+		self.is_alive = false
+		msg.post(".", "release_input_focus")
+		msg.post("/game_manager", "player_died", {
+			position = go.get_position(),
+			character_id = self.character_id
+		})
+		msg.post("/tutorial_floor", "show_rescue")
+	end
 end
 
 -- ============================================================
@@ -264,9 +260,9 @@ function M.tank_endurance_feedback(self)
 	-- Mostrar mensaje en HUD
 	if self.character_state then
 		local remaining = self.character_state.ability_state.endurance_hits_remaining
-		msg.post("/hud#hud", "show_message", { 
-			text = "¡AGUANTE! (" .. remaining .. ")", 
-			duration = 0.5 
+		msg.post("/hud#hud", "show_message", {
+			text = "¡AGUANTE! (" .. remaining .. ")",
+			duration = 0.5
 		})
 	end
 end
@@ -280,9 +276,9 @@ function M.dodge_feedback(self)
 		sprite.set_constant("#sprite", "tint", vmath.vector4(1, 1, 1, 1))
 	end)
 
-	msg.post("/hud#hud", "show_message", { 
-		text = "¡ESQUIVA!", 
-		duration = 0.5 
+	msg.post("/hud#hud", "show_message", {
+		text = "¡ESQUIVA!",
+		duration = 0.5
 	})
 end
 
@@ -292,33 +288,33 @@ end
 
 --- Agrega experiencia al personaje actual
 function M.add_exp(self, amount)
-if not self.character_state then
-	return false
-end
-
-local leveled_up = base_character.add_exp(self.character_state, amount)
-
-if leveled_up then
-	-- Actualizar velocidad si es Speedy
-	if self.character_data.ability_type == "speed_boost" then
-		self.speed = base_character.get_speed(self.character_state)
-		print("[Speedy] Nueva velocidad: " .. self.speed)
+	if not self.character_state then
+		return false
 	end
 
-	-- Notificar al HUD
-	msg.post("/hud#hud", "level_up", {
-		character_name = self.character_data.name,
-		new_level = self.character_state.ability_level
+	local leveled_up = base_character.add_exp(self.character_state, amount)
+
+	if leveled_up then
+		-- Actualizar velocidad si es Speedy
+		if self.character_data.ability_type == "speed_boost" then
+			self.speed = base_character.get_speed(self.character_state)
+			print("[Speedy] Nueva velocidad: " .. self.speed)
+		end
+
+		-- Notificar al HUD
+		msg.post("/hud#hud", "level_up", {
+			character_name = self.character_data.name,
+			new_level = self.character_state.ability_level
+		})
+	end
+
+	-- Actualizar barra de EXP
+	msg.post("/hud#hud", "update_exp", {
+		progress = base_character.get_exp_progress(self.character_state),
+		level = self.character_state.ability_level
 	})
-end
 
--- Actualizar barra de EXP
-msg.post("/hud#hud", "update_exp", {
-	progress = base_character.get_exp_progress(self.character_state),
-	level = self.character_state.ability_level
-})
-
-return leveled_up
+	return leveled_up
 end
 
 -- ============================================================
@@ -326,27 +322,27 @@ end
 -- ============================================================
 
 function M.handle_rescue_input(self, action)
-if not (self.near_fallen and self.fallen_id) then
-	return
-end
-
-if action.pressed then
-	print("[Player] Iniciando rescate...")
-	self.is_rescuing = true
-	msg.post(self.fallen_id, "rescue_hold")
-elseif action.released then
-	print("[Player] Rescate interrumpido")
-	self.is_rescuing = false
-	if go.exists(self.fallen_id) then
-		msg.post(self.fallen_id, "rescue_release")
+	if not (self.near_fallen and self.fallen_id) then
+		return
 	end
-end
+
+	if action.pressed then
+		print("[Player] Iniciando rescate...")
+		self.is_rescuing = true
+		msg.post(self.fallen_id, "rescue_hold")
+	elseif action.released then
+		print("[Player] Rescate interrumpido")
+		self.is_rescuing = false
+		if go.exists(self.fallen_id) then
+			msg.post(self.fallen_id, "rescue_release")
+		end
+	end
 end
 
 function M.clear_rescue_state(self)
-self.near_fallen = false
-self.fallen_id = nil
-self.is_rescuing = false
+	self.near_fallen = false
+	self.fallen_id = nil
+	self.is_rescuing = false
 end
 
 -- ============================================================
@@ -354,35 +350,35 @@ end
 -- ============================================================
 
 function M.apply_movement(self, dt)
-local is_moving = vmath.length(self.direction) > 0
-local movement = self.correction
+	local is_moving = vmath.length(self.direction) > 0
+	local movement = self.correction
 
-if is_moving then
-	-- Usar velocidad del personaje
-	local speed = self.speed
-	if self.character_state then
-		speed = base_character.get_speed(self.character_state)
+	if is_moving then
+		-- Usar velocidad del personaje
+		local speed = self.speed
+		if self.character_state then
+			speed = base_character.get_speed(self.character_state)
+		end
+
+		movement = movement + vmath.normalize(self.direction) * speed * dt
 	end
 
-	movement = movement + vmath.normalize(self.direction) * speed * dt
-end
+	if vmath.length(movement) > 0 then
+		go.set_position(go.get_position() + movement)
+	end
 
-if vmath.length(movement) > 0 then
-	go.set_position(go.get_position() + movement)
-end
+	-- Actualizar facing hacia crosshair
+	local aim_dir = M.get_aim_direction(self)
+	if vmath.length(aim_dir) > 0 then
+		self.facing = aim_dir
+	end
 
--- Actualizar facing hacia crosshair
-local aim_dir = M.get_aim_direction(self)
-if vmath.length(aim_dir) > 0 then
-	self.facing = aim_dir
-end
-
-return is_moving
+	return is_moving
 end
 
 function M.reset_frame_state(self)
-self.direction = vmath.vector3(0, 0, 0)
-self.correction = vmath.vector3(0, 0, 0)
+	self.direction = vmath.vector3(0, 0, 0)
+	self.correction = vmath.vector3(0, 0, 0)
 end
 
 return M
