@@ -465,13 +465,95 @@ El jugador debe pagar recursos o superar un desafío para recuperarlo.
 En modo normal, esto permite seguir el ciclo.
 En modo hardcore, perder tiempo o pods puede afectar el rescate total.
 8.5 Hackeo vs Sacrificio
-Hackeo
-Permite recuperar personajes o pods perdidos mediante un minijuego.
 
-Sacrificio
-Permite saltarse el minijuego a cambio de perder mejoras o recursos permanentes.
+El hacking es un minijuego opcional que reemplaza ciertas acciones convencionales
+por un desafío basado en Snake clásico. El jugador puede iniciar un hackeo presionando
+TAB cuando esté en contexto de:
 
-Narrativamente, el sacrificio representa quemar energía, materiales o módulos técnicos para acelerar un rescate.
+- **Enemigo fuerte** — El juego se congela, la cámara "entra" al sistema del enemigo
+  (zoom + glitch + overlay tipo terminal, estilo Nier: Automata / Pragmata). Si el
+  hack se completa, el enemigo queda **stuneado** unos segundos al volver.
+- **Puerta cerrada** — Se abre permanentemente al completar el hack.
+- **Personaje caído** — Recuperas al personaje **sin gastar recursos**. Si fallas,
+  puedes usar el rescate convencional (hold E) pagando recursos normalmente.
+
+---
+
+### 8.5.1 Mecánica del Minijuego
+
+- **Snake clásico** sobre cuadrícula de N×N, movimiento en 4 direcciones, sin pausa.
+- La serpiente representa el **hilo de ejecución del hack**. Chocar contra un muro
+  fijo o contra el propio rastro = **hack fallido**.
+- Hay **M coleccionables** dispersos en el grid. Se requiere un mínimo **K** para
+  **desbloquear la salida (EXIT)**. Una vez desbloqueada, hay que llegar al EXIT
+  para completar el hack.
+- La serpiente **crece** al recoger cada coleccionable.
+- Al recoger un coleccionable, el contador de requeridos disminuye. Cuando llegue
+  a 0, el EXIT se vuelve visible y accesible.
+
+### 8.5.2 Disparo de Eslabón
+
+- Presionar `SPACE` (o acción asignada) lanza el **primer eslabón** de la serpiente
+  en la dirección actual.
+- El eslabón vuela en línea recta hasta chocar con un **muro destructible** y lo
+  elimina, abriendo un nuevo camino.
+- Ese segmento se **pierde permanentemente** — la serpiente se acorta.
+- Para recuperar longitud hay que comer más coleccionables.
+- **Tradeoff:** sacrificas avance hacia el EXIT para abrir rutas o alcanzar
+  coleccionables bloqueados.
+
+### 8.5.3 Tablas de Dificultad
+
+| Dificultad | Grid | Celdas | Coleccionables (total / mínimo) | Muros fijos | Muros destructibles | Tiempo |
+|------------|------|--------|-------------------------------|-------------|--------------------|--------|
+| **Fácil** | 5×5 | 25 | 3 / 2 | 0–1 | 0 | 20s |
+| **Intermedio** | 6×6 | 36 | 5–6 / 3 | 2–3 | 1–2 | 25s |
+| **Difícil** | 7×7 | 49 | 7+ / 4 | 3–4 | 2–3 | 30s |
+
+En niveles intermedios y difíciles, el número de coleccionables totales puede ser
+mayor al mínimo requerido. Los extras dan margen para disparar eslabones sin quedarse
+sin progreso.
+
+### 8.5.4 Costo de Recursos
+
+Cada intento de hackeo consume recursos que se obtienen al eliminar enemigos.
+Los recursos representan materiales, datos o energía recuperada del laboratorio.
+
+| Dificultad | Costo por intento |
+|------------|------------------|
+| **Fácil** | 1 recurso |
+| **Intermedio** | 2 recursos |
+| **Difícil** | 3 recursos |
+
+Si el jugador no tiene suficientes recursos, no puede iniciar el hackeo y debe
+recurrir a la acción convencional.
+
+### 8.5.5 Condiciones
+
+| Resultado | Efecto |
+|-----------|--------|
+| **Victoria** | K coleccionables recogidos → EXIT visible → llegas al EXIT. El hack se completa con éxito. |
+| **Derrota** | Tiempo agotado, o la serpiente choca contra muro fijo o su propio rastro. El hack falla. |
+| **Abortar** | No se permite salir voluntariamente. Si comienzas un hack, lo juegas hasta el final. |
+
+### 8.5.6 Estética
+
+- Paleta **verde fósforo sobre negro** tipo terminal de laboratorio.
+- Grid con efecto scanlines / trazo CRT.
+- Transición de entrada: fundido desde el juego principal + distorsión glitch.
+- Beeps al recoger coleccionables.
+- Sonido de "puerta abriéndose" al desbloquear EXIT.
+- Al volver al juego principal, transición inversa (glitch out).
+
+---
+
+### Sacrificio
+
+Alternativa al hackeo. Permite **saltarse el minijuego** a cambio de perder mejoras
+o recursos permanentes.
+
+Narrativamente, el sacrificio representa quemar energía, materiales o módulos
+técnicos para acelerar un rescate.
 
 9. Modo Normal
 9.1 Objetivo Aparente
@@ -523,7 +605,7 @@ Resultado:
 
 El jugador/software continúa existiendo.
 El sistema conserva el control.
-Se desbloquean minijuegos o modos alternativos.
+Se desbloquean variantes del minijuego de hackeo (tableros bonus, sin límite de tiempo) o modos alternativos.
 El ciclo no se rompe del todo.
 Mensaje sugerido:
 
