@@ -17,6 +17,7 @@ end
 
 function M.request_target(self)
 	timer.delay(0.1, false, function()
+		if not go.exists(go.get_id()) then return end
 		msg.post("/wave_manager", "get_player_target", { requester = go.get_id() })
 	end)
 end

@@ -225,6 +225,7 @@ function on_message(self, message_id, message, sender)
 
 	if message_id == hash("boss_defeated") then
 		handle_boss_defeated(self)
+		self.current_boss_id = nil
 		return
 	end
 
@@ -254,8 +255,7 @@ function on_message(self, message_id, message, sender)
 
 	if message_id == hash("register_boss") then
 		self.current_boss_id = sender -- 'sender' es la URL dinámica del boss
-	elseif message_id == hash("player_pos") and self.current_boss_id then
-		-- Reenvía la posición al ID dinámico correcto
+	elseif message_id == hash("player_pos") and self.current_boss_id and go.exists(self.current_boss_id) then
 		msg.post(self.current_boss_id, "player_pos", message)
 	end
 end
