@@ -301,68 +301,6 @@ M.states[M.STATE.MEGA_APLASTON] = {
 
 -- ============================================================
 -- ESTADO: RODADA (Rebotando por la sala, Fase 2+)
--- Los rebotes se manejan en turtle.script via common.handle_wall_bounce
--- ============================================================
-
--- M.states[M.STATE.RODADA] = {
--- 	enter = function(self)
--- 		print("[Turtle] ¡¡RODADA!!")
---
--- 		self.rodada_bounces = 0
--- 		self.max_bounces = 5 + math.random(3)
--- 		self.rodada_direction = get_direction_to_player(self)
---
--- 		-- Guardar límites de la sala
--- 		local p = room_data.current.playable
--- 		self.room_bounds = {
--- 			left = p.min_x + 50,
--- 			right = p.max_x - 50,
--- 			bottom = p.min_y + 50,
--- 			top = p.max_y - 50
--- 		}
---
--- 		print("[Turtle] Rebotes objetivo: " .. self.max_bounces)
---
--- 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_FORWARD, 360, go.EASING_LINEAR, 0.4)
--- 	end,
---
--- 	update = function(self, dt)
--- 		local common = require "main.shared.entity_common"
---
--- 		local pos = go.get_position()
--- 		local new_pos = pos + self.rodada_direction * self.rodada_speed * dt
---
--- 		-- Aplicar límites lógicos de la sala
--- 		new_pos, _ = common.apply_bounds(self, new_pos, {
--- 			bounds = self.room_bounds,
--- 			direction_field = "rodada_direction",
--- 			bounce_field = "rodada_bounces",
--- 			max_bounces = self.max_bounces,
--- 			on_bounce = function(boss)
--- 				M.apply_bounce_variation(boss)
--- 			end,
--- 			on_max_bounces = function(boss)
--- 				M.on_rodada_complete(boss)
--- 			end
--- 		})
---
--- 		go.set_position(new_pos)
---
--- 		-- Timeout de seguridad
--- 		if self.state_timer >= 12.0 then
--- 			print("[Turtle] Rodada timeout")
--- 			M.change_state(self, M.STATE.IDLE)
--- 		end
--- 	end,
---
--- 	exit = function(self)
--- 		go.cancel_animations(".", "euler.z")
--- 		go.set_rotation(vmath.quat())
--- 		self.special_cooldown = self.special_cooldown_max
--- 	end
--- }
--- ============================================================
--- ESTADO: RODADA (Rebotando por la sala, Fase 2+)
 -- ============================================================
 
 M.states[M.STATE.RODADA] = {
@@ -641,49 +579,7 @@ function M.do_mega_aplaston(self)
 	end)
 end
 
--- ============================================================
--- ACCIONES DE ATAQUE
--- ============================================================
 
--- function M.do_aplaston(self, radius)
--- 	print("[Turtle] ¡APLASTÓN! Radio: " .. radius)
---
--- 	local my_pos = go.get_position()
--- 	local player_pos = get_player_position(self)
---
--- 	-- Screen shake
--- 	local camera_id = go.get_id("/camera")
--- 	camera.shake(camera_id, 0.003, 0.3, hash("both"))
---
--- 	if player_pos then
--- 		local distance = vmath.length(player_pos - my_pos)
---
--- 		if distance <= radius then
--- 			print("[Turtle] ¡Jugador en rango!")
--- 			msg.post(self.player_id, "enemy_damage", {
--- 				damage = 1,
--- 				enemy_position = my_pos
--- 			})
--- 		else
--- 			print("[Turtle] Jugador fuera de rango (" .. math.floor(distance) .. " > " .. radius .. ")")
--- 		end
--- 	end
--- end
---
--- function M.do_mega_aplaston(self)
--- 	print("[Turtle] ¡¡MEGA APLASTÓN!! (Pantalla completa)")
---
--- 	local camera_id = go.get_id("/camera")
--- 	camera.shake(camera_id, 0.006, 0.5, hash("both"))
---
--- 	if self.player_id and go.exists(self.player_id) then
--- 		msg.post(self.player_id, "enemy_damage", {
--- 			damage = 1,
--- 			enemy_position = go.get_position()
--- 		})
--- 	end
--- end
---
 -- ============================================================
 -- MANEJO DE IMPACTOS
 -- ============================================================
@@ -737,10 +633,6 @@ function M.on_damage_taken(self)
 
 	print("[Turtle] ¡OUCH!")
 end
-
--- ============================================================
--- EFECTOS VISUALES
--- ============================================================
 
 -- ============================================================
 -- EFECTOS VISUALES
