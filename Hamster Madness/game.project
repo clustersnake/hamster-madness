@@ -15,13 +15,15 @@ input_method = HiddenInputField
 [physics]
 gravity_y = -1000.0
 scale = 0.01
+use_fixed_timestep = 1
+fixed_update_frequency = 60
 
 [html5]
 scale_mode = stretch
 
 [project]
 title = Hamster Madness
-dependencies#0 = https://github.com/britzl/defold-orthographic/archive/master.zip
+
 
 [input]
 use_accelerometer = 0

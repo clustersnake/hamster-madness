@@ -1,0 +1,74 @@
+-- camera_controller.script
+-- Native camera controller - handles follow, bounds, and shake
+
+function init(self)
+	self.follow_target = nil
+	self.bounds = nil
+	self.shake_intensity = 0
+	self.shake_duration = 0
+	self.shake_timer = 0
+	self.shake_direction = hash("both")
+
+	local camera_url = msg.url("#camera")
+	if camera_url then
+		camera.set_orthographic_mode(camera_url, camera.ORTHO_MODE_FIXED)
+		go.set(camera_url, "orthographic_zoom", 1)
+	end
+end
+
+function update(self, dt)
+	local pos = go.get_position()
+
+	if self.follow_target and go.exists(self.follow_target) then
+		local target_pos = go.get_position(self.follow_target)
+		pos.x = target_pos.x
+		pos.y = target_pos.y
+
+		if self.bounds then
+			pos.x = math.max(self.bounds.left, math.min(self.bounds.right, pos.x))
+			pos.y = math.max(self.bounds.bottom, math.min(self.bounds.top, pos.y))
+		end
+	end
+
+	if self.shake_timer > 0 then
+		self.shake_timer = self.shake_timer - dt
+		local decay = self.shake_timer / self.shake_duration
+		local intensity = self.shake_intensity * decay
+		local offset = vmath.vector3(
+			(math.random() - 0.5) * 2 * intensity,
+			(math.random() - 0.5) * 2 * intensity,
+			0
+		)
+		if self.shake_direction == hash("horizontal") then
+			offset.y = 0
+		elseif self.shake_direction == hash("vertical") then
+			offset.x = 0
+		end
+		pos = pos + offset
+	end
+
+	go.set_position(pos)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("follow") then
+		self.follow_target = message.target
+		if message.bounds then
+			self.bounds = message.bounds
+		end
+	elseif message_id == hash("stop_follow") then
+		self.follow_target = nil
+	elseif message_id == hash("bounds") then
+		self.bounds = {
+			left = message.left,
+			right = message.right,
+			bottom = message.bottom,
+			top = message.top
+		}
+	elseif message_id == hash("shake") then
+		self.shake_intensity = message.intensity or 0.003
+		self.shake_duration = message.duration or 0.3
+		self.shake_timer = self.shake_duration
+		self.shake_direction = message.direction or hash("both")
+	end
+end
