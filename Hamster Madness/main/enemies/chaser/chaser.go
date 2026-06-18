@@ -63,6 +63,6 @@ embedded_components {
   ""
   position {
     y: -10.0
-    z: -0.1
+    z: -0.6
   }
 }

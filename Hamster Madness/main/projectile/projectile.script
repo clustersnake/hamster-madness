@@ -41,6 +41,7 @@ local function die(self)
 	-- Normal: convertirse en dropped_shield
 	print("Projectile → Dropped shield")
 	local pos = go.get_position()
+	pos.z = 0
 	factory.create("#dropped_shield_factory", pos)
 	go.delete()
 end

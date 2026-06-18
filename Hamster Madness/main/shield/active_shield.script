@@ -43,6 +43,7 @@ become_dropped_shield = function(self)
 	print("Active shield → Dropped shield")
 
 	local pos = go.get_position()
+	pos.z = 0
 	factory.create("#dropped_shield_factory", pos)
 
 	go.delete()

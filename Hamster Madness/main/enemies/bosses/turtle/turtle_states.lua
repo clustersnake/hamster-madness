@@ -751,7 +751,7 @@ spawn_shockwave = function(self, config)
 		if not go.exists(go.get_id()) then return end
 
 		local pos = go.get_position()
-		pos.z = 0.1
+		pos.z = 0.6
 
 		local props = {
 			max_scale = config.max_scale or 3.0,

@@ -21,7 +21,7 @@ instances {
   position {
     x: 360.0
     y: 257.0
-    z: -0.5
+    z: -0.8
   }
 }
 scale_along_z: 0
@@ -47,6 +47,7 @@ embedded_instances {
   ""
   position {
     y: 80.0
+    z: -0.8
   }
 }
 embedded_instances {

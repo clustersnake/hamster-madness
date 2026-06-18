@@ -8,4 +8,7 @@ embedded_components {
   "  texture: \"/main/enemies/enemies.atlas\"\n"
   "}\n"
   ""
+  position {
+    z: -0.6
+  }
 }

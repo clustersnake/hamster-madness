@@ -1,7 +1,7 @@
 tile_set: "/main/rooms/tilesets/dungeon.tilesource"
 layers {
   id: "floor"
-  z: -1.0
+  z: 0.0
   cell {
     x: 0
     y: 0
@@ -830,7 +830,7 @@ layers {
   cell {
     x: 19
     y: 9
-    tile: 11
+    tile: 0
   }
 }
 layers {
@@ -839,7 +839,7 @@ layers {
   cell {
     x: 0
     y: 0
-    tile: 20
+    tile: 12
   }
   cell {
     x: 1
@@ -934,7 +934,7 @@ layers {
   cell {
     x: 19
     y: 0
-    tile: 21
+    tile: 13
   }
   cell {
     x: 0
@@ -1019,7 +1019,7 @@ layers {
   cell {
     x: 0
     y: 9
-    tile: 30
+    tile: 10
   }
   cell {
     x: 1
@@ -1114,7 +1114,7 @@ layers {
   cell {
     x: 19
     y: 9
-    tile: 31
+    tile: 11
   }
 }
 material: "/builtins/materials/tile_map.material"

@@ -114,7 +114,7 @@ function M.fire_projectile(self)
 	local aim_direction = M.get_aim_direction(self)
 
 	local spawn_pos = player_pos + aim_direction * 50
-	spawn_pos.z = 0.5
+	spawn_pos.z = 0.6
 
 	local projectile_id = factory.create("#projectile_factory", spawn_pos)
 	msg.post(projectile_id, "fire", { direction = aim_direction })
@@ -223,7 +223,7 @@ function M.take_damage(self, enemy_position)
 		end
 
 		local spawn_pos = player_pos + knockback_dir * 40
-		spawn_pos.z = 0.5
+		spawn_pos.z = 0.6
 		local shield_id = factory.create("#active_shield_factory", spawn_pos)
 		msg.post(shield_id, "fire", { direction = knockback_dir })
 

@@ -12,6 +12,9 @@ embedded_components {
   "  texture: \"/main/projectile/projectile.atlas\"\n"
   "}\n"
   ""
+  position {
+    z: -0.4
+  }
 }
 embedded_components {
   id: "collisionobject"

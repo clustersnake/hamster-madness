@@ -12,6 +12,9 @@ embedded_components {
   "  texture: \"/main/player/player.atlas\"\n"
   "}\n"
   ""
+  position {
+    z: -0.4
+  }
   scale {
     x: 0.5
     y: 0.5

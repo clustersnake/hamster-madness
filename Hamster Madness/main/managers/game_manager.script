@@ -68,7 +68,7 @@ function init(self)
 	local ball_pos = vmath.vector3(
 	room_data.current.ball_spawn.x,
 	room_data.current.ball_spawn.y,
-	0.5
+	0.6
 )
 factory.create("#ball_factory", ball_pos)
 print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
@@ -77,7 +77,7 @@ print("[GameManager] Bola spawneada en: " .. ball_pos.x .. ", " .. ball_pos.y)
 local spawn_pos = vmath.vector3(
 room_data.current.spawn_points[1].x,
 room_data.current.spawn_points[1].y,
-0
+0.2
 )
 spawn_next_character(self, spawn_pos)
 
@@ -472,7 +472,7 @@ timer.delay(2.5, false, function()
 local boss_pos = vmath.vector3(
 room_data.current.boss_spawn and room_data.current.boss_spawn.x or 640,
 room_data.current.boss_spawn and room_data.current.boss_spawn.y or 500,
-0.5
+0.0
 )
 
 self.boss_id = factory.create("#turtle_factory", boss_pos)
