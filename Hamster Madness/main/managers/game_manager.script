@@ -1,7 +1,7 @@
 -- game_manager.script
 -- Controla el estado global: personajes, jugador activo, modo de juego
 
-local camera = require "orthographic.camera"
+local camera = require "main.camera.camera"
 local room_data = require "main.data.room_data"
 local character_data = require "main.data.character_data"  -- NUEVO
 local game_config = require "main.data.game_config"        -- NUEVO

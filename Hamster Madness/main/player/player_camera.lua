@@ -1,7 +1,7 @@
 -- player_camera.lua
 -- Configuración de cámara para el jugador
 
-local camera = require "orthographic.camera"
+local camera = require "main.camera.camera"
 local room_data = require "main.data.room_data"
 
 local M = {}

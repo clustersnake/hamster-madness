@@ -1,7 +1,7 @@
 name: "main"
 instances {
   id: "camera"
-  prototype: "/orthographic/camera.go"
+  prototype: "/main/camera/camera.go"
 }
 instances {
   id: "game_manager"

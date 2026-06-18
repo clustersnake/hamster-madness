@@ -1,5 +1,5 @@
 -- crosshair.script
-local camera = require "orthographic.camera"
+local camera = require "main.camera.camera"
 
 local CAMERA_ID = nil
 local hide_cursor
