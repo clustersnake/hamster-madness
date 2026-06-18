@@ -43,7 +43,7 @@ animations {
 animations {
   id: "tank_walk_up"
   images {
-    image: "/main/characters/tank/sprites/tank_walk_up .png"
+    image: "/main/characters/tank/sprites/tank_walk_up.png"
   }
   playback: PLAYBACK_LOOP_FORWARD
 }
