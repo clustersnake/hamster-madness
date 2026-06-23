@@ -5,7 +5,7 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"shooter_walk\"\n"
+  data: "default_animation: \"shooter-e\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
   "  x: 32.0\n"
@@ -13,7 +13,7 @@ embedded_components {
   "}\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/enemies/enemies.atlas\"\n"
+  "  texture: \"/main/enemies/shooter/shooter.atlas\"\n"
   "}\n"
   ""
   scale {

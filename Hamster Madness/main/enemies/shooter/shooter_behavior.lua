@@ -1,5 +1,5 @@
 -- shooter_behavior.lua
--- Comportamiento específico del Shooter: mantener distancia y disparar
+-- Comportamiento del Shooter: mantener distancia, disparar, 8 direcciones
 
 local common = require "main.shared.entity_common"
 
@@ -12,7 +12,40 @@ local M = {}
 M.MIN_DISTANCE = 80
 M.MAX_DISTANCE = 150
 M.SHOOT_COOLDOWN = 2.0
-M.PROJECTILE_OFFSET = 15  -- Distancia desde el centro al spawnear bala
+M.PROJECTILE_OFFSET = 15
+
+-- ============================================================
+-- DIRECCIÓN (8 direcciones)
+-- ============================================================
+
+function M.init_direction(self)
+	self.current_direction = "s"
+end
+
+function M.update_direction_sprite(self, to_player)
+	local angle = math.atan2(to_player.y, to_player.x)
+	local adjusted_angle = angle + (math.pi / 4)
+
+	local direction_map = {
+		"e",  -- 0°
+		"ne", -- 45°
+		"n",  -- 90°
+		"nw", -- 135°
+		"w",  -- 180°
+		"sw", -- 225°
+		"s",  -- 270°
+		"se"  -- 315°
+	}
+
+	local index = math.floor((adjusted_angle / (math.pi / 4)) % 8) + 1
+	local new_direction = direction_map[index]
+
+	if new_direction ~= self.current_direction then
+		self.current_direction = new_direction
+		local sprite_name = "shooter-" .. new_direction
+		sprite.play_flipbook("#sprite", hash(sprite_name))
+	end
+end
 
 -- ============================================================
 -- MOVIMIENTO
@@ -33,12 +66,10 @@ function M.update(self, dt)
 	local to_player = player_pos - my_pos
 	local distance = vmath.length(to_player)
 
-	-- Determinar dirección hacia el jugador
 	if distance > 0 then
 		self.direction = vmath.normalize(to_player)
 	end
 
-	-- Lógica de movimiento según distancia
 	local movement = vmath.vector3(0)
 
 	if distance < M.MIN_DISTANCE then
@@ -49,21 +80,10 @@ function M.update(self, dt)
 
 	go.set_position(my_pos + movement + self.correction)
 
-	M.update_facing(self, to_player)
+	M.update_direction_sprite(self, to_player)
 	M.update_shooting(self, dt, distance)
 
 	common.reset_correction(self)
-end
-
--- ============================================================
--- FACING
--- ============================================================
-
-function M.update_facing(self, to_player)
-	if to_player.x ~= 0 then
-		local facing_left = to_player.x < 0
-		sprite.set_hflip("#sprite", facing_left)
-	end
 end
 
 -- ============================================================
@@ -71,7 +91,6 @@ end
 -- ============================================================
 
 function M.update_shooting(self, dt, distance)
-	-- Cooldown
 	if not self.can_shoot then
 		self.shoot_timer = self.shoot_timer - dt
 		if self.shoot_timer <= 0 then
@@ -79,7 +98,6 @@ function M.update_shooting(self, dt, distance)
 		end
 	end
 
-	-- Disparar si está en rango y puede
 	local in_range = distance <= M.MAX_DISTANCE and distance >= M.MIN_DISTANCE * 0.5
 
 	if self.can_shoot and in_range and common.has_valid_target(self) then
@@ -91,17 +109,12 @@ end
 
 function M.fire_projectile(self)
 	local my_pos = go.get_position()
-
-	-- Posición de spawn (un poco adelante del enemigo)
 	local spawn_pos = my_pos + self.direction * M.PROJECTILE_OFFSET
 
-	-- Crear proyectil
 	local projectile_id = factory.create("#projectile_factory", spawn_pos)
 
 	if projectile_id then
-		-- Enviar dirección al proyectil
 		msg.post(projectile_id, "set_direction", { direction = self.direction })
-		print("[Shooter] Disparo!")
 	end
 end
 
