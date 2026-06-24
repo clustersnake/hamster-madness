@@ -33,7 +33,7 @@ function update(self, dt)
 		self.distance_traveled = self.distance_traveled + movement_distance
 
 		if self.distance_traveled >= self.max_distance then
-			become_dropped_shield(self)  -- Sin self:
+			become_dropped_shield(self)
 		end
 	end
 end

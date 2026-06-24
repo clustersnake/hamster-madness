@@ -108,7 +108,7 @@ animations {
   playback: PLAYBACK_LOOP_FORWARD
 }
 animations {
-  id: "speedy_hurt"
+  id: "speedy_fallen"
   images {
     image: "/main/characters/speedy/sprites/speedy_hurt_1.png"
   }
