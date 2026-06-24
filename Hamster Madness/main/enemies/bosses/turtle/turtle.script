@@ -12,7 +12,7 @@ local ROTATION_SPEED = 5.0
 
 local handle_collision
 local handle_wall_collision
-local handle_poojectile_hit
+local handle_projectile_hit
 local apply_damage
 local advance_phase
 local reflect_projectile
@@ -143,7 +143,7 @@ function on_message(self, message_id, message, sender)
 	-- Trigger con proyectil (alternativa)
 	if message_id == hash("trigger_response") then
 		if message.group == hash("projectile") and message.enter then
-			handle_poojectile_hit(self, message)
+			handle_projectile_hit(self, message)
 		end
 		return
 	end
@@ -200,7 +200,7 @@ function handle_collision(self, message)
 
 	-- Impacto con proyectil
 	if message.group == hash("projectile") then
-		handle_poojectile_hit(self, message)
+		handle_projectile_hit(self, message)
 		return
 	end
 end
@@ -225,7 +225,7 @@ function handle_wall_collision(self, message)
 	end
 end
 
-function handle_poojectile_hit(self, message)
+function handle_projectile_hit(self, message)
 	local result = states.on_hit_by_projectile(self)
 
 	if result == "damage" then
