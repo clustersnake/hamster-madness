@@ -1,0 +1,58 @@
+name: "room_large"
+instances {
+  id: "door_north"
+  prototype: "/main/doors/door.go"
+  position {
+    x: 640.0
+    y: 688.0
+  }
+}
+instances {
+  id: "door_south"
+  prototype: "/main/doors/door.go"
+  position {
+    x: 640.0
+    y: 112.0
+  }
+}
+instances {
+  id: "door_west"
+  prototype: "/main/doors/door.go"
+  position {
+    x: 32.0
+    y: 400.0
+  }
+}
+instances {
+  id: "door_east"
+  prototype: "/main/doors/door.go"
+  position {
+    x: 1248.0
+    y: 400.0
+  }
+}
+embedded_instances {
+  id: "tilemap"
+  data: "components {\n"
+  "  id: \"test_room\"\n"
+  "  component: \"/main/rooms/test_room.tilemap\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"collisionobject\"\n"
+  "  type: \"collisionobject\"\n"
+  "  data: \"collision_shape: \\\"/main/rooms/test_room.tilemap\\\"\\n"
+  "type: COLLISION_OBJECT_TYPE_STATIC\\n"
+  "mass: 0.0\\n"
+  "friction: 0.1\\n"
+  "restitution: 0.5\\n"
+  "group: \\\"default\\\"\\n"
+  "mask: \\\"player\\\"\\n"
+  "mask: \\\"projectile\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+  position {
+    y: 80.0
+    z: -0.8
+  }
+}
