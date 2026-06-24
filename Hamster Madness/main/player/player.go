@@ -33,6 +33,7 @@ embedded_components {
   "mask: \"enemy\"\n"
   "mask: \"fallen\"\n"
   "mask: \"enemy_projectile\"\n"
+  "mask: \"door\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
   "    shape_type: TYPE_SPHERE\n"
