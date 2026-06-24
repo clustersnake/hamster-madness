@@ -10,7 +10,7 @@ components {
 embedded_components {
   id: "sprite"
   type: "sprite"
-  data: "default_animation: \"chaser_idle\"\n"
+  data: "default_animation: \"chaser-e\"\n"
   "material: \"/builtins/materials/sprite.material\"\n"
   "size {\n"
   "  x: 32.0\n"
@@ -18,7 +18,7 @@ embedded_components {
   "}\n"
   "textures {\n"
   "  sampler: \"texture_sampler\"\n"
-  "  texture: \"/main/enemies/enemies.atlas\"\n"
+  "  texture: \"/main/enemies/chaser/chaser.atlas\"\n"
   "}\n"
   ""
   scale {
@@ -62,7 +62,6 @@ embedded_components {
   "}\n"
   ""
   position {
-    y: -10.0
     z: -0.6
   }
 }

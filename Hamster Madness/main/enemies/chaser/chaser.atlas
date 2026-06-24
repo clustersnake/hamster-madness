@@ -1,0 +1,32 @@
+images {
+  image: "/main/enemies/chaser/sprites/chaser-e.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/chaser/sprites/chaser-n.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/chaser/sprites/chaser-ne.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/chaser/sprites/chaser-nw.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/chaser/sprites/chaser-s.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/chaser/sprites/chaser-se.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/chaser/sprites/chaser-sw.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}
+images {
+  image: "/main/enemies/chaser/sprites/chaser-w.png"
+  sprite_trim_mode: SPRITE_TRIM_MODE_4
+}

@@ -34,7 +34,7 @@ function M.update(self, dt)
 		local movement = self.direction * self.speed * dt
 		go.set_position(my_pos + movement + self.correction)
 	end
-
+	common.update_direction_sprite(self, "chaser", to_player)
 	common.reset_correction(self)
 end
 

@@ -13,6 +13,7 @@ go.property("speed", 100)
 function init(self)
 	common.init_state(self)
 	common.request_target(self)
+	common.init_direction(self)
 end
 
 function update(self, dt)
