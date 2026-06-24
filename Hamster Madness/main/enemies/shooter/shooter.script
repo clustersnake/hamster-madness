@@ -15,7 +15,7 @@ function init(self)
 	self.can_shoot = true
 
 	-- Dirección inicial (8 direcciones)
-	behavior.init_direction(self)
+	common.init_direction(self)
 end
 
 function update(self, dt)

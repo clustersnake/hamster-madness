@@ -18,34 +18,30 @@ M.PROJECTILE_OFFSET = 15
 -- DIRECCIÓN (8 direcciones)
 -- ============================================================
 
-function M.init_direction(self)
-	self.current_direction = "s"
-end
-
-function M.update_direction_sprite(self, to_player)
-	local angle = math.atan2(to_player.y, to_player.x)
-	local adjusted_angle = angle + (math.pi / 4)
-
-	local direction_map = {
-		"e",  -- 0°
-		"ne", -- 45°
-		"n",  -- 90°
-		"nw", -- 135°
-		"w",  -- 180°
-		"sw", -- 225°
-		"s",  -- 270°
-		"se"  -- 315°
-	}
-
-	local index = math.floor((adjusted_angle / (math.pi / 4)) % 8) + 1
-	local new_direction = direction_map[index]
-
-	if new_direction ~= self.current_direction then
-		self.current_direction = new_direction
-		local sprite_name = "shooter-" .. new_direction
-		sprite.play_flipbook("#sprite", hash(sprite_name))
-	end
-end
+-- function M.update_direction_sprite(self, to_player)
+-- 	local angle = math.atan2(to_player.y, to_player.x)
+-- 	local adjusted_angle = angle + (math.pi / 4)
+-- 
+-- 	local direction_map = {
+-- 		"e",  -- 0°
+-- 		"ne", -- 45°
+-- 		"n",  -- 90°
+-- 		"nw", -- 135°
+-- 		"w",  -- 180°
+-- 		"sw", -- 225°
+-- 		"s",  -- 270°
+-- 		"se"  -- 315°
+-- 	}
+-- 
+-- 	local index = math.floor((adjusted_angle / (math.pi / 4)) % 8) + 1
+-- 	local new_direction = direction_map[index]
+-- 
+-- 	if new_direction ~= self.current_direction then
+-- 		self.current_direction = new_direction
+-- 		local sprite_name = "shooter-" .. new_direction
+-- 		sprite.play_flipbook("#sprite", hash(sprite_name))
+-- 	end
+-- end
 
 -- ============================================================
 -- MOVIMIENTO
@@ -80,7 +76,7 @@ function M.update(self, dt)
 
 	go.set_position(my_pos + movement + self.correction)
 
-	M.update_direction_sprite(self, to_player)
+	common.update_direction_sprite(self, "shooter", to_player)
 	M.update_shooting(self, dt, distance)
 
 	common.reset_correction(self)
