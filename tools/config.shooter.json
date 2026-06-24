@@ -1,0 +1,14 @@
+{
+    "character": "shooter",
+    "output_dir": "/home/clustersnake/repos/hamster-madness/Hamster Madness/main/enemies/shooter/sprites",
+    "render_engine": "BLENDER_EEVEE",
+    "resolution_x": 192,
+    "resolution_y": 192,
+    "camera_distance": 15,
+    "camera_height": 13,
+    "ortho_scale": 22.0,
+    "fps": 12,
+    "actions": [
+        {"name": "idle", "frames": "all"}
+    ]
+}
