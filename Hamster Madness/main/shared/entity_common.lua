@@ -15,6 +15,35 @@ function M.init_state(self)
 	self.is_paused = false
 end
 
+function M.init_direction(self)
+	self.current_direction = "s"
+end
+
+function M.update_direction_sprite(self, enemy_type, to_player)
+	local angle = math.atan2(to_player.y, to_player.x)
+	local adjusted_angle = angle + (math.pi / 4)
+
+	local direction_map = {
+		"e",  -- 0°
+		"ne", -- 45°
+		"n",  -- 90°
+		"nw", -- 135°
+		"w",  -- 180°
+		"sw", -- 225°
+		"s",  -- 270°
+		"se"  -- 315°
+	}
+
+	local index = math.floor((adjusted_angle / (math.pi / 4)) % 8) + 1
+	local new_direction = direction_map[index]
+
+	if new_direction ~= self.current_direction then
+		self.current_direction = new_direction
+		local sprite_name = enemy_type .. "-" .. new_direction
+		sprite.play_flipbook("#sprite", hash(sprite_name))
+	end
+end
+
 function M.request_target(self)
 	timer.delay(0.1, false, function()
 		if not go.exists(go.get_id()) then return end
