@@ -52,6 +52,8 @@ local WAVE_CONFIG = {
 	}
 }
 
+local level_layout = require "main.data.level_layout"
+
 function init(self)
 	self.current_wave = 0
 	self.enemies_alive = 0
@@ -63,36 +65,30 @@ function init(self)
 	-- Referencia al player activo
 	self.active_player_id = go.get_id("/player")
 
-	-- Cola de puntos a usar para spawn escalonado
-	-- Ahora guarda {point, enemy_type}
 	self.spawn_queue = {}
 
-	-- Configuración de oleada actual
 	self.current_shooter_chance = 0
 
-	-- Modo rescate
 	self.is_rescue_mode = false
 	self.rescue_wave = 0
-
-	-- NUEVO: Estado de boss fight
 	self.is_boss_fight = false
+	self.is_active = false
 
-	-- Cargar datos de la room actual
-	self.room = room_data.current
+	-- Datos de la sala actual (room_data tiene spawn_points global)
+	self.room = room_data.current or room_data.test_room
 	self.min_distance = room_data.config.min_distance_from_player
+	self.room_difficulty = 0
+	self.room_is_boss = false
+	self.room_wave_count = 0
 
-	print("[WaveManager] Inicializado")
-	print("[WaveManager] Room: " .. self.room.name)
-	print("[WaveManager] Spawn points disponibles: " .. #self.room.spawn_points)
-
-	-- Comenzar primera oleada
-	timer.delay(2.0, false, function()
-		start_next_wave(self)
-	end)
+	print("[WaveManager] Inicializado (esperando configuración de sala)")
 end
 
 function update(self, dt)
-	-- No spawnear durante boss fight
+	if not self.is_active then
+		return
+	end
+
 	if self.is_boss_fight then
 		return
 	end
@@ -200,16 +196,51 @@ function on_message(self, message_id, message, sender)
 	-- NUEVO: Mensaje para terminar boss fight
 	if message_id == hash("boss_fight_ended") then
 		self.is_boss_fight = false
-		self.spawn_queue = {}  -- Limpiar cola por si acaso
-		print("[WaveManager] Boss fight terminado - Sistema detenido")
-		-- NO iniciamos nueva oleada, el juego terminó
+		self.spawn_queue = {}
+		print("[WaveManager] Boss fight terminado - Sala limpia")
+		msg.post("/level_manager", "room_cleared")
 		return
 	end
 
 	if message_id == hash("game_over") then
 		self.spawn_queue = {}
-		self.is_spawning = false
+		self.is_active = false
 		print("[WaveManager] Detenido por Game Over")
+		return
+	end
+
+	-- Configurar sala desde level_manager
+	if message_id == hash("configure_room") then
+		self.room_difficulty = message.difficulty or 1
+		self.room_is_boss = message.is_boss or false
+
+		local wave_count = math.min(#WAVE_CONFIG.normal, 3 + self.room_difficulty)
+		self.room_wave_count = wave_count
+
+		print("[WaveManager] Sala configurada: " .. tostring(message.room_id) .. " | Dificultad: " .. self.room_difficulty .. " | Boss: " .. tostring(self.room_is_boss) .. " | Oleadas: " .. wave_count)
+		return
+	end
+
+	if message_id == hash("start_waves") then
+		self.current_wave = 0
+		self.enemies_alive = 0
+		self.spawned_enemies = {}
+		self.spawn_queue = {}
+		self.is_active = true
+		self.is_rescue_mode = false
+		self.is_boss_fight = false
+
+		timer.delay(1.5, false, function()
+			start_next_wave(self)
+		end)
+		print("[WaveManager] Oleadas iniciadas")
+		return
+	end
+
+	if message_id == hash("stop_waves") then
+		self.is_active = false
+		self.spawn_queue = {}
+		print("[WaveManager] Oleadas detenidas")
 		return
 	end
 end
@@ -418,8 +449,8 @@ on_wave_complete = function(self)
 	print("[WaveManager] ¡Oleada completada!")
 	msg.post("/hud#hud", "show_message", { text = i18n.t("wave_complete"), duration = 1.5 })
 
-	-- ¿Es hora del boss? (solo en modo normal, no en rescate)
-	if not self.is_rescue_mode and self.current_wave >= BOSS_TRIGGER_WAVE then
+	-- Si es boss room y se completó la oleada que dispara el boss
+	if self.room_is_boss and not self.is_rescue_mode and self.current_wave >= BOSS_TRIGGER_WAVE then
 		print("[WaveManager] ═══════════════════════════")
 		print("[WaveManager]   ¡PREPARANDO BOSS FIGHT!  ")
 		print("[WaveManager] ═══════════════════════════")
@@ -427,10 +458,22 @@ on_wave_complete = function(self)
 		timer.delay(2.0, false, function()
 			msg.post("/game_manager", "start_boss_fight")
 		end)
-		return  -- No iniciar más oleadas
+		return
 	end
 
-	-- Continuar con siguiente oleada normal
+	-- Si es boss room y boss ya fue derrotado, notificar limpieza
+	if self.room_is_boss and not self.is_boss_fight then
+		msg.post("/level_manager", "room_cleared")
+		return
+	end
+
+	-- Si se acabaron las oleadas de la sala, notificar limpieza
+	if not self.is_rescue_mode and self.current_wave >= self.room_wave_count then
+		msg.post("/level_manager", "room_cleared")
+		return
+	end
+
+	-- Continuar con siguiente oleada
 	timer.delay(3.0, false, function()
 		start_next_wave(self)
 	end)

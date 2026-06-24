@@ -153,7 +153,60 @@ M.big_room.size.height
 --]]
 
 -- ============================================
--- SALA ACTUAL (cambiar para probar otras)
+-- HUB (Sala central con puertas)
+-- ============================================
+M.hub_room = {
+	name = "Hub",
+
+	type = "hub",
+
+	size = {
+		width = 1280,
+		height = 640
+	},
+
+	scrollable = false,
+
+	camera_bounds = nil,
+
+	camera_center = {
+		x = 640,
+		y = 360
+	},
+
+	playable = {
+		min_x = 64,
+		max_x = 1216,
+		min_y = 144,
+		max_y = 656
+	},
+
+	doors = {
+		north = { x = 640, y = 112, state = "locked", target_room = nil },
+		south = { x = 640, y = 688, state = "locked", target_room = nil },
+		west  = { x = 32,  y = 400, state = "locked", target_room = nil },
+		east  = { x = 1248, y = 400, state = "locked", target_room = nil },
+	},
+
+	player_spawn = { x = 640, y = 250 },
+	ball_spawn = { x = 640, y = 400 },
+
+	spawn_points = {
+		{x = 640, y = 250},  -- Centro, cerca del player_spawn
+		{x = 250, y = 400},
+		{x = 1030, y = 400},
+		{x = 450, y = 550},
+		{x = 830, y = 550},
+	},
+}
+
+M.hub_room.camera_bounds = calculate_camera_bounds(
+	M.hub_room.size.width,
+	M.hub_room.size.height
+)
+
+-- ============================================
+-- SALA ACTUAL (se actualiza dinámicamente)
 -- ============================================
 M.current = M.test_room
 
