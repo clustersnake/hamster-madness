@@ -1,0 +1,66 @@
+local STATE = {
+	LOCKED = "locked",
+	UNLOCKED = "unlocked",
+	OPEN = "open"
+}
+
+local DOOR_BY_POSITION = {
+	{ y = 688, dir = "north", label = "N" },
+	{ y = 112, dir = "south", label = "S" },
+	{ x = 32,  dir = "west",  label = "O" },
+	{ x = 1248, dir = "east", label = "E" },
+}
+
+function init(self)
+	local pos = go.get_position()
+	self.direction = "?"
+	self.direction_name = "?"
+
+	for _, d in ipairs(DOOR_BY_POSITION) do
+		local match = true
+		if d.x and math.abs(pos.x - d.x) > 16 then match = false end
+		if d.y and math.abs(pos.y - d.y) > 16 then match = false end
+		if match then
+			self.direction = d.dir
+			self.direction_name = d.label
+			break
+		end
+	end
+
+	self.state = STATE.LOCKED
+	sprite.play_flipbook("#sprite", hash(STATE.LOCKED))
+	msg.post("/level_manager", "door_ready", { id = go.get_id(), direction = self.direction })
+end
+
+function set_state(self, new_state)
+	if self.state == new_state then
+		return
+	end
+
+	self.state = new_state
+	sprite.play_flipbook("#sprite", hash(new_state))
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("unlock") then
+		set_state(self, STATE.UNLOCKED)
+
+	elseif message_id == hash("lock") then
+		set_state(self, STATE.LOCKED)
+
+	elseif message_id == hash("open") then
+		set_state(self, STATE.OPEN)
+
+	elseif message_id == hash("close") then
+		set_state(self, STATE.LOCKED)
+
+	elseif message_id == hash("trigger_response") then
+		if self.state == STATE.UNLOCKED and message.enter then
+			local door_data = {
+				direction = self.direction,
+				direction_name = self.direction_name
+			}
+			msg.post("/level_manager", "player_entered_door", door_data)
+		end
+	end
+end
