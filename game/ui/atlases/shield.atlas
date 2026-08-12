@@ -1,0 +1,13 @@
+images {
+  image: "/assets/sprites/bullet/ball_small.png"
+}
+images {
+  image: "/assets/sprites/bullet/ball_small_2.png"
+}
+images {
+  image: "/assets/sprites/bullet/ball_small_3.png"
+}
+images {
+  image: "/assets/sprites/shield/ball_large.png"
+}
+extrude_borders: 2

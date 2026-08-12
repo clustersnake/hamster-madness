@@ -1,0 +1,19 @@
+images {
+  image: "/assets/sprites/player/speedy/speedy_idle_down.png"
+}
+images {
+  image: "/assets/sprites/player/speedy/speedy_idle_right.png"
+}
+images {
+  image: "/assets/sprites/player/speedy/speedy_idle_up.png"
+}
+images {
+  image: "/assets/sprites/player/speedy/speedy_walk_down.png"
+}
+images {
+  image: "/assets/sprites/player/speedy/speedy_walk_right.png"
+}
+images {
+  image: "/assets/sprites/player/speedy/speedy_walk_up.png"
+}
+extrude_borders: 2

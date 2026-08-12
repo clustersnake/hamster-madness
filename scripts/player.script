@@ -1,0 +1,69 @@
+local hash_shoot = hash("shoot")
+local hash_recover_shield = hash("recover_shield")
+
+local function update_shield_state(self)
+	if self.has_shield then
+		msg.post("#shield_sprite", "enable")
+		msg.post("#shield_collision", "enable")
+	else
+		msg.post("#shield_sprite", "disable")
+		msg.post("#shield_collision", "disable")
+	end
+end
+
+local function fire_projectile(self)
+	self.has_shield = false
+	update_shield_state(self)
+
+	local pos = go.get_position()
+	local bullet_id = factory.create("#bullet_factory", pos)
+
+	-- Enviamos la dirección de apuntado (aim_dir) y la referencia del dueño a la bala
+	msg.post(bullet_id, "set_dir", { dir = self.aim_dir })
+	msg.post(bullet_id, "set_owner", { owner = go.get_id() })
+end
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+
+	self.has_shield = true
+	-- Dirección de apuntado por defecto (hacia la derecha)
+	self.aim_dir = vmath.vector3(1, 0, 0)
+
+	update_shield_state(self)
+end
+
+function on_input(self, action_id, action)
+	-- 1. Capturar el movimiento del mouse (action_id es nil cuando el mouse se mueve)
+	if not action_id then
+		-- Tomamos las dimensiones de la pantalla (por defecto 1280x720)
+		local screen_width = sys.get_config_int("display.width", 1280)
+		local screen_height = sys.get_config_int("display.height", 720)
+
+		-- Calculamos el vector desde el centro de la pantalla (donde está la cámara/jugador) hacia el cursor
+		local center = vmath.vector3(screen_width / 2, screen_height / 2, 0)
+		local mouse_pos = vmath.vector3(action.x, action.y, 0)
+		local dir = mouse_pos - center
+
+		-- Mapeamos el eje Y de pantalla al eje -Z del mundo 3D (profundidad)
+		-- Manteniendo la altura Y del mundo en 0 para que viaje paralelo al suelo
+		if vmath.length_sqr(dir) > 0 then
+			local dir_3d = vmath.vector3(dir.x, 0, -dir.y)
+			self.aim_dir = vmath.normalize(dir_3d)
+		end
+	end
+
+	-- 2. Disparo
+	if action_id == hash_shoot and action.pressed then
+		if self.has_shield then
+			fire_projectile(self)
+		end
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash_recover_shield then
+		self.has_shield = true
+		update_shield_state(self)
+	end
+end

@@ -1,0 +1,35 @@
+go.property("speed", 10)
+
+local hash_set_owner = hash("set_owner")
+local hash_set_dir = hash("set_dir")
+local hash_trigger_response = hash("trigger_response")
+local hash_enemy = hash("enemy")
+local hash_recover_shield = hash("recover_shield")
+
+function init(self)
+	self.dir = vmath.vector3(1, 0, 0)
+	self.owner = nil
+end
+
+function update(self, dt)
+	local pos = go.get_position()
+	pos = pos + self.dir * self.speed * dt
+	go.set_position(pos)
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash_set_dir then
+		self.dir = message.dir
+
+	elseif message_id == hash_set_owner then
+		self.owner = message.owner
+
+	elseif message_id == hash_trigger_response and message.enter then
+		if message.other_id == self.owner then
+			msg.post(self.owner, hash_recover_shield)
+			go.delete()
+		elseif message.other_group == hash_enemy then
+			-- Lógica de impacto con enemigo
+		end
+	end
+end
