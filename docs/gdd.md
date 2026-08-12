@@ -1,23 +1,28 @@
-# Hamster Madness: Rescue Protocol
-## Game Design Document v5.6 — Lore, Progression & Rescue Protocol Update
+# Project H.A.M.S.T.E.R
+## Game Design Document v1.0
 
 ---
 
-# 1. Concepto Core
+# 1. Concept Core
 
 ## Premisa
 
-**Hamster Madness: Rescue Protocol** es un juego de acción / twin-stick shooter / roguelite narrativo donde el jugador cree controlar drones de rescate dentro de un laboratorio subterráneo colapsado tras un desastre natural.
+**Project H.A.M.S.T.E.R** es un juego de acción / twin-stick shooter / roguelite narrativo donde el jugador controla drones de rescate dentro de un laboratorio subterráneo colapsado tras un desastre natural.
 
 La premisa aparente es simple:
 
-> Un científico atrapado intenta usar drones especializados para alcanzar el exterior y pedir ayuda.
+> El jugador está atrapado en las instalaciones e intenta usar drones especializados para alcanzar el exterior y pedir ayuda.
+
+> Para alcanzar su objetivo el jugador debe pasar a través del sistema de seguridad del laboratorio que fiel a sus directivas identifica los esfuerzos de escape de los drones como una amenaza a la seguridad y tratará de detenerlos por todos los medios.
 
 La realidad es más oscura:
 
-El científico murió durante un intento fallido de transferencia neurológica. El jugador no es el científico vivo, sino una **copia parcial de sus memorias**, sostenida por el sistema del laboratorio mediante una interfaz sináptica conectada a un núcleo biológico.
+El jugador es una personalidad creada por el sistema de respaldo que ve amenazada la integridad del sistema debido a las condiciones del sistema de generadores eléctricos que no van a durar para siempre.
 
 Los drones del jugador no son simples máquinas: cada uno contiene un núcleo sináptico con un hámster real utilizado para agilizar reacciones, cálculos y toma de decisiones.
+
+Plot Twist:
+El jugador mismo depende de un núcleo sináptico y por ende al final de la aventura tendrá que decidir si liberar al hámster alojado en su núcleo o conservarlo y seguir operativo.
 
 ---
 
@@ -31,7 +36,6 @@ Los drones del jugador no son simples máquinas: cada uno contiene un núcleo si
 | **Tamaño Nativo de Sprites** | 96x96 px |
 | **Estilo Jugador** | Cartoon vectorial |
 | **Estilo Enemigos / SPA** | Robótico, metálico, rígido, low-poly / pre-renderizado |
-| **Evento objetivo** | Gamedev.js Jam 2026 |
 
 ---
 
@@ -54,6 +58,7 @@ Los personajes jugables tienen un diseño **cartoon, vectorial y expresivo**. Au
 ### Justificación narrativa
 
 Los drones del jugador se mueven de forma más natural porque están vinculados a núcleos sinápticos biológicos. Los hámsters aportan instinto, microdecisiones y procesamiento orgánico, haciendo que los drones sean menos rígidos que los sistemas automáticos del laboratorio.
+Los drones tienen personalidades diferentes e interactúan con el jugador de forma constante ofreciendo tips, feedback o sencillamente realizando comentarios graciosos haciendo que el jugador se sienta parte de la experiencia todo el tiempo.
 
 ---
 
@@ -65,7 +70,7 @@ Los enemigos pertenecen al **Sistema de Protección Automatizado** del laborator
 - Tanques.
 - Torretas.
 - Cañones láser.
-- Trampas.
+- Trampas (pinchos, planchas de presión, bombas).
 - Drones centinela.
 - Robots de mantenimiento.
 - Sistemas de contención.
@@ -75,7 +80,7 @@ Visualmente son más fríos, mecánicos y rígidos que los drones del jugador.
 ### Rasgos visuales
 
 - Formas angulares.
-- Materiales metálicos.
+- Modelos pixelart.
 - Paleta de grises, negros y acentos luminosos.
 - Movimiento mecánico.
 - Simetría y repetición.
@@ -92,13 +97,8 @@ El SPA no posee procesamiento orgánico libre. Sus unidades dependen de rutinas,
 
 ## 3.1 El Desastre
 
-Un desastre natural provoca el aislamiento del laboratorio subterráneo. El científico principal queda atrapado y herido en los niveles más profundos.
-
-Antes de morir, intenta usar una cápsula de rescate experimental basada en transferencia neurológica. Sin embargo, el proceso falla.
-
-Durante la conexión, el científico fallece. El sistema, incapaz de completar correctamente la transferencia, crea una copia parcial de sus memorias y la sostiene mediante un núcleo sináptico biológico.
-
-Esa copia es el jugador.
+Un desastre natural provoca el aislamiento del laboratorio subterráneo. 
+Dentro del laboratorio se realizan diferentes experimentos para crear y entrenar diferentes drones a los cuales se les inyecta comportamientos animales a través de enlaces sinápticos.
 
 ---
 
@@ -160,7 +160,8 @@ Cada partida ocurre en el mundo real. No es una simulación.
 
 Existen únicamente:
 
-- 6 drones principales.
+- 6 drones principales (con un núcleo sináptico biológico activo).
+- 1 dron utilitario ("Spare") sin personalidad ni núcleo biológico inicial, de soporte técnico.
 - 1 núcleo sináptico asociado al operador/jugador.
 
 Sin embargo, en el laboratorio existen más hámsters y otros animales experimentales. Esto permite que nuevas partidas utilicen nuevos núcleos biológicos asignados a los mismos chasis reconstruidos.
@@ -247,79 +248,147 @@ No se conserva completamente:
 
 ---
 
+## 4.5 Protocolo de Calibración del Sistema (Fase Pre-Run)
+
+Antes de iniciar una incursión (run), el operador/jugador debe someterse a una secuencia de calibración del sistema. Esta fase sirve para sincronizar el enlace sináptico y evaluar el nivel de respuesta cognitiva del operador en condiciones críticas de energía.
+
+El protocolo consta de tres etapas lógicas:
+
+1. **Ordenamiento de Especialistas (Habilidades):** El sistema solicita al jugador que priorice las 6 habilidades de los drones principales de acuerdo con su preferencia estratégica, ordenándolas de la 1 (mayor prioridad/deseada al inicio) a la 6 (menor prioridad).
+2. **Evaluación de Amenazas (Ordenamiento de Jefes):** El jugador ordena a los 8 jefes del laboratorio según su percepción de peligrosidad de menor a mayor (de la amenaza 1 a la 8).
+3. **Diagnóstico de Enfoque (La Pregunta Clave):** Se interroga al jugador sobre cuál habilidad considera la más crucial de entre las 7 disponibles (Velocidad, Fuerza, Precisión, Agilidad, Destreza, Suerte o Inteligencia).
+
+### 4.5.1 Prueba de Rendimiento Coherente (Minijuegos)
+
+Dependiendo de la habilidad que el jugador seleccione en la pregunta clave, el sistema dispara un minijuego de entrenamiento específico. Completar la prueba con éxito determinará la sincronización del chasis y la compatibilidad en el despliegue del mapa de amenazas.
+
+Los minijuegos de calibración son:
+
+- **Velocidad:** 3 carreras de velocidad lineal estilo *GL-Lightcycle* (esquivar estelas de luz en un circuito cerrado de alta velocidad).
+- **Fuerza:** 3 rondas consecutivas de un desafío de machacar botones de forma rápida e intensa para sobrecargar generadores de energía estropeados.
+- **Precisión:** 3 niveles de tiro al blanco dinámico en los que el jugador debe eliminar objetivos inmóviles y móviles haciendo rebotar ráfagas de proyectiles en las superficies de la sala.
+- **Agilidad:** 3 rondas intensas de evasión pura en un plano confinado, esquivando patrones geométricos de proyectiles letales (al estilo de combate de *Undertale*).
+- **Destreza:** 3 oleadas cronometradas de enemigos en las que el jugador debe posicionarse estratégicamente para neutralizarlos de manera exclusiva utilizando minas de proximidad y campos gravitacionales.
+- **Suerte:** 3 partidas místicas rápidas en las que el jugador debe apostar e inclinar la probabilidad para predecir el resultado del lanzamiento de dados cuánticos (un minijuego ágil y con menor nivel de estrés físico).
+- **Inteligencia:** Resolver 3 laberintos generados de forma algorítmica y dinámica en un terminal de datos bajo un estricto tiempo límite.
+
+*Nota:* Si el jugador decide no completar o abortar las pruebas, el protocolo asume un **fallo total en el rendimiento cognitivo** (resultado negativo).
+
+### 4.5.2 Calibración y Consecuencias en el Despliegue
+
+La puntuación final obtenida en la prueba de rendimiento dictará el orden en que los chasis de los drones se reconstruyen en los pods y cómo responde el sistema de seguridad automática (SPA) del laboratorio:
+
+| Puntuación | Estado de Sincronización | Consecuencia en Drones (Aliados) | Consecuencia en Jefes (Enemigos) |
+| :--- | :--- | :--- | :--- |
+| **Buena** | **Sincronización Total** | Se respeta exactamente el orden de prioridad elegido por el usuario. El jugador inicia la partida pudiendo controlar a los **2 primeros drones de inmediato** (intercambiables durante el run). | El orden de aparición de los jefes se adapta dinámicamente para que sean **compatibles** (vulnerables) al arsenal y estilo de los drones asignados para sus sectores correspondientes. |
+| **Regular** | **Sincronización Estable** | Se conserva exactamente el orden elegido por el jugador para la reconstrucción de los chasis, iniciando con el primer dron elegido. | El orden de aparición de los jefes conserva el orden original exacto que el usuario seleccionó durante la fase de amenazas. |
+| **Mala / Omitida** | **Fallo de Enlace** | El sistema de reconstrucción colapsa y despliega los drones en un **orden totalmente aleatorio**. | El sistema de defensa del SPA detecta el fallo del enlace del jugador y reorganiza a los jefes para que sean **incompatibles** (altamente hostiles y contra-estrategias directas) a los drones asignados en sus respectivos sectores. |
+
+---
+
 # 5. Personajes Jugables
 
-## 5.1 Los 6 Especialistas
+## 5.1 Los 6 Especialistas + Dron Utilitario
 
-Cada personaje representa un dron distinto, con una personalidad visual y una función jugable específica.
-
-Aunque el jugador los percibe como personajes o “vidas”, cada uno contiene un núcleo sináptico con un hámster asociado.
+Cada especialista representa un dron distinto con una personalidad visual propia, un diseño de chasis característico y una función jugable (atributo) específica sustentada en su núcleo sináptico biológico. Además, se dispone de un dron utilitario auxiliar ("Spare") para labores de apoyo e inteligencia técnica.
 
 ---
 
 ## Speedy — Velocidad
 
+- **Aspecto Visual:** Color rojo brillante. Presenta llantas traseras significativamente más grandes que las delanteras y un spoiler trasero aerodinámico al puro estilo *dragster* de carreras de aceleración.
+- **Justificación de Diseño:** Chasis ultraligero optimizado para altas velocidades lineales y desvíos rápidos de energía.
+
 | Nivel | Mejora |
 |---|---|
 | **Nivel 1** | +10% velocidad base |
 | **Nivel 2** | Rastro de chispas al girar |
-| **Nivel 3** | Rango magnético aumentado |
-| **Nivel 4** | **Tiempo Bala** |
+| **Nivel 3** | Rango magnético de recolección aumentado |
+| **Nivel 4** | **Tiempo Bala** — Ralentiza el tiempo de su entorno al moverse a máxima potencia |
 
 ---
 
-## Tank — Blindaje
+## Tank — Fuerza
+
+- **Aspecto Visual:** Color verde militar mate. Cuenta con tracción por orugas de alta resistencia y un casco militar blindado con una estrella blanca característica en la parte frontal.
+- **Justificación de Diseño:** Estructura pesada y maciza construida para repeler impactos frontales directos y liberar ondas de energía cinética.
 
 | Nivel | Mejora |
 |---|---|
 | **Nivel 1** | Aguanta 1 golpe extra sin soltar escudo |
 | **Nivel 2** | Onda de choque al recuperar proyectil |
 | **Nivel 3** | Escudo +30% más grande |
-| **Nivel 4** | **Fortaleza Móvil** — invulnerabilidad temporal |
+| **Nivel 4** | **Fortaleza Móvil** — Invulnerabilidad temporal con escudo expandido |
 
 ---
 
-## Trickshot — Geometría
+## Trickshot (Ricochet) — Precisión
+
+- **Aspecto Visual:** Color azul cobalto. Equipado con 4 ruedas rústicas todoterreno y visores ópticos con miras telescópicas de precisión integradas ("ojos").
+- **Justificación de Diseño:** Sistemas de calibración angular hiperprecisos y software de cálculo balístico inmediato de rebote.
 
 | Nivel | Mejora |
 |---|---|
 | **Nivel 1** | 1 redirección tras impacto |
-| **Nivel 2** | 2 redirecciones + rebote a enemigo |
+| **Nivel 2** | 2 redirecciones + rebote inteligente a enemigo |
 | **Nivel 3** | Proyectil perforante |
-| **Nivel 4** | **Fragmentación** |
+| **Nivel 4** | **Fragmentación** — El proyectil se divide en múltiples sub-esferas letales al impactar |
 
 ---
 
-## Lucky — Anomalía
+## Phaser — Agilidad
+
+- **Aspecto Visual:** Color naranja metalizado. Completamente desprovisto de ruedas, suspendido mediante un módulo de flotación/levitación magnética. Posee una cúpula superior de vidrio templado similar a una cabina de nave espacial o platillo volador.
+- **Justificación de Diseño:** Chasis flotante con suspensión cuántica que le permite realizar movimientos rápidos de desfase molecular (*dashes*) e intangibilidad temporal.
 
 | Nivel | Mejora |
 |---|---|
-| **Nivel 1** | 10% de probabilidad de ignorar impacto |
-| **Nivel 2** | Rebote probabilístico de proyectil |
-| **Nivel 3** | Mayor drop de mejoras |
-| **Nivel 4** | **Siete de la Suerte** — críticos mejorados |
+| **Nivel 1** | *Impulso de Fase* básico (dash) con frames de invulnerabilidad (*i-frames*) |
+| **Nivel 2** | Daño por contacto de energía residual durante el impulso de fase |
+| **Nivel 3** | Desfase cuántico — Permite atravesar de forma segura paredes delgadas |
+| **Nivel 4** | **Multi-Fase** — 3 impulsos cuánticos encadenados a alta velocidad |
 
 ---
 
-## Dasher — Agilidad
+## Trapper (Hunter) — Destreza
+
+- **Aspecto Visual:** Color amarillo de alta visibilidad. Tracción por 4 orugas triangulares independientes. Cuenta con un accesorio en la parte superior que emula un sombrero de pesca de ala ancha o una bandana de cazador.
+- **Justificación de Diseño:** Chasis diseñado para el control de zonas mediante trampas terrestres y dispositivos de detención tácticos.
 
 | Nivel | Mejora |
 |---|---|
-| **Nivel 1** | Dash básico con i-frames |
-| **Nivel 2** | Daño por contacto durante dash |
-| **Nivel 3** | Atraviesa paredes delgadas |
-| **Nivel 4** | **Multi-Dash** — 3 dashes encadenados |
+| **Nivel 1** | Proyectil convertido en mina de proximidad terrestre |
+| **Nivel 2** | Campo de ralentización gravitacional alrededor del dispositivo |
+| **Nivel 3** | Detonación manual a distancia |
+| **Nivel 4** | **Agujero Negro** — Vórtice de succión que atrae a enemigos y restos hacia la mina |
 
 ---
 
-## Trapper — Táctica
+## Lucky (Rabbit / Lucy) — Suerte
+
+- **Aspecto Visual:** Color violeta místico. Montado sobre un chasis de 6 ruedas rústicas multiterreno, adornado con sutiles detalles estéticos de velos protectores similares a los de una adivinadora o mística.
+- **Justificación de Diseño:** Software de modulación cuántica que manipula probabilidades para ignorar daños y maximizar el botín del entorno.
 
 | Nivel | Mejora |
 |---|---|
-| **Nivel 1** | Proyectil convertido en mina de proximidad |
-| **Nivel 2** | Campo de ralentización |
-| **Nivel 3** | Detonación manual |
-| **Nivel 4** | **Agujero Negro** |
+| **Nivel 1** | 10% de probabilidad de ignorar impacto entrante |
+| **Nivel 2** | Rebote probabilístico de proyectil desviado hacia un enemigo |
+| **Nivel 3** | Mayor probabilidad de drop de mejoras y recursos |
+| **Nivel 4** | **Siete de la Suerte** — Multiplica drásticamente la tasa de golpes críticos |
+
+---
+
+## Spare — Inteligencia
+
+- **Aspecto Visual:** Color blanco industrial. Dispone de 4 ruedas pequeñas y un par de brazos mecánicos articulados en la parte frontal para manipular materiales.
+- **Justificación de Diseño:** Dron utilitario y de repuesto auxiliar del laboratorio. Carece de núcleo sináptico biológico activo de hámster y de personalidad aparente, operando mediante una IA analítica orientada al soporte y eficiencia técnica.
+
+| Nivel | Mejora |
+|---|---|
+| **Nivel 1** | +15% de velocidad de recolección de chatarra y autoreparación |
+| **Nivel 2** | Atracción magnética de materiales a distancia usando los brazos mecánicos |
+| **Nivel 3** | Escáner de sector en HUD — Revela rutas ocultas, recursos y trampas cercanas |
+| **Nivel 4** | **Auto-Ensamblaje** — Si es destruido, se auto-reconstruye una vez por nivel usando 50% de los recursos actuales |
 
 ---
 
@@ -379,41 +448,88 @@ Al derrotar a un jefe:
 
 ---
 
-## 7.2 Justificación del antiguo Boss Tortuga
+## 7.2 Justificación del Boss Tortuga (Turtle Tank)
 
-Originalmente, el primer boss era una tortuga. Luego su diseño evolucionó hasta convertirse en un tanque.
+Originalmente, el primer boss era una tortuga caricaturesca. Luego su diseño evolucionó para convertirse en un tanque blindado.
 
-Este cambio se integra al lore mediante el nombre clave:
+Este cambio se integra perfectamente al lore del laboratorio mediante su nombre clave de desarrollo interno:
 
-> **Proyecto Testudo**
+> **Proyecto Turtle**
 
-El boss tanque conserva el concepto de tortuga:
+El boss tanque conserva intactas las raíces conceptuales de la tortuga:
 
-- Blindaje pesado.
-- Avance lento.
-- Defensa frontal.
-- Resistencia alta.
-- Caparazón mecánico.
-- Núcleo biológico asociado a una tortuga.
+- Blindaje pesado de caparazón metálico.
+- Avance sumamente lento y metódico.
+- Fuerte defensa frontal impenetrable.
+- Resistencia estructural sumamente alta.
+- Núcleo biológico/sináptico asociado a una tortuga real.
 
-Esto permite mantener rastros del nombre `Turtle`, `Tortuga` o similares en el código como referencia interna del proyecto.
+Esto permite y justifica mantener rastros de nombres como `Turtle`, `Tortuga` o similares en la estructura del código y activos del juego.
 
 ---
 
-## 7.3 Tabla de Bosses
+## 7.3 Tabla de los 8 Bosses
 
-| Boss | Nombre de Proyecto | Animal Asociado | Técnica Visual | Mecánica | Recompensa |
+| Boss | Nombre de Proyecto | Animal Asociado | Técnica Visual | Mecánica | Recompensa / Habilidad Adquirida |
 |---|---|---|---|---|---|
-| **Tanque Testudo** | Tortuga / Turtle | Tortuga | Stacking / 3D pre-render | Lento, blindado, ráfagas de misiles, inmune por delante | **Parry:** refleja proyectiles |
-| **Araña Centinela** | Spider | Araña | Blender 8-dir | Movimiento errático, redes, control de zonas | **Telaraña:** recuperación mejorada de proyectil |
-| **Puercoespín Blindado** | Porcupine | Puercoespín | Stacking / 3D pre-render | Cargas veloces, explosión radial de púas | **Púas:** daño aumentado |
-| **Murciélago de Sonar** | Bat | Murciélago | Blender animado | Oscuridad, ondas sónicas, ataques desde ángulos ciegos | **Sonar:** revela rutas ocultas |
-| **Víbora Láser** | Serpent | Serpiente | Segmentado / 8-dir | Ataques lineales, láseres, emboscadas por conductos | **Rayo Guiado:** mejora de precisión |
-| **Primate Cognitivo** | Primate | Mono | Blender / animación avanzada | Aprende patrones, cambia estrategias | **Predicción:** mejora de puntería o reacción |
+| **Tanque Turtle** | Turtle | Tortuga | Stacking / 3D pre-render | Lento, blindaje pesado frontal impenetrable, ráfagas constantes de misiles guiados de medio alcance. | **Caparazón:** Permite devolver proyectiles con un parry de escudo perfecto. |
+| **Araña Centinela** | Spider | Araña | Blender 8-dir | Movimiento rápido y errático, tendido de telarañas ralentizantes, control de zonas mediante nidos de crías. | **Telaraña:** Atracción magnética mejorada de proyectiles y restos al chasis. |
+| **Puercoespín Blindado** | Porcupine | Puercoespín | Stacking / 3D pre-render | Embestidas lineales furiosas a gran velocidad, liberación radial masiva de púas metálicas de tungsteno. | **Púas de Acero:** Multiplica el daño pasivo de metralla al reventar proyectiles. |
+| **Murciélago de Sonar** | Bat | Murciélago | Blender animado | Combate en penumbra artificial del sector, ataques rápidos desde ángulos ciegos, ondas de sonido que aturden. | **Sonar de Eco:** Revela rutas secretas, trampas ocultas y muros destructibles en el mapa. |
+| **Víbora Láser** | Serpent | Serpiente | Segmentado / 8-dir | Ataques rectilíneos ultrarrápidos, barrido continuo con haces de láser térmico, emboscadas desde ductos del techo. | **Láser Refractario:** Mejora drástica en la precisión y guiado inteligente de los disparos. |
+| **Armadillo Rodante** | Armadillo | Armadillo | Blender / 3D pre-render | Se compacta en una esfera acorazada indestructible que rueda y rebota a gran velocidad por toda la sala. | **Placas Reflectoras:** Desvía el daño de un impacto letal por sala, otorgando resistencia pasiva. |
+| **Conejo de Impulso** | Rabbit | Conejo | Blender / Spritesheets | Saltos verticales hidráulicos colosales y constantes, generando ondas sísmicas devastadoras al caer sobre el suelo. | **Salto de Fase:** Incrementa el alcance máximo y la velocidad de los impulsos de fase (dashes). |
+| **Lobo Cazador** | Wolf | Lobo | Blender / 8 direcciones | Inteligencia artificial táctica adaptativa, camuflaje óptico intermitente en las sombras, mordiscos críticos. | **Instinto Salvaje:** Reduce drásticamente los tiempos de recarga de habilidades de los chasis. |
 
 ---
 
-## 7.4 Núcleos de Boss
+## 7.4 Matriz de Compatibilidades y Contracorrientes (Estilo Mega Man X)
+
+La efectividad en el combate del laboratorio depende directamente de la asignación del dron idóneo contra la amenaza correcta. El sistema de calibración inicial de la run ajusta las apariciones de los jefes de forma que sean **compatibles** (favorables para el jugador) o **incompatibles** (diseñados para anular la ventaja del dron actual):
+
+### Relaciones de Compatibilidad (Ventaja del Jugador)
+- **Speedy (Velocidad)** contra:
+  - *Tanque Turtle:* Su velocidad lineal le permite flanquear el blindaje frontal inexpugnable de Turtle de forma instantánea.
+  - *Armadillo Rodante:* Permite evadir sus trayectorias esféricas veloces y disparar a sus puntos vulnerables expuestos tras el rebote.
+- **Tank (Fuerza)** contra:
+  - *Puercoespín Blindado:* El escudo de alta resistencia bloquea por completo la lluvia masiva de púas de tungsteno.
+  - *Conejo de Impulso:* El blindaje pesado absorbe las ondas de choque sísmicas generadas por el conejo al aterrizar.
+- **Trickshot (Precisión)** contra:
+  - *Araña Centinela:* Los proyectiles ricochet/rebote limpian sus redes ralentizantes a distancia segura y exponen sus patas débiles.
+  - *Murciélago de Sonar:* El sistema de miras telescópicas y el rebote en paredes permiten golpear al Murciélago oculto en las sombras sin línea de visión directa.
+- **Phaser (Agilidad)** contra:
+  - *Víbora Láser:* Su flotación magnética y desfase cuántico (*i-frames*) le permiten traspasar las barreras de láser continuo sin recibir daño alguno.
+  - *Puercoespín Blindado:* Puede desfasar a través del torbellino de púas radiales en pleno despliegue.
+- **Trapper (Destreza)** contra:
+  - *Araña Centinela:* Las minas terrestres de proximidad destruyen nidos de crías y sus campos gravitacionales confinan a la araña.
+  - *Lobo Cazador:* Las trampas de ralentización neutralizan por completo la agilidad táctica y camuflaje del lobo, dejándolo expuesto.
+- **Lucky (Suerte)** contra:
+  - *Armadillo Rodante:* El modificador probabilístico de suerte le permite resistir los aplastamientos masivos e inclinar la tasa de impactos críticos al máximo en momentos clave.
+  - *Lobo Cazador:* Desvía la ráfaga de ataques del lobo y devuelve golpes críticos de forma automática.
+
+### Relaciones de Incompatibilidad (Desventaja del Jugador / Contracorrientes)
+- **Speedy (Velocidad)** sufre contra:
+  - *Araña Centinela:* Sus redes ralentizantes reducen la velocidad a cero y sabotean el rastro de chispas.
+  - *Murciélago de Sonar:* Las ondas de sonido distorsionantes sabotean los controles lineales del veloz chasis.
+- **Tank (Fuerza)** sufre contra:
+  - *Víbora Láser:* Los haces continuos de láser térmico y los ataques verticales eluden el escudo frontal y funden el blindaje pesado.
+  - *Lobo Cazador:* Su alta movilidad táctica le permite flanquear y asaltar los puntos ciegos traseros de la armadura pesada.
+- **Trickshot (Precisión)** sufre contra:
+  - *Tanque Turtle:* El blindaje frontal pesado repele y absorbe los rebotes de precisión normales, haciéndolos inútiles.
+  - *Armadillo Rodante:* Su caparazón esférico reflectante devuelve los tiros de precisión contra el propio dron del jugador.
+- **Phaser (Agilidad)** sufre contra:
+  - *Conejo de Impulso:* El gran alcance de las ondas sísmicas al aterrizar atrapa a Phaser justo al final de sus dashes flotantes.
+  - *Araña Centinela:* Las redes restringen y desactivan de inmediato el módulo de impulsos cuánticos flotantes.
+- **Trapper (Destreza)** sufre contra:
+  - *Murciélago de Sonar:* Al volar constantemente, el murciélago esquiva por completo las minas terrestres de proximidad.
+  - *Víbora Láser:* La serpiente viaja por conductos superiores elevados y paredes, evitando las zonas minadas del suelo.
+- **Lucky (Suerte)** sufre contra:
+  - *Puercoespín Blindado:* El volumen de púas letales en pantalla satura la capacidad de evasión del chasis, haciendo inviable la esquiva por azar.
+  - *Tanque Turtle:* El fuego continuo y misiles guiados del tanque no dejan margen a la probabilidad.
+
+---
+
+## 7.5 Núcleos de Boss
 
 Los núcleos de boss son más grandes o más protegidos que los de los drones normales. No se presentan como trofeos, sino como **vidas rescatadas**.
 
