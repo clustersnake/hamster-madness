@@ -1,3 +1,6 @@
+go.property("muzzle_offset", 1.0)
+go.property("aim_height", 0.5)
+
 local hash_shoot = hash("shoot")
 local hash_recover_shield = hash("recover_shield")
 
@@ -15,7 +18,8 @@ local function fire_projectile(self)
 	self.has_shield = false
 	update_shield_state(self)
 
-	local pos = go.get_position()
+	local pos = go.get_world_position() + self.aim_dir * self.muzzle_offset
+	pos.y = self.aim_height
 	local bullet_id = factory.create("#bullet_factory", pos)
 
 	-- Enviamos la dirección de apuntado (aim_dir) y la referencia del dueño a la bala
@@ -29,27 +33,35 @@ function init(self)
 	self.has_shield = true
 	-- Dirección de apuntado por defecto (hacia la derecha)
 	self.aim_dir = vmath.vector3(1, 0, 0)
+	-- Reticulo: punto del suelo bajo el cursor
+	self.aim_ground = nil
 
 	update_shield_state(self)
 end
 
 function on_input(self, action_id, action)
 	-- 1. Capturar el movimiento del mouse (action_id es nil cuando el mouse se mueve)
-	if not action_id then
-		-- Tomamos las dimensiones de la pantalla (por defecto 1280x720)
-		local screen_width = sys.get_config_int("display.width", 1280)
-		local screen_height = sys.get_config_int("display.height", 720)
+	-- if not action_id then
+	if action.screen_x and action.screen_y then
+		-- Punto del near plane de la cámara bajo el cursor
+		local w = camera.screen_xy_to_world(action.screen_x, action.screen_y, "/camera#camera")
 
-		-- Calculamos el vector desde el centro de la pantalla (donde está la cámara/jugador) hacia el cursor
-		local center = vmath.vector3(screen_width / 2, screen_height / 2, 0)
-		local mouse_pos = vmath.vector3(action.x, action.y, 0)
-		local dir = mouse_pos - center
+		-- Vector forward de la cámara (Defold mira hacia -Z local)
+		local cam_q = go.get_world_rotation("/camera#camera")
+		local fwd = vmath.rotate(cam_q, vmath.vector3(0, 0, -1))
 
-		-- Mapeamos el eje Y de pantalla al eje -Z del mundo 3D (profundidad)
-		-- Manteniendo la altura Y del mundo en 0 para que viaje paralelo al suelo
-		if vmath.length_sqr(dir) > 0 then
-			local dir_3d = vmath.vector3(dir.x, 0, -dir.y)
-			self.aim_dir = vmath.normalize(dir_3d)
+		-- Intersección del rayo de cámara con el plano del suelo (Y = 0)
+		if fwd.y ~= 0 then
+			local t = -w.y / fwd.y
+			if t >= 0 then
+				local ground = w + fwd * t
+				self.aim_ground = ground
+				local d = ground - go.get_world_position()
+				d.y = 0 -- Mantenemos el proyectil horizontal al plano
+				if vmath.length_sqr(d) > 0 then
+					self.aim_dir = vmath.normalize(d)
+				end
+			end
 		end
 	end
 
@@ -58,6 +70,13 @@ function on_input(self, action_id, action)
 		if self.has_shield then
 			fire_projectile(self)
 		end
+	end
+end
+
+function update(self, dt)
+	-- Mover el retículo al punto del suelo bajo el cursor
+	if self.aim_ground then
+		go.set_position(vmath.vector3(self.aim_ground.x, self.aim_height, self.aim_ground.z), "crosshair")
 	end
 end
 
