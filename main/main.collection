@@ -224,6 +224,7 @@ instances {
   id: "walls_north"
   prototype: "/game/objects/arena/wall.go"
   position {
+    y: 1.0
     z: -10.0
   }
 }
@@ -231,6 +232,7 @@ instances {
   id: "walls_south"
   prototype: "/game/objects/arena/wall.go"
   position {
+    y: 1.0
     z: 10.0
   }
 }
@@ -239,6 +241,7 @@ instances {
   prototype: "/game/objects/arena/wall.go"
   position {
     x: 10.0
+    y: 1.0
   }
   rotation {
     y: 0.70710677
@@ -250,6 +253,7 @@ instances {
   prototype: "/game/objects/arena/wall.go"
   position {
     x: -10.0
+    y: 1.0
   }
   rotation {
     y: 0.70710677
