@@ -22,3 +22,11 @@ mouse_trigger {
   input: MOUSE_BUTTON_1
   action: "shoot"
 }
+key_trigger {
+  input: KEY_B
+  action: "toggle_bounce"
+}
+key_trigger {
+  input: KEY_R
+  action: "toggle_ricochet"
+}

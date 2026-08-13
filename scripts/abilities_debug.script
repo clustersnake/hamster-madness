@@ -1,0 +1,28 @@
+-- abilities_debug.script
+-- GO de debug: permite activar/desactivar habilidades y rasgos con teclas.
+-- Para probar una habilidad futura: añadir una entrada a TOGGLES + un binding.
+
+local abilities = require "scripts.abilities"
+
+local TOGGLES = {
+	[hash("toggle_bounce")] = { kind = "global", name = "bounce" },
+	[hash("toggle_ricochet")] = { kind = "trait", name = "ricochet" },
+}
+
+function init(self)
+	msg.post(".", "acquire_input_focus")
+end
+
+function on_input(self, action_id, action)
+	local toggle = TOGGLES[action_id]
+	if toggle and action.pressed then
+		if toggle.kind == "global" then
+			abilities.debug_toggle_global(toggle.name)
+			print("[Abilities] global '" .. toggle.name .. "' = " .. tostring(abilities.is_unlocked(toggle.name)))
+		else
+			abilities.debug_toggle_trait(toggle.name)
+			print("[Abilities] trait '" .. toggle.name .. "' = " .. tostring(abilities.has_trait(toggle.name)))
+		end
+		return true
+	end
+end
