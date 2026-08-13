@@ -15,7 +15,7 @@ embedded_components {
   "    rotation {\n"
   "    }\n"
   "    index: 0\n"
-  "    count: 1\n"
+  "    count: 3\n"
   "  }\n"
   "  data: 10.0\n"
   "  data: 1.0\n"
