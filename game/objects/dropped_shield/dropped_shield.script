@@ -1,0 +1,15 @@
+-- dropped_shield.script
+-- Bola de hámster caída: estática en el suelo, esperando ser recogida.
+
+local hash_trigger_response = hash("trigger_response")
+local hash_recover_shield = hash("recover_shield")
+local hash_player = hash("player")
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash_trigger_response and message.enter then
+		if message.other_group == hash_player then
+			msg.post(message.other_id, hash_recover_shield)
+			go.delete()
+		end
+	end
+end

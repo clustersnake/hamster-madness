@@ -1,20 +1,56 @@
 go.property("speed", 10)
+go.property("max_distance", 40)
 
-local hash_set_owner = hash("set_owner")
+local abilities = require "scripts.abilities"
+
 local hash_set_dir = hash("set_dir")
-local hash_trigger_response = hash("trigger_response")
+local hash_set_owner = hash("set_owner")
+local hash_contact_point_response = hash("contact_point_response")
+local hash_default = hash("default")
 local hash_enemy = hash("enemy")
-local hash_recover_shield = hash("recover_shield")
+
+local function become_dropped(self, pos)
+	if self.is_dying then
+		return
+	end
+	self.is_dying = true
+	factory.create("#dropped_shield_factory", pos)
+	go.delete()
+end
 
 function init(self)
 	self.dir = vmath.vector3(1, 0, 0)
 	self.owner = nil
+	self.is_dying = false
+	self.distance_traveled = 0
+	self.bounce_cooldown = 0
+	self.cooldown_time = 0.05
 end
 
 function update(self, dt)
-	local pos = go.get_position()
-	pos = pos + self.dir * self.speed * dt
+	if self.is_dying then
+		return
+	end
+
+	if self.bounce_cooldown > 0 then
+		self.bounce_cooldown = self.bounce_cooldown - dt
+	end
+
+	local pos = go.get_position() + self.dir * self.speed * dt
 	go.set_position(pos)
+
+	self.distance_traveled = self.distance_traveled + self.speed * dt
+	if self.distance_traveled >= self.max_distance then
+		become_dropped(self, go.get_world_position())
+	end
+end
+
+local function bounce(self, message)
+	local normal = message.normal
+	local dot = vmath.dot(self.dir, normal)
+	self.dir = vmath.normalize(self.dir - 2 * dot * normal)
+	go.set_position(go.get_position() + normal * message.distance)
+	self.bounce_cooldown = self.cooldown_time
 end
 
 function on_message(self, message_id, message, sender)
@@ -24,12 +60,26 @@ function on_message(self, message_id, message, sender)
 	elseif message_id == hash_set_owner then
 		self.owner = message.owner
 
-	elseif message_id == hash_trigger_response and message.enter then
-		if message.other_id == self.owner then
-			msg.post(self.owner, hash_recover_shield)
-			go.delete()
-		elseif message.other_group == hash_enemy then
-			-- Lógica de impacto con enemigo
+	elseif message_id == hash_contact_point_response then
+		if self.is_dying then
+			return
+		end
+
+		local impact_pos = go.get_world_position() + message.normal * 0.5
+
+		if message.other_group == hash_enemy then
+			if abilities.has_trait("ricochet") and self.bounce_cooldown <= 0 then
+				bounce(self, message)
+			else
+				become_dropped(self, impact_pos)
+			end
+
+		elseif message.other_group == hash_default then
+			if abilities.is_unlocked("bounce") and self.bounce_cooldown <= 0 then
+				bounce(self, message)
+			else
+				become_dropped(self, impact_pos)
+			end
 		end
 	end
 end

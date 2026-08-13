@@ -89,6 +89,29 @@ embedded_instances {
   "\"\n"
   "}\n"
   "embedded_components {\n"
+  "  id: \"player_collision\"\n"
+  "  type: \"collisionobject\"\n"
+  "  data: \"type: COLLISION_OBJECT_TYPE_KINEMATIC\\n"
+  "mass: 0.0\\n"
+  "friction: 0.1\\n"
+  "restitution: 0.5\\n"
+  "group: \\\"player\\\"\\n"
+  "mask: \\\"dropped_shield\\\"\\n"
+  "embedded_collision_shape {\\n"
+  "  shapes {\\n"
+  "    shape_type: TYPE_SPHERE\\n"
+  "    position {\\n"
+  "    }\\n"
+  "    rotation {\\n"
+  "    }\\n"
+  "    index: 0\\n"
+  "    count: 1\\n"
+  "  }\\n"
+  "  data: 0.6\\n"
+  "}\\n"
+  "\"\n"
+  "}\n"
+  "embedded_components {\n"
   "  id: \"bullet_factory\"\n"
   "  type: \"factory\"\n"
   "  data: \"prototype: \\\"/game/objects/bullet/bullet.go\\\"\\n"
@@ -196,4 +219,48 @@ embedded_instances {
     y: 1.0
     z: -3.0
   }
+}
+instances {
+  id: "walls_north"
+  prototype: "/game/objects/arena/wall.go"
+  position {
+    z: -10.0
+  }
+}
+instances {
+  id: "walls_south"
+  prototype: "/game/objects/arena/wall.go"
+  position {
+    z: 10.0
+  }
+}
+instances {
+  id: "walls_east"
+  prototype: "/game/objects/arena/wall.go"
+  position {
+    x: 10.0
+  }
+  rotation {
+    y: 0.70710677
+    w: 0.70710677
+  }
+}
+instances {
+  id: "walls_west"
+  prototype: "/game/objects/arena/wall.go"
+  position {
+    x: -10.0
+  }
+  rotation {
+    y: 0.70710677
+    w: 0.70710677
+  }
+}
+embedded_instances {
+  id: "abilities_debug"
+  data: "components {\n"
+  "  id: \"abilities_debug\"\n"
+  "  component: \"/scripts/abilities_debug.script\"\n"
+  "}\n"
+  ""
 }
